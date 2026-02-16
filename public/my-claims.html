@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Claims - Back2u</title>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+        nav { background: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 1px solid #f3f4f6; }
+        nav > div { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+        @media (max-width: 640px) { nav > div { padding: 1rem 0.25rem; gap: 1rem; } }
+        main { flex: 1; }
+        footer { background: linear-gradient(to right, #111827, #1f2937); color: #d1d5db; text-align: center; padding: 2rem; border-top: 1px solid #374151; margin-top: auto; }
+        .grid { display: grid; gap: 2rem; }
+        .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        @media (max-width: 1024px) { .lg\\:grid-cols-4 { grid-template-columns: 1fr; } }
+        .lg\\:col-span-1 { grid-column: span 1; }
+        .lg\\:col-span-3 { grid-column: span 3; }
+        @media (max-width: 1024px) { .lg\\:col-span-1, .lg\\:col-span-3 { grid-column: auto; } }
+        .sidebar { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; position: sticky; top: 6rem; }
+        .nav-item-active { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: all 0.3s; }
+        .nav-item { color: #1f2937; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: background-color 0.3s; }
+        .nav-item:hover { background-color: #dbeafe; }
+        .container { max-width: 80rem; margin: 0 auto; padding: 2rem 1rem; }
+        .bg-red-600 { background-color: #dc2626; }
+        .text-white { color: white; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .text-gray-700 { color: #374151; }
+        .text-sm { font-size: 0.875rem; }
+        .font-medium { font-weight: 500; }
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { color: #1d4ed8; }
+    </style>
+    <style>
+        .nav-item-active { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); color: white; }
+        .nav-item { transition: background-color 0.3s; }
+        .nav-item:hover { background-color: #dbeafe; }
+    </style>
+</head>
+<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
+    <nav class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl animate-pulse">🔍</span>
+                <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
+            </div>
+            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105 bg-gradient-to-r from-blue-100 to-cyan-100">🔍 My Claims</a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
+            </div>
+            <!-- Mobile menu button -->
+            <div class="lg:hidden">
+                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
+                    <span class="text-3xl">☰</span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="lg:hidden hidden bg-white border-t-2 border-gradient-to-r from-blue-200 to-cyan-200 px-4 py-6 shadow-lg">
+            <div class="flex flex-col gap-4">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50" id="dashboardLinkMobile" style="display: none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-100 hover:to-cyan-100 bg-gradient-to-r from-blue-100 to-cyan-100">🔍 My Claims</a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">👤 Profile</a>
+                <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold text-center mt-2">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar -->
+            <aside class="lg:col-span-1">
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 sticky top-24">
+                    <div class="pb-6 border-b border-gray-300 mb-6">
+                        <h3 id="userName" class="text-lg font-bold text-gray-800">User Name</h3>
+                        <p id="userEmail" class="text-sm text-gray-600 my-2">user@email.com</p>
+                        <p id="userRole" class="inline-block bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold mt-3">Student</p>
+                    </div>
+
+                    <nav class="flex flex-col gap-2">
+                        <a href="dashboard.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
+                            <span>📋</span> My Lost Items
+                        </a>
+                        <a href="my-claims.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item-active">
+                            <span>🔍</span> My Claims
+                        </a>
+                        <a href="report-lost.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
+                            <span>➕</span> Report Lost Item
+                        </a>
+                        <a href="browse-found.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
+                            <span>📦</span> Browse Found
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:col-span-3">
+                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                    <h1 class="text-gray-800 text-4xl font-bold">🔍 My Claims</h1>
+                </div>
+
+                <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+
+                <div id="claimsContainer" class="my-8">
+                    <div class="text-center py-12">
+                        <div class="text-4xl mb-3">⏳</div>
+                        <p class="text-gray-500 font-medium">Loading your claims...</p>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="text-center p-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl my-8 hidden">
+                    <div class="text-5xl mb-3">📭</div>
+                    <h2 class="text-gray-600 mb-2 text-2xl font-bold">No claims yet</h2>
+                    <p class="text-gray-500 mb-6">You haven't submitted any claims yet.</p>
+                    <a href="browse-found.html" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer inline-block">📦 Browse Found Items</a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
+        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script src="/javascripts/modal.js"></script>
+    <script src="/javascripts/my-claims.js"></script>
+</body>
+</html>

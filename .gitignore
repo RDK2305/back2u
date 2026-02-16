@@ -66,24 +66,13 @@ Back2u/
 app.js
 test_db_connection.js
 
-# Frontend Files (DO NOT PUSH)
-# Keep frontend local for now - only backend, database, and documentation should be pushed
-public/browse-found.html
-public/dashboard.html
-public/index.html
-public/login.html
-public/my-claims.html
-public/profile.html
-public/register.html
-public/report-lost.html
-public/verify-email.html
-public/javascripts/*.js
-public/stylesheets/style.css
-public/stylesheets/style.min.css
+# Frontend Files - NOW INCLUDING IN GIT
+# Keep build/config files for CSS
+# build-css.js, postcss.config.js, tailwind.config.js
+# favicon.svg - kept as asset
 
-# Note: Exception - keep following frontend files:
-# - build-css.js
-# - postcss.config.js
-# - tailwind.config.js
-# - favicon.svg
-# These are build/config files or assets, not frontend code
+# Note: Following frontend files are now included in the repo:
+# - public/html files
+# - public/javascripts
+# - public/stylesheets
+# - public/images

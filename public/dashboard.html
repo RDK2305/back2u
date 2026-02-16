@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>security Dashboard - Back2u</title>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+        nav { background: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 1px solid #f3f4f6; }
+        nav > div { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+        @media (max-width: 640px) { nav > div { padding: 1rem 0.25rem; gap: 1rem; } }
+        main { flex: 1; }
+        footer { background: linear-gradient(to right, #111827, #1f2937); color: #d1d5db; text-align: center; padding: 2rem; border-top: 1px solid #374151; margin-top: auto; }
+        .grid { display: grid; gap: 2rem; }
+        .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        @media (max-width: 1024px) { .lg\\:grid-cols-4 { grid-template-columns: 1fr; } }
+        .lg\\:col-span-1 { grid-column: span 1; }
+        .lg\\:col-span-3 { grid-column: span 3; }
+        @media (max-width: 1024px) { .lg\\:col-span-1, .lg\\:col-span-3 { grid-column: auto; } }
+        .sidebar { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; position: sticky; top: 6rem; }
+        .nav-item-active { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: all 0.3s; }
+        .nav-item { color: #1f2937; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: background-color 0.3s; }
+        .nav-item:hover { background-color: #dbeafe; }
+    </style>
+</head>
+<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
+    <nav class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl animate-pulse">🔍</span>
+                <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
+            </div>
+            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
+            </div>
+            <!-- Mobile menu button -->
+            <div class="lg:hidden">
+                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
+                    <span class="text-3xl">☰</span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="lg:hidden hidden bg-white border-t-2 border-gradient-to-r from-blue-200 to-cyan-200 px-4 py-6 shadow-lg">
+            <div class="flex flex-col gap-4">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔍 My Claims</a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">👤 Profile</a>
+                <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold text-center mt-2">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar -->
+            <aside class="lg:col-span-1">
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 sticky top-24">
+                    <div class="pb-6 border-b border-gray-300 mb-6">
+                        <h3 id="userName" class="text-lg font-bold text-gray-800">security Name</h3>
+                        <p id="userEmail" class="text-sm text-gray-600 my-2">security@email.com</p>
+                        <p class="inline-block bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold mt-3">security</p>
+                    </div>
+
+                    <nav class="flex flex-col gap-2">
+                        <a href="dashboard.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
+                            <span>📋</span> My Items
+                        </a>
+                        <a href="my-claims.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
+                            <span>🔍</span> My Claims
+                        </a>
+                        <a href="browse-found.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
+                            <span>📦</span> Browse Found
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:col-span-3">
+                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                    <h1 class="text-gray-800 text-4xl font-bold">⚙️ security Dashboard</h1>
+                    <button id="openCreateItemBtn" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer">➕ Create New Item</button>
+                </div>
+
+                <!-- Filters and Search -->
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                            <select id="filterType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Types</option>
+                                <option value="lost">Lost</option>
+                                <option value="found">Found</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="filterStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Statuses</option>
+                                <option value="Reported">Reported</option>
+                                <option value="Open">Open</option>
+                                <option value="Claimed">Claimed</option>
+                                <option value="Returned">Returned</option>
+                                <option value="Disposed">Disposed</option>
+                                <option value="Done">Done</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Verified">Verified</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="filterCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Categories</option>
+                                <option value="phone">Phone</option>
+                                <option value="wallet">Wallet</option>
+                                <option value="keys">Keys</option>
+                                <option value="id">Student ID</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="bag">Bag</option>
+                                <option value="textbook">Textbook</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Campus</label>
+                            <select id="filterCampus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Campuses</option>
+                                <option value="Main">Main</option>
+                                <option value="Waterloo">Waterloo</option>
+                                <option value="Cambridge">Cambridge</option>
+                                <option value="Doon">Doon</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="applyFiltersBtn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div id="statsContainer" class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8" style="display: none;">
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-6 rounded-2xl text-center shadow-md">
+                        <div class="text-sm opacity-90 mb-2 font-medium">Total Items</div>
+                        <div class="text-4xl font-bold" id="statsTotal">0</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-600 to-green-800 text-white p-6 rounded-2xl text-center shadow-md">
+                        <div class="text-sm opacity-90 mb-2 font-medium">Open Items</div>
+                        <div class="text-4xl font-bold" id="statsOpen">0</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-600 to-orange-800 text-white p-6 rounded-2xl text-center shadow-md">
+                        <div class="text-sm opacity-90 mb-2 font-medium">Claimed</div>
+                        <div class="text-4xl font-bold" id="statsClaimed">0</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white p-6 rounded-2xl text-center shadow-md">
+                        <div class="text-sm opacity-90 mb-2 font-medium">Resolved</div>
+                        <div class="text-4xl font-bold" id="statsResolved">0</div>
+                    </div>
+                </div>
+
+                <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+
+                <!-- Items Container -->
+                <div id="itemsContainer" class="space-y-4">
+                    <div class="text-center py-12">
+                        <div class="text-4xl mb-3">⏳</div>
+                        <p class="text-gray-500 font-medium">Loading items...</p>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center items-center gap-3 my-8" id="paginationContainer" style="display: none;">
+                    <button id="prevBtn" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all">← Previous</button>
+                    <span id="pageInfo" class="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg"></span>
+                    <button id="nextBtn" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all">Next →</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Item Modal -->
+    <div id="createItemModal" class="fixed inset-0 bg-black/50 items-center justify-center z-[1000] hidden" style="display: none;">
+        <div class="bg-white rounded-2xl p-8 max-w-2xl w-[90%] max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <span class="modal-close-btn absolute top-4 right-6 text-3xl cursor-pointer text-gray-500 hover:text-gray-800 transition-colors">&times;</span>
+
+            <div class="space-y-6">
+                <h2 class="text-3xl font-bold text-gray-800">Create New Item</h2>
+
+                <form id="createItemForm" enctype="multipart/form-data">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                            <input type="text" id="itemTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                            <select id="itemCategory" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Category</option>
+                                <option value="phone">Phone</option>
+                                <option value="wallet">Wallet</option>
+                                <option value="keys">Keys</option>
+                                <option value="id">Student ID</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="bag">Bag</option>
+                                <option value="textbook">Textbook</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Type *</label>
+                            <select id="itemType" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="found">Found</option>
+                                <option value="lost">Lost</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Campus *</label>
+                            <select id="itemCampus" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Campus</option>
+                                <option value="Main">Main</option>
+                                <option value="Waterloo">Waterloo</option>
+                                <option value="Cambridge">Cambridge</option>
+                                <option value="Doon">Doon</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Location *</label>
+                            <input type="text" id="itemLocation" required placeholder="Where was the item found/lost?" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date Found/Lost</label>
+                            <input type="date" id="itemDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="itemStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Reported">Reported</option>
+                                <option value="Open">Open</option>
+                                <option value="Done">Done</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Verified">Verified</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">User ID *</label>
+                            <input type="number" id="itemUserId" required placeholder="Enter user ID who owns/found this item" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="itemDescription" rows="3" placeholder="Additional details..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Distinguishing Features</label>
+                            <textarea id="itemFeatures" rows="2" placeholder="Unique identifying features..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Image</label>
+                            <input type="file" id="itemImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all">
+                            Create Item
+                        </button>
+                        <button type="button" onclick="closeCreateItemModal()" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
+        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script src="/javascripts/modal.js"></script>
+    <script src="/javascripts/dashboard.js"></script>
+    <script>
+        // Navigation and authentication logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+            const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+
+            if (user) {
+                // Show dashboard link only for security users
+                if (user.role === 'security') {
+                    if (dashboardLink) dashboardLink.style.display = 'inline-block';
+                    if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
+                }
+
+                // Update logout button with user's name
+                if (logoutBtn) {
+                    logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
+                }
+                if (logoutBtnMobile) {
+                    logoutBtnMobile.textContent = `🚪 Logout (${user.first_name})`;
+                }
+
+                // Setup logout functionality
+                const setupLogout = (btn) => {
+                    if (btn) {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (confirm('Are you sure you want to logout?')) {
+                                localStorage.removeItem('user');
+                                window.location.href = 'index.html';
+                            }
+                        });
+                    }
+                };
+                setupLogout(logoutBtn);
+                setupLogout(logoutBtnMobile);
+            }
+
+            // Mobile menu toggle functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browse Found Items - Back2u</title>
+    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css" />
+    <script src="https://cdn.tailwindcss.com" defer></script>
+
+    <style>
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.6s ease-out;
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      }
+    </style>
+  </head>
+  <body
+    class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800"
+  >
+    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center"
+      >
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🔍</span>
+          <div
+            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
+          >
+            Back2u
+          </div>
+        </div>
+        <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
+          <a
+            href="browse-found.html"
+            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105 bg-gradient-to-r from-blue-100 to-cyan-100"
+            >📦 Browse Found</a
+          >
+          <a
+            href="report-lost.html"
+            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
+            >📝 Report Lost</a
+          >
+          <a
+            href="dashboard.html"
+            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
+            id="dashboardLink"
+            style="display: none;"
+            >📊 Dashboard</a
+          >
+          <a
+            href="my-claims.html"
+            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
+            >🔍 My Claims</a
+          >
+          <a
+            href="profile.html"
+            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
+            >👤 Profile</a
+          >
+          <a
+            href="#"
+            id="logoutBtn"
+            class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105"
+            >Logout</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
+      <div
+        class="bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white p-8 rounded-2xl mb-8 shadow-xl"
+      >
+        <h1 class="text-4xl font-bold mb-2">🔎 Find Your Lost Item</h1>
+        <p class="mb-6 text-blue-100">
+          Browse through all found items and claim what's yours
+        </p>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end"
+        >
+          <div class="lg:col-span-2">
+            <label for="searchKeyword" class="block mb-2 font-semibold text-sm"
+              >Search</label
+            >
+            <input
+              type="text"
+              id="searchKeyword"
+              placeholder="Search by title..."
+              class="w-full px-4 py-2.5 border border-blue-200 rounded-lg text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+
+          <div>
+            <label for="filterCategory" class="block mb-2 font-semibold text-sm"
+              >Category</label
+            >
+            <select
+              id="filterCategory"
+              class="w-full px-4 py-2.5 border border-blue-200 rounded-lg text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">All Categories</option>
+              <option value="phone">📱 Phone</option>
+              <option value="wallet">👛 Wallet</option>
+              <option value="keys">🔑 Keys</option>
+              <option value="id">🆔 Student ID</option>
+              <option value="clothing">👕 Clothing</option>
+              <option value="bag">🎒 Bag</option>
+              <option value="textbook">📚 Textbook</option>
+              <option value="electronics">⚡ Electronics</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterCampus" class="block mb-2 font-semibold text-sm"
+              >Campus</label
+            >
+            <select
+              id="filterCampus"
+              class="w-full px-4 py-2.5 border border-blue-200 rounded-lg text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">All Campuses</option>
+              <option value="Main">🏢 Main (Kitchener)</option>
+              <option value="Waterloo">🏢 Waterloo</option>
+              <option value="Cambridge">🏢 Cambridge</option>
+              <option value="Doon">🏢 Doon</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              id="searchBtn"
+              class="flex-1 px-4 py-2.5 bg-white text-blue-600 hover:bg-gray-50 font-semibold rounded-lg cursor-pointer transition-all hover:shadow-md"
+            >
+              Search
+            </button>
+            <button
+              id="resetBtn"
+              class="px-4 py-2.5 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-lg cursor-pointer transition-all"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="errorMessage"
+        class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden"
+        role="alert"
+      ></div>
+
+      <div
+        id="itemsContainer"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-8 animate-fade-in"
+      >
+        <div class="col-span-full text-center py-12">
+          <div class="text-4xl mb-3">⏳</div>
+          <p class="text-gray-500 font-medium">Loading items...</p>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-center items-center gap-3 my-8"
+        id="paginationContainer"
+        style="display: none"
+      >
+        <button
+          id="prevBtn"
+          class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all"
+        >
+          ← Previous
+        </button>
+        <span
+          id="pageInfo"
+          class="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg"
+        ></span>
+        <button
+          id="nextBtn"
+          class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all"
+        >
+          Next →
+        </button>
+      </div>
+
+      <div
+        id="emptyState"
+        class="text-center p-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl my-8 hidden"
+      >
+        <div class="text-5xl mb-3">📭</div>
+        <h2 class="text-gray-600 mb-2 text-2xl font-bold">No items found</h2>
+        <p class="text-gray-500 mb-6">Try adjusting your search filters</p>
+      </div>
+    </div>
+
+    <!-- Item Detail Modal -->
+    <div
+      id="itemModal"
+      class="fixed inset-0 bg-black/50 items-center justify-center z-[1000] hidden"
+      style="display: none"
+    >
+      <div
+        class="bg-white rounded-2xl p-8 max-w-2xl w-[90%] max-h-[90vh] overflow-y-auto relative shadow-2xl"
+      >
+        <span
+          class="close-modal absolute top-4 right-6 text-3xl cursor-pointer text-gray-500 hover:text-gray-800 transition-colors"
+          id="closeModal"
+          >&times;</span
+        >
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <footer
+      class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto"
+    >
+      <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script src="/javascripts/modal.js"></script>
+    <script src="/javascripts/browse-found.js"></script>
+    <script>
+        // Navigation and authentication logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (user) {
+                // Show dashboard link only for security users
+                if (user.role === 'security') {
+                    if (dashboardLink) dashboardLink.style.display = 'inline-block';
+                }
+
+                // Update logout button with user's name
+                if (logoutBtn) {
+                    logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
+                }
+
+                // Setup logout functionality
+                const setupLogout = (btn) => {
+                    if (btn) {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (confirm('Are you sure you want to logout?')) {
+                                localStorage.removeItem('user');
+                                window.location.href = 'index.html';
+                            }
+                        });
+                    }
+                };
+                setupLogout(logoutBtn);
+            }
+        });
+    </script>
+  </body>
+</html>

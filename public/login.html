@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Back2u</title>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    </style>
+    <style>
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-in { animation: slideIn 0.6s ease-out; }
+        .input-focus:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+    </style>
+</head>
+<body class="flex flex-col bg-gradient-to-br from-slate-50 to-blue-50 text-gray-800">
+    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🔍</span>
+                <div class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
+            </div>
+            <div class="flex gap-4 sm:gap-8 items-center">
+                <a href="index.html" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</a>
+                <a href="register.html" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all font-medium hover:shadow-md">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full flex items-center justify-center">
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-100 animate-slide-in">
+                <div class="text-center mb-8">
+                    <div class="text-5xl mb-3 inline-block">🔐</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">Welcome Back</h1>
+                    <p class="text-gray-600">Login to your Back2u account</p>
+                </div>
+
+                <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+
+                <form id="loginForm" class="space-y-5">
+                    <div>
+                        <label for="email" class="block mb-2 font-semibold text-gray-700 text-sm">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="your.email@conestogac.on.ca" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label for="password" class="block mb-2 font-semibold text-gray-700 text-sm">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                    </div>
+
+                    <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer mt-6">Login</button>
+
+                    <p class="text-center my-4 text-gray-600 text-sm">
+                        Don't have an account? <a href="register.html" class="text-blue-600 font-semibold hover:underline">Register here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
+        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script src="/javascripts/login.js"></script>
+</body>
+</html>

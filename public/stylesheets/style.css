@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  Back2u - Now using Tailwind CSS for styling
+  All legacy custom CSS classes have been removed.
+  See HTML files for Tailwind utility class usage.
+*/

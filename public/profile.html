@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Back2u</title>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    </style>
+    <style>
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-in { animation: slideIn 0.6s ease-out; }
+        .input-focus:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+    </style>
+</head>
+<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
+    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🔍</span>
+                <div class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
+            </div>
+            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105 bg-gradient-to-r from-blue-100 to-cyan-100">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full">
+        <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-100 animate-slide-in">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="text-4xl">⚙️</span>
+                <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">My Profile</h1>
+            </div>
+            <p class="text-gray-600 mb-8">Update your account information and preferences</p>
+
+            <div id="successMessage" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+            <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+
+                <form id="profileForm">
+                    <div class="mb-8">
+                        <h3 class="mb-4 text-gray-800 border-b-2 border-blue-600 pb-2 text-lg font-semibold">Basic Information</h3>
+                        <div class="grid grid-cols-2 gap-6 md:grid-cols-1">
+                            <div class="mb-6">
+                                <label class="block mb-2 font-medium text-gray-800">Student/security ID</label>
+                                <input type="text" id="studentId" disabled placeholder="S001" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100">
+                                <small class="block mt-1 text-gray-500 text-sm">This cannot be changed</small>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block mb-2 font-medium text-gray-800">Email Address</label>
+                                <input type="email" id="email" disabled placeholder="user@conestogac.on.ca" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100">
+                                <small class="block mt-1 text-gray-500 text-sm">This cannot be changed</small>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 md:grid-cols-1">
+                            <div class="mb-6">
+                                <label for="firstName" class="block mb-2 font-medium text-gray-800">First Name</label>
+                                <input type="text" id="firstName" name="first_name" required placeholder="John" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            </div>
+                            <div class="mb-6">
+                                <label for="lastName" class="block mb-2 font-medium text-gray-800">Last Name</label>
+                                <input type="text" id="lastName" name="last_name" required placeholder="Doe" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 md:grid-cols-1">
+                            <div class="mb-6">
+                                <label for="campus" class="block mb-2 font-medium text-gray-800">Campus</label>
+                                <select id="campus" name="campus" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                                    <option value="">Select Campus</option>
+                                    <option value="Main">Main (Kitchener)</option>
+                                    <option value="Waterloo">Waterloo</option>
+                                    <option value="Cambridge">Cambridge</option>
+                                    <option value="Doon">Doon</option>
+                                </select>
+                            </div>
+                            <div class="mb-6">
+                                <label for="program" class="block mb-2 font-medium text-gray-800">Program</label>
+                                <input type="text" id="program" name="program" placeholder="e.g., Computer Science" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-300 my-8">
+
+                    <div class="mb-8">
+                        <h3 class="mb-4 text-gray-800 border-b-2 border-blue-600 pb-2 text-lg font-semibold">Change Password</h3>
+                        <p class="text-gray-600 mb-6 text-sm">Leave empty if you don't want to change your password</p>
+
+                        <div class="mb-6">
+                            <label for="currentPassword" class="block mb-2 font-medium text-gray-800">Current Password</label>
+                            <input type="password" id="currentPassword" name="password" placeholder="Enter your current password" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="newPassword" class="block mb-2 font-medium text-gray-800">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            <small class="block mt-1 text-gray-500 text-sm">Min 8 characters, include 1 number and 1 special character (!@#$%^&*)</small>
+                            <div id="passwordRequirements" class="mt-2 p-3 bg-gray-100 rounded-md text-sm" style="display: none;">
+                                <p class="my-1 text-gray-600"><span id="req-length" class="mr-2 font-bold text-gray-500">✗</span> At least 8 characters</p>
+                                <p class="my-1 text-gray-600"><span id="req-number" class="mr-2 font-bold text-gray-500">✗</span> Contains a number</p>
+                                <p class="my-1 text-gray-600"><span id="req-special" class="mr-2 font-bold text-gray-500">✗</span> Contains special character (!@#$%^&*)</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="confirmPassword" class="block mb-2 font-medium text-gray-800">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-8 flex-wrap">
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer">Save Changes</button>
+                        <a href="dashboard.html" class="px-6 py-3 bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all font-semibold rounded-lg cursor-pointer text-center">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
+        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script src="/javascripts/profile.js"></script>
+    <script>
+        // Navigation and authentication logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (user) {
+                // Show dashboard link only for security users
+                if (user.role === 'security') {
+                    if (dashboardLink) dashboardLink.style.display = 'inline-block';
+                }
+
+                // Update logout button with user's name
+                if (logoutBtn) {
+                    logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
+                }
+
+                // Setup logout functionality
+                const setupLogout = (btn) => {
+                    if (btn) {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (confirm('Are you sure you want to logout?')) {
+                                localStorage.removeItem('user');
+                                window.location.href = 'index.html';
+                            }
+                        });
+                    }
+                };
+                setupLogout(logoutBtn);
+            }
+        });
+    </script>
+</body>
+</html>
