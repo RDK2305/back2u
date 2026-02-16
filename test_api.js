@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Use production URL or fall back to localhost for testing
-const API_BASE = process.env.API_URL || 'https://Back2u-0463.onrender.com';
+const API_BASE = process.env.API_URL || 'https://back2u-h67h.onrender.com/api/items';
 const USE_LOCALHOST = process.argv.includes('--local');
 const ACTUAL_API_BASE = USE_LOCALHOST ? 'http://localhost:5000' : API_BASE;
 

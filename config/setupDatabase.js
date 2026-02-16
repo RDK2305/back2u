@@ -3,7 +3,7 @@ require('dotenv').config();
 
 async function setupDatabase() {
   // First, connect to MySQL server (without selecting database)
-  const adminConnection = await mysql.createConnection({
+  const adminConfig = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
@@ -11,7 +11,16 @@ async function setupDatabase() {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
-  });
+  };
+
+  // Add SSL configuration for Aiven cloud database
+  if (process.env.DB_SSL === 'true') {
+    adminConfig.ssl = {
+      rejectUnauthorized: false,
+    };
+  }
+
+  const adminConnection = await mysql.createConnection(adminConfig);
 
   let connection;
   try {
@@ -31,7 +40,7 @@ async function setupDatabase() {
     await adminConnection.end();
 
     // Now connect to our actual database
-    connection = await mysql.createConnection({
+    const dbConfig = {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
       user: process.env.DB_USER,
@@ -40,7 +49,16 @@ async function setupDatabase() {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0
-    });
+    };
+
+    // Add SSL configuration for Aiven cloud database
+    if (process.env.DB_SSL === 'true') {
+      dbConfig.ssl = {
+        rejectUnauthorized: false,
+      };
+    }
+
+    connection = await mysql.createConnection(dbConfig);
 
     // Create Users table
     await connection.query(`

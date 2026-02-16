@@ -1,25 +1,32 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// MySQL configuration - Supports both local and cloud (Aiven) databases
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'Back2u',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  // SSL configuration for Aiven cloud database
-  ssl: process.env.DB_SSL === 'true' ? true : false,
-  // Strict SSL mode for production
-  ...(process.env.DB_SSL === 'true' && {
-    enableCredentialsOverride: true,
+// MySQL connection pool configuration
+const getPoolConfig = () => {
+  const baseConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'Back2u',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
     supportBigNumbers: true,
     bigNumberStrings: true,
-  }),
-});
+  };
+
+  // Add SSL configuration for Aiven cloud database
+  if (process.env.DB_SSL === 'true') {
+    baseConfig.ssl = {
+      rejectUnauthorized: false, // Aiven uses self-signed certificates
+    };
+  }
+
+  return baseConfig;
+};
+
+const pool = mysql.createPool(getPoolConfig());
 
 pool.on('connection', () => {
   console.log('✅ MySQL connected!');

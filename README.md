@@ -116,7 +116,7 @@ npm install
 npm start
 ```
 
-> 🎉 Production URL: **`https://Back2u-0463.onrender.com`**
+> 🎉 Production URL: **`https://back2u-h67h.onrender.com/api/items`**
 
 <details>
 <summary><b>Local Development</b></summary>
@@ -335,13 +335,13 @@ node test_api.js
 
 ```bash
 # Get all items (Production)
-curl https://Back2u-0463.onrender.com//api/items
+curl https://back2u-h67h.onrender.com/api/items//api/items
 
 # Filter by category
-curl "https://Back2u-0463.onrender.com//api/items?category=electronics&status=lost"
+curl "https://back2u-h67h.onrender.com/api/items//api/items?category=electronics&status=lost"
 
 # Register user
-curl -X POST https://Back2u-0463.onrender.com//api/auth/register \
+curl -X POST https://back2u-h67h.onrender.com/api/items//api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "student_id": "001",
@@ -391,7 +391,7 @@ curl -X POST https://Back2u-0463.onrender.com//api/auth/register \
 ### Upload Example
 
 ```bash
-curl -X POST https://Back2u-0463.onrender.com//api/items/found \
+curl -X POST https://back2u-h67h.onrender.com/api/items//api/items/found \
   -H "Authorization: Bearer <your-token>" \
   -F "title=Lost iPhone" \
   -F "category=electronics" \
