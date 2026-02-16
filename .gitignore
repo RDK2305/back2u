@@ -85,5 +85,5 @@ public/stylesheets/style.min.css
 # - build-css.js
 # - postcss.config.js
 # - tailwind.config.js
-# - TAILWIND_MIGRATION.md
-# These are build/config files, not frontend code
+# - favicon.svg
+# These are build/config files or assets, not frontend code

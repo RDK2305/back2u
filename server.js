@@ -49,6 +49,15 @@ app.use(sanitizeInput);
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Favicon route
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+});
+
+app.get('/favicon.svg', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+});
+
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
