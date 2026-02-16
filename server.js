@@ -49,13 +49,25 @@ app.use(sanitizeInput);
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Favicon route
+// Favicon and manifest routes
 app.get('/favicon.ico', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+  res.type('image/x-icon');
+  res.sendFile(path.join(__dirname, 'public', 'images', 'favicon.ico'));
 });
 
 app.get('/favicon.svg', (req, res) => {
+  res.type('image/svg+xml');
   res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+});
+
+app.get('/apple-touch-icon.png', (req, res) => {
+  res.type('image/png');
+  res.sendFile(path.join(__dirname, 'public', 'images', 'apple-touch-icon.png'));
+});
+
+app.get('/site.webmanifest', (req, res) => {
+  res.type('application/manifest+json');
+  res.sendFile(path.join(__dirname, 'public', 'images', 'site.webmanifest'));
 });
 
 // Serve uploaded files
