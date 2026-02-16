@@ -98,7 +98,7 @@ const reportFoundItem = async (req, res) => {
 const reportLostItem = async (req, res) => {
   try {
     const { title, category, description, location_lost, campus, date_lost, distinguishing_features } = req.body;
-    
+    console.log({ title, category, description, location_lost, campus, date_lost, distinguishing_features });
     // Validate required fields
     if (!title || !category || !location_lost || !campus || !date_lost) {
       return res.status(400).json({ message: 'Missing required fields: title, category, location_lost, campus, date_lost' });
