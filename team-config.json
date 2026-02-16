@@ -1,0 +1,137 @@
+{
+  "project": {
+    "name": "Back2u",
+    "description": "Lost & Found System",
+    "repository": "https://github.com/RDK2305/back2u.git"
+  },
+  "teamMembers": [
+    {
+      "id": "001",
+      "key": "gurjant",
+      "firstName": "Gurjant",
+      "lastName": "Singh",
+      "fullName": "Gurjant Singh",
+      "email": "gssandhu911@gmail.com",
+      "role": "Backend Developer",
+      "responsibilities": [
+        "Backend API development",
+        "Route management",
+        "Business logic",
+        "Integration with controllers"
+      ],
+      "branch": "backend/gurjant",
+      "gitConfig": {
+        "user.name": "Gurjant Singh",
+        "user.email": "gssandhu911@gmail.com"
+      },
+      "allowedPaths": [
+        "controllers/",
+        "routes/authRoutes*.js",
+        "routes/itemRoutes.js",
+        "routes/claimRoutes.js",
+        "middleware/",
+        "server.js",
+        "config/"
+      ]
+    },
+    {
+      "id": "002",
+      "key": "bishal",
+      "firstName": "Bishal",
+      "lastName": "",
+      "fullName": "Bishal",
+      "email": "bishalsharma24112002@gmail.com",
+      "role": "Database Administrator",
+      "responsibilities": [
+        "Database design",
+        "Database optimization",
+        "Data models",
+        "Documentation"
+      ],
+      "branch": "database/bishal",
+      "gitConfig": {
+        "user.name": "Bishal",
+        "user.email": "bishalsharma24112002@gmail.com"
+      },
+      "allowedPaths": [
+        "models/",
+        "config/database.js",
+        "config/setupDatabase.js",
+        "documentation/",
+        "DEVELOPER_GUIDE.md",
+        "DATABASE_SETUP.md"
+      ]
+    },
+    {
+      "id": "003",
+      "key": "rudraksh",
+      "firstName": "Rudraksh",
+      "lastName": "",
+      "fullName": "Rudraksh",
+      "email": "rudrakshkharadi53@gmail.com",
+      "role": "Full Stack Coordinator",
+      "responsibilities": [
+        "Code integration",
+        "Branch merging",
+        "Quality assurance",
+        "Deployment coordination"
+      ],
+      "branch": "main",
+      "gitConfig": {
+        "user.name": "Rudraksh",
+        "user.email": "rudrakshkharadi53@gmail.com"
+      },
+      "allowedPaths": [
+        "**"
+      ]
+    }
+  ],
+  "branches": {
+    "main": {
+      "description": "Main production branch",
+      "maintainer": "rudraksh",
+      "purpose": "Full stack integration and coordination"
+    },
+    "backend/gurjant": {
+      "description": "Backend feature branch",
+      "maintainer": "gurjant",
+      "purpose": "Backend API and business logic development"
+    },
+    "database/bishal": {
+      "description": "Database branch",
+      "maintainer": "bishal",
+      "purpose": "Database schema and data management"
+    }
+  },
+  "excludeFromGit": [
+    "public/**/*.html",
+    "public/**/*.css",
+    "public/**/*.js",
+    "public/images/**",
+    "node_modules/",
+    ".env",
+    ".env.*",
+    "logs/",
+    "*.log",
+    ".vscode/",
+    ".idea/"
+  ],
+  "guidelines": {
+    "commits": {
+      "format": "[TYPE]: Brief description",
+      "types": [
+        "feat: New feature",
+        "fix: Bug fix",
+        "docs: Documentation",
+        "style: Code style",
+        "refactor: Code refactoring",
+        "perf: Performance improvement",
+        "test: Test addition"
+      ]
+    },
+    "branches": {
+      "naming": "lowercase/kebab-case",
+      "prefix": "backend/, database/, feature/"
+    }
+  }
+}
