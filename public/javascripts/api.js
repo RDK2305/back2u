@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'https://back2u-h67h.onrender.com//api';
+const API_BASE_URL = 'https://back2u-h67h.onrender.com/api';
 
 // Helper function to get JWT token from localStorage
 function getToken() {

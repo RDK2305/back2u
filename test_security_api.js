@@ -3,13 +3,13 @@
  * Tests all new security-enhanced endpoints
  */
 
-const API_URL = 'https://back2u-h67h.onrender.com//api/auth';
+const API_URL = 'https://back2u-h67h.onrender.com/api/auth';
 
 // Test 1: Check API is running
 async function testAPIRunning() {
     console.log('\n🧪 Test 1: API Running Check');
     try {
-        const response = await fetch('https://back2u-h67h.onrender.com//');
+        const response = await fetch('https://back2u-h67h.onrender.com/');
         const data = await response.json();
         console.log('✅ API Response:', data);
     } catch (error) {
