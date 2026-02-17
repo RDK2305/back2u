@@ -3,7 +3,7 @@ const axios = require('axios');
 // Use production URL or fall back to localhost for testing
 const API_BASE = process.env.API_URL || 'https://back2u-h67h.onrender.com/api/items';
 const USE_LOCALHOST = process.argv.includes('--local');
-const ACTUAL_API_BASE = USE_LOCALHOST ? 'http://localhost:5000' : API_BASE;
+const ACTUAL_API_BASE = USE_LOCALHOST ? 'https://back2u-h67h.onrender.com/' : API_BASE;
 
 async function testAPI() {
   console.log(`🚀 Testing Back2u API - Full CRUD Operations...`);

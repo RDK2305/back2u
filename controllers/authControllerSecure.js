@@ -55,7 +55,7 @@ const generateVerificationToken = () => {
 
 // Send verification email simulator (replace with actual email service)
 const sendVerificationEmail = (email, verificationToken, userName) => {
-  const verificationLink = `${process.env.FRONTEND_URL || 'http://localhost:5000'}/verify-email.html?token=${verificationToken}`;
+  const verificationLink = `${process.env.FRONTEND_URL || 'https://back2u-h67h.onrender.com/'}/verify-email.html?token=${verificationToken}`;
   
   console.log(`📧 Verification email sent to ${email}`);
   console.log(`Verification link: ${verificationLink}`);

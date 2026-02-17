@@ -42,7 +42,7 @@ app.use(helmet({
       scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "http://localhost:5000"],
+      connectSrc: ["'self'", "https://back2u-h67h.onrender.com/"],
     },
   },
 }));
