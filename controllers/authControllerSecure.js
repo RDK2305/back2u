@@ -2,17 +2,30 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const { generateRoleSpecificId, generatePasswordResetToken } = require('../utils/authUtil');
+const { sendVerificationEmail: sendVerificationEmailUtil, sendPasswordResetEmail: sendPasswordResetEmailUtil } = require('../utils/emailUtil');
 
 // security registration code (stored securely)
 const VALID_security_CODES = {
-  'security2024SECURE': { campus: 'Main', role: 'security' },
-  'security2024WATER': { campus: 'Waterloo', role: 'security' },
-  'security2024CAMB': { campus: 'Cambridge', role: 'security' },
-  'security2024DOON': { campus: 'Doon', role: 'security' }
+  'security2026SECURE': { campus: 'Main', role: 'security' },
+  'security2026WATER': { campus: 'Waterloo', role: 'security' },
+  'security2026CAMB': { campus: 'Cambridge', role: 'security' },
+  'security2026DOON': { campus: 'Doon', role: 'security' }
 };
 
 // Email verification store (in production, use database)
 const verificationTokens = new Map();
+
+// Password reset tokens store (in production, use database)
+const passwordResetTokens = new Map();
+
+// Professor registration codes (stored securely)
+const VALID_PROFESSOR_CODES = {
+  'professor2026MAIN': { campus: 'Main', role: 'professor' },
+  'professor2026WATER': { campus: 'Waterloo', role: 'professor' },
+  'professor2026CAMB': { campus: 'Cambridge', role: 'professor' },
+  'professor2026DOON': { campus: 'Doon', role: 'professor' }
+};
 
 // Password validation helper
 const validatePassword = (password) => {
@@ -53,21 +66,36 @@ const generateVerificationToken = () => {
   return crypto.randomBytes(32).toString('hex');
 };
 
-// Send verification email simulator (replace with actual email service)
-const sendVerificationEmail = (email, verificationToken, userName) => {
-  const verificationLink = `${process.env.FRONTEND_URL || 'https://back2u-h67h.onrender.com/'}/verify-email.html?token=${verificationToken}`;
-  
-  console.log(`📧 Verification email sent to ${email}`);
-  console.log(`Verification link: ${verificationLink}`);
-  console.log(`Token: ${verificationToken}`);
-  
-  // In production, integrate with email service like:
-  // - SendGrid
-  // - Nodemailer
-  // - AWS SES
-  // - Mailgun
-  
-  return true;
+// Send verification email using Nodemailer
+const sendVerificationEmail = async (email, verificationToken, userName) => {
+  try {
+    const result = await sendVerificationEmailUtil(email, verificationToken);
+    return result;
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    // In development, still allow registration even if email fails
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`📧 [DEV MODE] Would send verification link: ${process.env.APP_URL}/verify-email.html?token=${verificationToken}`);
+      return true;
+    }
+    return false;
+  }
+};
+
+// Send password reset email using Nodemailer
+const sendPasswordResetEmail = async (email, resetToken, userName) => {
+  try {
+    const result = await sendPasswordResetEmailUtil(email, resetToken);
+    return result;
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    // In development, still allow request even if email fails
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`📧 [DEV MODE] Would send reset link: ${process.env.APP_URL}/reset-password.html?token=${resetToken}`);
+      return true;
+    }
+    return false;
+  }
 };
 
 // @desc    Register security with Code
@@ -75,7 +103,7 @@ const sendVerificationEmail = (email, verificationToken, userName) => {
 // @access  Public
 const registersecurity = async (req, res) => {
   try {
-    const { student_id, email, first_name, last_name, program, password, securityCode } = req.body;
+    const { email, first_name, last_name, program, password, securityCode } = req.body;
 
     // Validate security code
     if (!securityCode || !VALID_security_CODES[securityCode]) {
@@ -106,18 +134,15 @@ const registersecurity = async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Check if student_id already used
-    const studentIdExists = await User.findByStudentId(student_id);
-    if (studentIdExists) {
-      return res.status(400).json({ message: 'Student/security ID already in use' });
-    }
-
     // Get security campus from code
     const securityInfo = VALID_security_CODES[securityCode];
 
+    // Generate role-specific ID for security
+    const security_id = generateRoleSpecificId('security');
+
     // Create security user
     const user = await User.create({
-      student_id,
+      student_id: security_id,
       email,
       first_name,
       last_name,
@@ -130,10 +155,10 @@ const registersecurity = async (req, res) => {
 
     if (user) {
       // Log security registration for audit
-      console.log(`🔒 security account created: ${user.email} (${user.id}) - Campus: ${securityInfo.campus}`);
+      console.log(`🔒 Security account created: ${user.email} (${user.student_id}) - Campus: ${securityInfo.campus}`);
 
       res.status(201).json({
-        message: 'security account registered successfully',
+        message: 'Security account registered successfully. Your Security ID is: ' + user.student_id,
         user: {
           id: user.id,
           student_id: user.student_id,
@@ -150,7 +175,7 @@ const registersecurity = async (req, res) => {
       res.status(400).json({ message: 'Failed to create security account' });
     }
   } catch (error) {
-    console.error('security registration error:', error);
+    console.error('Security registration error:', error);
     res.status(500).json({ message: 'Server error during security registration' });
   }
 };
@@ -160,7 +185,7 @@ const registersecurity = async (req, res) => {
 // @access  Public
 const registerStudent = async (req, res) => {
   try {
-    const { student_id, email, first_name, last_name, campus, program, password } = req.body;
+    const { email, first_name, last_name, campus, program, password } = req.body;
 
     // Validate email domain
     if (!validateEmailDomain(email)) {
@@ -184,11 +209,8 @@ const registerStudent = async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Check if student_id already used
-    const studentIdExists = await User.findByStudentId(student_id);
-    if (studentIdExists) {
-      return res.status(400).json({ message: 'Student ID already in use' });
-    }
+    // Generate role-specific ID for student
+    const student_id = generateRoleSpecificId('student');
 
     // Create student user (not verified initially)
     const user = await User.create({
@@ -214,10 +236,10 @@ const registerStudent = async (req, res) => {
       });
 
       // Send verification email
-      sendVerificationEmail(email, verificationToken, `${first_name} ${last_name}`);
+      await sendVerificationEmail(email, verificationToken, `${first_name} ${last_name}`);
 
       res.status(201).json({
-        message: 'Student account created. Please check your email to verify your account.',
+        message: 'Student account created successfully. Your Student ID is: ' + student_id + '. Please check your email to verify your account.',
         user: {
           id: user.id,
           student_id: user.student_id,
@@ -469,14 +491,245 @@ const logout = async (req, res) => {
   }
 };
 
+// @desc    Register Professor
+// @route   POST /api/auth/register-professor
+// @access  Public
+const registerProfessor = async (req, res) => {
+  try {
+    const { email, first_name, last_name, campus, program, password, professorCode } = req.body;
+
+    // Validate professor code
+    if (!professorCode || !VALID_PROFESSOR_CODES[professorCode]) {
+      return res.status(403).json({ 
+        message: 'Invalid professor registration code. Please contact administration.' 
+      });
+    }
+
+    // Validate email domain
+    if (!validateEmailDomain(email)) {
+      return res.status(400).json({ 
+        message: 'Only @conestogac.on.ca or @conestoga.ca emails are allowed' 
+      });
+    }
+
+    // Validate password strength
+    const passwordErrors = validatePassword(password);
+    if (passwordErrors.length > 0) {
+      return res.status(400).json({ 
+        message: 'Password does not meet security requirements',
+        errors: passwordErrors 
+      });
+    }
+
+    // Check if user exists
+    const userExists = await User.findByEmail(email);
+    if (userExists) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    // Get professor campus from code
+    const professorInfo = VALID_PROFESSOR_CODES[professorCode];
+
+    // Generate role-specific ID for professor
+    const professor_id = generateRoleSpecificId('professor');
+
+    // Create professor user (auto-verified)
+    const user = await User.create({
+      student_id: professor_id,
+      email,
+      first_name,
+      last_name,
+      campus: professorInfo.campus,
+      program: program || 'Faculty',
+      password,
+      role: 'professor',
+      is_verified: true // professor accounts auto-verified
+    });
+
+    if (user) {
+      console.log(`👨‍🏫 Professor account created: ${user.email} (${user.student_id}) - Campus: ${professorInfo.campus}`);
+
+      res.status(201).json({
+        message: 'Professor account registered successfully',
+        user: {
+          id: user.id,
+          student_id: user.student_id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          campus: user.campus,
+          role: user.role,
+          is_verified: user.is_verified
+        },
+        token: generateToken(user.id)
+      });
+    } else {
+      res.status(400).json({ message: 'Failed to create professor account' });
+    }
+  } catch (error) {
+    console.error('Professor registration error:', error);
+    res.status(500).json({ message: 'Server error during professor registration' });
+  }
+};
+
+// @desc    Forgot Password - Send Reset Email
+// @route   POST /api/auth/forgot-password
+// @access  Public
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    // Check if user exists
+    const user = await User.findByEmail(email);
+    if (!user) {
+      // Don't reveal if email exists (security best practice)
+      return res.json({
+        message: 'If an account exists with this email, a password reset link will be sent'
+      });
+    }
+
+    // Generate password reset token
+    const { token, hashedToken, expiresAt } = generatePasswordResetToken();
+
+    // Store reset token
+    passwordResetTokens.set(hashedToken, {
+      userId: user.id,
+      email: user.email,
+      createdAt: Date.now(),
+      expiresAt: expiresAt
+    });
+
+    // Send password reset email
+    await sendPasswordResetEmail(email, token, `${user.first_name} ${user.last_name}`);
+
+    res.json({
+      message: 'If an account exists with this email, a password reset link will be sent',
+      sentAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Server error during password reset request' });
+  }
+};
+
+// @desc    Reset Password - Verify Token and Set New Password
+// @route   POST /api/auth/reset-password
+// @access  Public
+const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword, confirmPassword } = req.body;
+
+    if (!token || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'Token and new password are required' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    // Hash the token to match what's stored
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Check if token exists and is valid
+    const tokenData = passwordResetTokens.get(hashedToken);
+    if (!tokenData) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    if (tokenData.expiresAt < Date.now()) {
+      passwordResetTokens.delete(hashedToken);
+      return res.status(400).json({ message: 'Password reset token has expired. Please request a new one.' });
+    }
+
+    // Validate password strength
+    const passwordErrors = validatePassword(newPassword);
+    if (passwordErrors.length > 0) {
+      return res.status(400).json({ 
+        message: 'Password does not meet security requirements',
+        errors: passwordErrors 
+      });
+    }
+
+    // Find user
+    const user = await User.findById(tokenData.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user password
+    await User.update(tokenData.userId, { password: hashedPassword });
+
+    // Clean up reset token
+    passwordResetTokens.delete(hashedToken);
+
+    console.log(`🔐 Password reset successfully for user: ${user.email}`);
+
+    res.json({
+      message: 'Password has been reset successfully. You can now login with your new password.',
+      email: user.email
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Server error during password reset' });
+  }
+};
+
+// @desc    Verify Reset Token
+// @route   POST /api/auth/verify-reset-token
+// @access  Public
+const verifyResetToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required' });
+    }
+
+    // Hash the token to match what's stored
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Check if token exists and is valid
+    const tokenData = passwordResetTokens.get(hashedToken);
+    if (!tokenData) {
+      return res.status(400).json({ valid: false, message: 'Invalid reset token' });
+    }
+
+    if (tokenData.expiresAt < Date.now()) {
+      passwordResetTokens.delete(hashedToken);
+      return res.status(400).json({ valid: false, message: 'Reset token has expired' });
+    }
+
+    res.json({
+      valid: true,
+      email: tokenData.email,
+      message: 'Reset token is valid'
+    });
+  } catch (error) {
+    console.error('Verify reset token error:', error);
+    res.status(500).json({ message: 'Server error during token verification' });
+  }
+};
+
 module.exports = { 
-  registersecurity, 
-  registerStudent, 
+  registersecurity,
+  registerStudent,
+  registerProfessor,
   verifyEmail,
-  login, 
-  getMe, 
-  updateProfile, 
+  login,
+  getMe,
+  updateProfile,
   logout,
+  forgotPassword,
+  resetPassword,
+  verifyResetToken,
   validatePassword,
   validateEmailDomain,
   generateToken

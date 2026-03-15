@@ -9,6 +9,7 @@
     "build:css": "node build-css.js",
     "watch:css": "nodemon --exec \"node build-css.js\" --watch public --watch tailwind.config.js --watch postcss.config.js",
     "setup:db": "node config/setupDatabase.js",
+    "insert:dummy": "node config/insertDummyData.js",
     "team:list": "node utils/team-config-util.js list",
     "team:info": "node utils/team-config-util.js info",
     "team:branches": "node utils/team-config-util.js branches"
@@ -23,7 +24,8 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.6.5"
+    "mysql2": "^3.6.5",
+    "nodemailer": "^8.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

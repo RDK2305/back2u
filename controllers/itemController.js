@@ -1,6 +1,7 @@
 const Item = require('../models/Item');
 const User = require('../models/User');
 const path = require('path');
+const { transformItemsImageUrls } = require('../utils/imageUrlUtil');
 
 // @desc    Get all items
 // @route   GET /api/items
@@ -24,13 +25,17 @@ const getItems = async (req, res) => {
     const countFilters = { category, campus, status, search };
     const allItems = await Item.findAll(countFilters);
     
+    // Transform image URLs to absolute paths
+    const transformedItems = transformItemsImageUrls(items, req);
+    const transformedAllItems = transformItemsImageUrls(allItems, req);
+    
     res.json({
       success: true,
-      count: items.length,
-      total: allItems.length,
+      count: transformedItems.length,
+      total: transformedAllItems.length,
       page: parseInt(page),
-      pages: Math.ceil(allItems.length / parseInt(limit)),
-      data: items
+      pages: Math.ceil(transformedAllItems.length / parseInt(limit)),
+      data: transformedItems
     });
   } catch (error) {
     console.error(error);
@@ -49,7 +54,10 @@ const getItem = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
     
-    res.json(item);
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(item, req);
+    
+    res.json(transformedItem);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -82,9 +90,12 @@ const reportFoundItem = async (req, res) => {
 
     const item = await Item.create(itemData);
     
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(item, req);
+    
     res.status(201).json({
       message: 'Found item registered successfully',
-      item
+      item: transformedItem
     });
   } catch (error) {
     console.error(error);
@@ -125,9 +136,12 @@ const reportLostItem = async (req, res) => {
 
     const item = await Item.create(itemData);
     
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(item, req);
+    
     res.status(201).json({
       message: 'Lost item reported successfully',
-      item
+      item: transformedItem
     });
   } catch (error) {
     console.error(error);
@@ -161,9 +175,12 @@ const updateItem = async (req, res) => {
       campus: campus || item.campus
     });
     
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(updatedItem, req);
+    
     res.json({
       message: 'Item updated successfully',
-      item: updatedItem
+      item: transformedItem
     });
   } catch (error) {
     console.error(error);
@@ -187,10 +204,13 @@ const updateItemStatus = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(item, req);
+
     console.log('Item status updated successfully');
     res.json({
       message: 'Item status updated successfully',
-      item
+      item: transformedItem
     });
   } catch (error) {
     console.error('Error in updateItemStatus:', error);
@@ -223,10 +243,13 @@ const getUserLostItems = async (req, res) => {
   try {
     const items = await Item.findByUserId(req.user.id, 'lost');
     
+    // Transform image URLs to absolute paths
+    const transformedItems = transformItemsImageUrls(items, req);
+    
     res.json({
       success: true,
-      count: items.length,
-      data: items
+      count: transformedItems.length,
+      data: transformedItems
     });
   } catch (error) {
     console.error(error);
@@ -241,10 +264,13 @@ const getUserFoundItems = async (req, res) => {
   try {
     const items = await Item.findByUserId(req.user.id, 'found');
     
+    // Transform image URLs to absolute paths
+    const transformedItems = transformItemsImageUrls(items, req);
+    
     res.json({
       success: true,
-      count: items.length,
-      data: items
+      count: transformedItems.length,
+      data: transformedItems
     });
   } catch (error) {
     console.error(error);
@@ -273,13 +299,17 @@ const getPublicFoundItems = async (req, res) => {
     // Get total count for pagination
     const allItems = await Item.findAll({ type: 'found', status: 'Open', category, campus });
 
+    // Transform image URLs to absolute paths
+    const transformedItems = transformItemsImageUrls(items, req);
+    const transformedAllItems = transformItemsImageUrls(allItems, req);
+
     res.json({
       success: true,
-      count: items.length,
-      total: allItems.length,
+      count: transformedItems.length,
+      total: transformedAllItems.length,
       page: parseInt(page),
-      pages: Math.ceil(allItems.length / parseInt(limit)),
-      data: items
+      pages: Math.ceil(transformedAllItems.length / parseInt(limit)),
+      data: transformedItems
     });
   } catch (error) {
     console.error(error);
@@ -339,9 +369,12 @@ const createItemBysecurity = async (req, res) => {
 
     const item = await Item.create(itemData);
 
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(item, req);
+
     res.status(201).json({
       message: 'Item created successfully by security',
-      item
+      item: transformedItem
     });
   } catch (error) {
     console.error(error);
@@ -405,9 +438,12 @@ const updateItemBysecurity = async (req, res) => {
       user_id: user_id || item.user_id
     });
 
+    // Transform image URL to absolute path
+    const transformedItem = transformItemsImageUrls(updatedItem, req);
+
     res.json({
       message: 'Item updated successfully by security',
-      item: updatedItem
+      item: transformedItem
     });
   } catch (error) {
     console.error(error);

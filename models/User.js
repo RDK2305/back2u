@@ -99,6 +99,62 @@ class User {
       connection.release();
     }
   }
+
+  static async saveOTP(email, otpCode, expiryMinutes = 10) {
+    const connection = await pool.getConnection();
+    try {
+      const hashedOTP = await bcrypt.hash(otpCode, 10);
+      const expiryTime = new Date(Date.now() + expiryMinutes * 60000);
+      
+      await connection.query(
+        `UPDATE users SET otp_code = ?, otp_expires_at = ? WHERE email = ?`,
+        [hashedOTP, expiryTime, email]
+      );
+      return true;
+    } finally {
+      connection.release();
+    }
+  }
+
+  static async verifyOTP(email, otpCode) {
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.query(
+        `SELECT otp_code, otp_expires_at FROM users WHERE email = ?`,
+        [email]
+      );
+      
+      if (rows.length === 0) {
+        return false;
+      }
+
+      const user = rows[0];
+      
+      // Check if OTP has expired
+      if (!user.otp_expires_at || new Date() > new Date(user.otp_expires_at)) {
+        return false;
+      }
+
+      // Compare OTP
+      const isValid = await bcrypt.compare(otpCode, user.otp_code);
+      return isValid;
+    } finally {
+      connection.release();
+    }
+  }
+
+  static async clearOTP(email) {
+    const connection = await pool.getConnection();
+    try {
+      await connection.query(
+        `UPDATE users SET otp_code = NULL, otp_expires_at = NULL WHERE email = ?`,
+        [email]
+      );
+      return true;
+    } finally {
+      connection.release();
+    }
+  }
 }
 
 module.exports = User;

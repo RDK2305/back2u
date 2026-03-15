@@ -17,6 +17,8 @@ if (missingEnv.length > 0) {
 const authRoutesSecure = require('./routes/authRoutesSecure');
 const itemRoutes = require('./routes/itemRoutes');
 const claimRoutes = require('./routes/claimRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const messageRoutes = require('./routes/messageRoutes');
 
 // Security middleware imports
 const {
@@ -112,6 +114,8 @@ app.use('/api/auth/verify-email', verifyLimiter);
 app.use('/api/auth', authRoutesSecure);
 app.use('/api/items', apiLimiter, itemRoutes);
 app.use('/api/claims', apiLimiter, claimRoutes);
+app.use('/api/notifications', apiLimiter, notificationRoutes);
+app.use('/api/messages', apiLimiter, messageRoutes);
 
 // 404 handler
 app.use((req, res) => {

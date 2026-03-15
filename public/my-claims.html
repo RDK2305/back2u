@@ -139,6 +139,43 @@
         </div>
     </div>
 
+    <!-- Messaging Modal -->
+    <div id="messagingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full h-[600px] overflow-hidden flex flex-col">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h2 class="text-2xl font-bold">💬 Claim Messages</h2>
+                    <p class="text-green-100 text-sm mt-1">Direct communication with the claim participant</p>
+                </div>
+                <button id="closeMessagingModal" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 w-10 h-10 flex items-center justify-center transition text-2xl">✕</button>
+            </div>
+
+            <!-- Messages Display -->
+            <div id="messagesDisplay" class="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white space-y-4">
+                <div class="text-center py-8">
+                    <p class="text-gray-500">Loading messages...</p>
+                </div>
+            </div>
+
+            <!-- Message Input Section -->
+            <div class="border-t border-gray-200 p-6 bg-white flex-shrink-0">
+                <textarea id="messageInput" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none" 
+                    placeholder="Type your message here..." 
+                    rows="3"></textarea>
+                <div class="flex gap-3 mt-4">
+                    <button id="sendMessageBtn" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition font-semibold shadow-md">
+                        ➤ Send Message
+                    </button>
+                    <button id="closeMessagingBtn" class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
         <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
     </footer>

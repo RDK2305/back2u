@@ -132,7 +132,7 @@ async function testValidsecurityRegistration() {
                 last_name: 'Smith',
                 program: 'security',
                 password: 'SecurePass123!',
-                securityCode: 'security2024SECURE'  // Valid code
+                securityCode: 'security2026SECURE'  // Valid code
             })
         });
         const data = await response.json();

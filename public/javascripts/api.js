@@ -1,5 +1,7 @@
-// API Configuration
-const API_BASE_URL = 'https://back2u-h67h.onrender.com/api';
+// API Configuration - Use localhost for development, production URL when deployed
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? `http://localhost:5000/api`
+  : 'https://back2u-h67h.onrender.com/api';
 
 // Helper function to get JWT token from localStorage
 function getToken() {
@@ -272,4 +274,143 @@ function getStatusClass(status) {
     'completed': 'bg-green-100 text-green-800'
   };
   return statusMap[status] || 'bg-blue-100 text-blue-800';
+}
+// ==================== NOTIFICATION API FUNCTIONS ====================
+
+// Get user notifications
+async function getNotifications(limit = 20, page = 1) {
+  try {
+    const response = await apiCall(`/notifications?limit=${limit}&page=${page}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    return null;
+  }
+}
+
+// Get unread notification count
+async function getUnreadNotificationCount() {
+  try {
+    const response = await apiCall('/notifications/unread/count');
+    return response?.unread_count || 0;
+  } catch (error) {
+    console.error('Error fetching unread count:', error);
+    return 0;
+  }
+}
+
+// Mark notification as read
+async function markNotificationAsRead(notificationId) {
+  try {
+    const response = await apiCall(`/notifications/${notificationId}/read`, 'PUT');
+    return response;
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    return null;
+  }
+}
+
+// Mark all notifications as read
+async function markAllNotificationsAsRead() {
+  try {
+    const response = await apiCall('/notifications/mark-all/read', 'PUT');
+    return response;
+  } catch (error) {
+    console.error('Error marking all notifications as read:', error);
+    return null;
+  }
+}
+
+// Delete notification
+async function deleteNotification(notificationId) {
+  try {
+    const response = await apiCall(`/notifications/${notificationId}`, 'DELETE');
+    return response;
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    return null;
+  }
+}
+
+// Get notifications by type
+async function getNotificationsByType(type) {
+  try {
+    const response = await apiCall(`/notifications/type/${type}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching notifications by type:', error);
+    return null;
+  }
+}
+
+// ==================== MESSAGE API FUNCTIONS ====================
+
+// Send message on claim
+async function sendMessage(claimId, receiverId, message) {
+  try {
+    const response = await apiCall('/messages', 'POST', {
+      claim_id: claimId,
+      receiver_id: receiverId,
+      message: message
+    });
+    return response;
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error;
+  }
+}
+
+// Get claim messages
+async function getClaimMessages(claimId) {
+  try {
+    const response = await apiCall(`/messages/claim/${claimId}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching claim messages:', error);
+    return null;
+  }
+}
+
+// Get user's inbox
+async function getUserMessages() {
+  try {
+    const response = await apiCall('/messages/inbox');
+    return response;
+  } catch (error) {
+    console.error('Error fetching user messages:', error);
+    return null;
+  }
+}
+
+// Get unread message count
+async function getUnreadMessageCount() {
+  try {
+    const response = await apiCall('/messages/unread/count');
+    return response?.unread_count || 0;
+  } catch (error) {
+    console.error('Error fetching unread message count:', error);
+    return 0;
+  }
+}
+
+// Mark message as read
+async function markMessageAsRead(messageId) {
+  try {
+    const response = await apiCall(`/messages/${messageId}/read`, 'PUT');
+    return response;
+  } catch (error) {
+    console.error('Error marking message as read:', error);
+    return null;
+  }
+}
+
+// Delete message
+async function deleteMessage(messageId) {
+  try {
+    const response = await apiCall(`/messages/${messageId}`, 'DELETE');
+    return response;
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    return null;
+  }
 }

@@ -1,5 +1,7 @@
 const Claim = require('../models/Claim');
 const Item = require('../models/Item');
+const { sendNotification } = require('./notificationController');
+const { transformItemsImageUrls } = require('../utils/imageUrlUtil');
 
 // @desc    Create claim
 // @route   POST /api/claims
@@ -15,7 +17,7 @@ const createClaim = async (req, res) => {
     }
     
     // Check if item is already claimed
-    if (item.status === 'claimed') {
+    if (item.status === 'Claimed') {
       return res.status(400).json({ message: 'Item is already claimed' });
     }
     
@@ -28,9 +30,27 @@ const createClaim = async (req, res) => {
     
     const claim = await Claim.create(claimData);
     
+    // Send notification to item owner
+    if (item.user_id) {
+      await sendNotification(
+        item.user_id,
+        'claim_submission',
+        'New Claim on Your Item',
+        `Someone has claimed your item: "${item.title}". Please review their verification answers.`,
+        item_id,
+        claim.id
+      );
+    }
+    
+    // Transform image URL to absolute path
+    const transformedClaim = {
+      ...claim,
+      item_image: claim.item_image ? transformItemsImageUrls({ image_url: claim.item_image }, req).image_url : null
+    };
+    
     res.status(201).json({
       message: 'Claim submitted successfully',
-      claim
+      claim: transformedClaim
     });
   } catch (error) {
     console.error(error);
@@ -54,7 +74,13 @@ const getClaim = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to view this claim' });
     }
     
-    res.json(claim);
+    // Transform image URL to absolute path
+    const transformedClaim = {
+      ...claim,
+      item_image: claim.item_image ? transformItemsImageUrls({ image_url: claim.item_image }, req).image_url : null
+    };
+    
+    res.json(transformedClaim);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -77,10 +103,40 @@ const verifyClaim = async (req, res) => {
     if (!claim) {
       return res.status(404).json({ message: 'Claim not found' });
     }
+
+    // Get item details for notification
+    const item = await Item.findById(claim.item_id);
+    
+    // Send notification to claimer based on status
+    if (status === 'verified') {
+      await sendNotification(
+        claim.claimer_id,
+        'claim_approved',
+        'Claim Approved ✓',
+        `Your claim for "${item?.title}" has been approved. Please coordinate with the item owner for pickup.`,
+        claim.item_id,
+        claim.id
+      );
+    } else if (status === 'rejected') {
+      await sendNotification(
+        claim.claimer_id,
+        'claim_rejected',
+        'Claim Not Approved',
+        `Your claim for "${item?.title}" could not be verified. Please review the verification notes.`,
+        claim.item_id,
+        claim.id
+      );
+    }
+    
+    // Transform image URL to absolute path
+    const transformedClaim = {
+      ...claim,
+      item_image: claim.item_image ? transformItemsImageUrls({ image_url: claim.item_image }, req).image_url : null
+    };
     
     res.json({
       message: 'Claim verification updated successfully',
-      claim
+      claim: transformedClaim
     });
   } catch (error) {
     console.error(error);
@@ -95,10 +151,16 @@ const getUserClaims = async (req, res) => {
   try {
     const claims = await Claim.getUserClaims(req.user.id);
     
+    // Transform image URLs for all claims
+    const transformedClaims = claims.map(claim => ({
+      ...claim,
+      item_image: claim.item_image ? transformItemsImageUrls({ image_url: claim.item_image }, req).image_url : null
+    }));
+    
     res.json({
       success: true,
-      count: claims.length,
-      data: claims
+      count: transformedClaims.length,
+      data: transformedClaims
     });
   } catch (error) {
     console.error(error);
@@ -113,10 +175,16 @@ const getItemClaims = async (req, res) => {
   try {
     const claims = await Claim.findByItemId(req.params.id);
     
+    // Transform image URLs for all claims
+    const transformedClaims = claims.map(claim => ({
+      ...claim,
+      item_image: claim.item_image ? transformItemsImageUrls({ image_url: claim.item_image }, req).image_url : null
+    }));
+    
     res.json({
       success: true,
-      count: claims.length,
-      data: claims
+      count: transformedClaims.length,
+      data: transformedClaims
     });
   } catch (error) {
     console.error(error);
@@ -152,9 +220,15 @@ const updateClaim = async (req, res) => {
       verification_notes: verification_notes || claim.verification_notes
     });
     
+    // Transform image URL to absolute path
+    const transformedClaim = {
+      ...updatedClaim,
+      item_image: updatedClaim.item_image ? transformItemsImageUrls({ image_url: updatedClaim.item_image }, req).image_url : null
+    };
+    
     res.json({
       message: 'Claim updated successfully',
-      claim: updatedClaim
+      claim: transformedClaim
     });
   } catch (error) {
     console.error(error);

@@ -148,13 +148,16 @@ async function viewClaim(claimId) {
               ` : ''}
 
               <!-- User Actions -->
-              ${claim.claimer_id === user.id && claim.status === 'pending' ? `
-                <div class="flex gap-2">
+              <div class="flex gap-2 flex-wrap">
+                <button onclick="openMessagingModal(${claim.id})" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                  💬 Send Message
+                </button>
+                ${claim.claimer_id === user.id && claim.status === 'pending' ? `
                   <button onclick="cancelClaim(${claim.id})" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
                     Cancel Claim
                   </button>
-                </div>
-              ` : ''}
+                ` : ''}
+              </div>
             </div>`;
 
       if (window.Modal) {
@@ -243,5 +246,154 @@ async function cancelClaim(claimId) {
     }
   } catch (error) {
     alert('Failed to cancel claim: ' + error.message);
+  }
+}
+
+// =============================================
+// MESSAGING SYSTEM FUNCTIONS
+// =============================================
+
+let currentMessagingClaimId = null;
+
+async function openMessagingModal(claimId) {
+  console.log('Opening messaging modal for claim:', claimId);
+  currentMessagingClaimId = claimId;
+  
+  // Close the claim details modal first
+  closeClaimModal();
+  
+  const messagingModal = document.getElementById('messagingModal');
+  if (!messagingModal) {
+    console.error('Messaging modal not found');
+    return;
+  }
+
+  // Show the modal
+  messagingModal.classList.remove('hidden');
+
+  // Load messages for this claim
+  await loadMessages(claimId);
+
+  // Setup event listeners
+  const sendBtn = document.getElementById('sendMessageBtn');
+  const closeBtn = document.getElementById('closeMessagingBtn');
+  const closeIcon = document.getElementById('closeMessagingModal');
+
+  if (sendBtn) {
+    sendBtn.onclick = () => handleSendMessage(claimId);
+  }
+  if (closeBtn) {
+    closeBtn.onclick = closeMessagingModal;
+  }
+  if (closeIcon) {
+    closeIcon.onclick = closeMessagingModal;
+  }
+
+  // Auto-refresh messages every 10 seconds
+  const refreshInterval = setInterval(async () => {
+    if (!messagingModal.classList.contains('hidden')) {
+      await loadMessages(claimId);
+    } else {
+      clearInterval(refreshInterval);
+    }
+  }, 10000);
+}
+
+function closeMessagingModal() {
+  const messagingModal = document.getElementById('messagingModal');
+  if (messagingModal) {
+    messagingModal.classList.add('hidden');
+  }
+  currentMessagingClaimId = null;
+}
+
+async function loadMessages(claimId) {
+  try {
+    const response = await getClaimMessages(claimId);
+    
+    if (response && response.data) {
+      displayMessages(response.data);
+    } else {
+      console.warn('No messages found or error loading messages');
+    }
+  } catch (error) {
+    console.error('Failed to load messages:', error);
+  }
+}
+
+function displayMessages(messages) {
+  const messagesDisplay = document.getElementById('messagesDisplay');
+  if (!messagesDisplay) {
+    console.error('Messages display area not found');
+    return;
+  }
+
+  if (!messages || messages.length === 0) {
+    messagesDisplay.innerHTML = '<div class="flex items-center justify-center h-full"><p class="text-center text-gray-500">No messages yet.<br>Start the conversation!</p></div>';
+    return;
+  }
+
+  const user = getUser();
+  const messageHTML = messages.map(msg => {
+    const isSent = msg.sender_id === user.id;
+    const time = new Date(msg.created_at);
+    const timeStr = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const dateStr = time.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const senderName = isSent ? 'You' : (msg.sender_name || 'Unknown');
+    
+    return `
+      <div class="flex ${isSent ? 'justify-end' : 'justify-start'} mb-4">
+        <div class="flex flex-col ${isSent ? 'items-end' : 'items-start'} max-w-[70%]">
+          <div class="text-xs font-semibold text-gray-600 mb-1">${senderName}</div>
+          <div class="px-4 py-3 rounded-2xl ${isSent ? 'bg-green-600 text-white rounded-br-none' : 'bg-gray-300 text-gray-800 rounded-bl-none'} shadow-sm break-words">
+            ${msg.message}
+          </div>
+          <div class="text-xs text-gray-500 mt-1">${dateStr} at ${timeStr}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  messagesDisplay.innerHTML = messageHTML;
+  // Scroll to bottom
+  messagesDisplay.scrollTop = messagesDisplay.scrollHeight;
+}
+
+async function handleSendMessage(claimId) {
+  const messageInput = document.getElementById('messageInput');
+  const message = messageInput.value.trim();
+
+  if (!message) {
+    alert('Please enter a message');
+    return;
+  }
+
+  try {
+    // Get claim details to find receiver
+    const claimResponse = await apiCall(`/claims/${claimId}`, 'GET');
+    if (!claimResponse) {
+      alert('Failed to load claim details');
+      return;
+    }
+
+    const claim = claimResponse;
+    const user = getUser();
+    
+    // Determine receiver (the other party in the claim)
+    const receiverId = claim.claimer_id === user.id ? claim.owner_id : claim.claimer_id;
+
+    // Send message
+    const response = await sendMessage(claimId, receiverId, message);
+
+    if (response) {
+      messageInput.value = '';
+      // Reload messages
+      await loadMessages(claimId);
+    } else {
+      alert('Failed to send message');
+    }
+  } catch (error) {
+    alert('Error sending message: ' + error.message);
+    console.error('Send message error:', error);
   }
 }

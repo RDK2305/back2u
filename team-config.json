@@ -1,0 +1,84 @@
+{
+  "project": "CampusFind - Lost and Found Platform",
+  "team": [
+    {
+      "id": "RDK2305",
+      "name": "Rudraksh Kharadi",
+      "email": "rudrakshkharadi53@gmail.com",
+      "github": "RDK2305",
+      "roles": [
+        "Team Lead",
+        "Project Manager",
+        "Client Interaction",
+        "Requirements Documentation",
+        "Installer Development"
+      ]
+    },
+    {
+      "id": "paudel3101",
+      "name": "Bishal Paudel",
+      "email": "bishalsharma24112002@gmail.com",
+      "github": "paudel3101",
+      "roles": [
+        "Project Record-keeping",
+        "Technical Documentation",
+        "Client Documentation",
+        "SQL/LINQ Development"
+      ]
+    },
+    {
+      "id": "Gagan-sran",
+      "name": "Gagan Singh",
+      "email": "gs9814870091@gmail.com",
+      "github": "Gagan-sran",
+      "roles": [
+        "UI / Web Design",
+        "Frontend Development"
+      ]
+    },
+    {
+      "id": "gurjant575",
+      "name": "Gurjant Singh",
+      "email": "gssandhu911@gmail.com",
+      "github": "gurjant575",
+      "roles": [
+        "Design Diagrams (UML, ERD)",
+        "Backend Development",
+        "Database Design"
+      ]
+    }
+  ],
+  "contributionAreas": {
+    "ProjectManagement": {
+      "description": "Project planning, leadership, and record-keeping",
+      "lead": "Rudraksh Kharadi"
+    },
+    "AnalysisDesignDocumentation": {
+      "description": "Client interaction, requirements, design diagrams, technical documentation",
+      "lead": "Rudraksh Kharadi"
+    },
+    "WebDevelopment": {
+      "description": "Frontend UI/Design and Backend Development",
+      "frontendLead": "Gagan Singh",
+      "backendLead": "Gurjant Singh"
+    },
+    "DatabaseDevelopment": {
+      "description": "Database design and SQL development",
+      "lead": "Gurjant Singh",
+      "supportedBy": ["Bishal Paudel"]
+    },
+    "QualityAssurance": {
+      "description": "Testing and code review",
+      "assigned": "All Members"
+    }
+  },
+  "commitConvention": {
+    "pattern": "[MODULE] Message | Author: Name",
+    "examples": [
+      "[BACKEND] Added forgot password OTP endpoint | Author: Gurjant Singh",
+      "[FRONTEND] Updated password reset UI | Author: Gagan Singh",
+      "[DATABASE] Created OTP columns | Author: Bishal Paudel",
+      "[DOCS] Updated API documentation | Author: Rudraksh Kharadi"
+    ]
+  }
+}

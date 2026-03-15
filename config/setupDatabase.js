@@ -72,7 +72,11 @@ async function setupDatabase() {
         program VARCHAR(100),
         password VARCHAR(255) NOT NULL,
         is_verified BOOLEAN DEFAULT FALSE,
-        role VARCHAR(20) DEFAULT 'student' CHECK (role IN ('student', 'security')),
+        role VARCHAR(20) DEFAULT 'student' CHECK (role IN ('student', 'security', 'professor')),
+        reset_token_hash VARCHAR(255),
+        reset_token_expires_at TIMESTAMP NULL,
+        otp_code VARCHAR(10),
+        otp_expires_at TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
@@ -117,7 +121,124 @@ async function setupDatabase() {
       )
     `);
 
+    // Create Notifications table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        type VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT,
+        related_item_id INT,
+        related_claim_id INT,
+        \`read\` TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (related_item_id) REFERENCES items(id) ON DELETE SET NULL,
+        FOREIGN KEY (related_claim_id) REFERENCES claims(id) ON DELETE SET NULL,
+        INDEX idx_user_read (user_id, \`read\`),
+        INDEX idx_created (created_at)
+      )
+    `);;;
+
+    // Create Reports table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS reports (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        report_type VARCHAR(50) NOT NULL,
+        generated_by INT,
+        report_date DATE NOT NULL,
+        total_items_reported INT DEFAULT 0,
+        total_claimed INT DEFAULT 0,
+        total_returned INT DEFAULT 0,
+        claims_pending INT DEFAULT 0,
+        top_categories JSON,
+        top_locations JSON,
+        lost_vs_found JSON,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (generated_by) REFERENCES users(id) ON DELETE SET NULL,
+        INDEX idx_report_date (report_date)
+      )
+    `);
+
+    // Create Messages table (for Iteration 3)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        claim_id INT NOT NULL,
+        sender_id INT NOT NULL,
+        receiver_id INT NOT NULL,
+        message TEXT NOT NULL,
+        \`read\` TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE,
+        FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
+        INDEX idx_claim (claim_id),
+        INDEX idx_receiver (receiver_id, \`read\`)
+      )
+    `);
+
+    // Create Ratings table (for Iteration 3)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS ratings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        claim_id INT NOT NULL,
+        rater_id INT NOT NULL,
+        rated_user_id INT NOT NULL,
+        rating INT CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE,
+        FOREIGN KEY (rater_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (rated_user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_rating (claim_id, rater_id)
+      )
+    `);
+
     console.log("All tables created successfully!");
+
+    // Update existing users table to add new columns and role support
+    try {
+      // Add professor role support to existing users table
+      await connection.query(`
+        ALTER TABLE users MODIFY COLUMN role VARCHAR(20) DEFAULT 'student' CHECK (role IN ('student', 'security', 'professor'))
+      `).catch(() => {
+        // If ALTER fails, it may be because the column already has this constraint
+        console.log("Note: Users table role constraint already updated or modification skipped");
+      });
+
+      // Add password reset token columns if they don't exist
+      await connection.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_hash VARCHAR(255)
+      `).catch(() => {
+        console.log("Note: reset_token_hash column may already exist");
+      });
+
+      await connection.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires_at TIMESTAMP NULL
+      `).catch(() => {
+        console.log("Note: reset_token_expires_at column may already exist");
+      });
+
+      // Add OTP columns for forgot password flow
+      await connection.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_code VARCHAR(10)
+      `).catch(() => {
+        console.log("Note: otp_code column may already exist");
+      });
+
+      await connection.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_expires_at TIMESTAMP NULL
+      `).catch(() => {
+        console.log("Note: otp_expires_at column may already exist");
+      });
+
+      console.log("Users table schema updated successfully!");
+    } catch (err) {
+      console.log("Schema migration note:", err.message);
+    }
 
     // Insert sample data for testing
     const [userResult] = await connection.query(
@@ -425,6 +546,105 @@ async function setupDatabase() {
         ],
       );
       console.log("Sample claims inserted");
+
+      // Insert sample messages
+      await connection.query(
+        `
+        INSERT INTO messages (claim_id, sender_id, receiver_id, message, \`read\`) VALUES
+        (?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?)
+      `,
+        [
+          1,
+          2,
+          1,
+          "Hi, I have the blue leather wallet you found. Can we schedule a pickup?",
+          1,
+          1,
+          1,
+          2,
+          "Sure! I can meet you tomorrow at 2pm at the library.",
+          1,
+          1,
+          2,
+          1,
+          "Perfect! See you then.",
+          0,
+          2,
+          3,
+          1,
+          "Do you still have the MacBook Pro?",
+          0,
+          2,
+          1,
+          3,
+          "Yes, it's in great condition. When can you pick it up?",
+          1,
+          3,
+          4,
+          3,
+          "Hello, I found your ID card. I have it with me.",
+          1,
+          3,
+          4,
+          3,
+          "Thank you so much! I really appreciate it. Can I get it from you?",
+          0,
+          3,
+          4,
+          3,
+          "Of course! I'll be at the student center tomorrow 3-5pm.",
+          0,
+        ],
+      );
+      console.log("Sample messages inserted");
+
+      // Insert sample notifications
+      await connection.query(
+        `
+        INSERT INTO notifications (user_id, type, title, message, related_item_id, related_claim_id, \`read\`) VALUES
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?)
+      `,
+        [
+          1,
+          "claim_submission",
+          "New Claim on Your Item",
+          "Someone has claimed your MacBook Pro 2021",
+          1,
+          1,
+          1,
+          1,
+          "claim_submission",
+          "New Claim on Your Item",
+          "Someone has claimed your Silver House Keys",
+          2,
+          2,
+          1,
+          3,
+          "claim_submission",
+          "New Claim on Your Item",
+          "Someone has claimed your Gold Watch",
+          9,
+          3,
+          0,
+          2,
+          "claim_approved",
+          "Claim Approved",
+          "Your claim for MacBook Pro 2021 has been approved!",
+          1,
+          1,
+          1,
+        ],
+      );
+      console.log("Sample notifications inserted");
     } else {
       console.log(
         "Database already contains data, skipping sample data insertion",

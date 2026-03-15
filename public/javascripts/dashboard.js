@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load initial items
   loadItems();
+
+  // Setup notifications
+  setupNotifications();
 });
 
 function setupFormHandlers() {
@@ -764,5 +767,163 @@ async function deleteItem(itemId) {
     }
   } catch (error) {
     alert('Failed to delete item: ' + error.message);
+  }
+}
+// ==================== NOTIFICATION SYSTEM ====================
+
+function setupNotifications() {
+  // Load notifications on page load
+  loadNotifications();
+
+  // Setup notification modal events
+  const notificationsBtn = document.getElementById('notificationsBtn');
+  const notificationModal = document.getElementById('notificationModal');
+  const closeNotificationModal = document.getElementById('closeNotificationModal');
+  const closeNotificationBtn = document.getElementById('closeNotificationBtn');
+  const markAllReadBtn = document.getElementById('markAllReadBtn');
+
+  if (notificationsBtn) {
+    notificationsBtn.addEventListener('click', openNotificationModal);
+  }
+
+  if (closeNotificationModal) {
+    closeNotificationModal.addEventListener('click', closeNotifications);
+  }
+
+  if (closeNotificationBtn) {
+    closeNotificationBtn.addEventListener('click', closeNotifications);
+  }
+
+  if (markAllReadBtn) {
+    markAllReadBtn.addEventListener('click', markAllRead);
+  }
+
+  // Close modal when clicking outside
+  if (notificationModal) {
+    notificationModal.addEventListener('click', (e) => {
+      if (e.target === notificationModal) {
+        closeNotifications();
+      }
+    });
+  }
+
+  // Refresh notifications every 30 seconds
+  setInterval(loadNotifications, 30000);
+}
+
+async function loadNotifications() {
+  try {
+    const response = await getNotifications(20, 1);
+
+    if (!response || !response.data) {
+      return;
+    }
+
+    const { data, unread } = response;
+
+    // Update badge
+    updateNotificationBadge(unread);
+
+    // If modal is open, update notifications list
+    const modal = document.getElementById('notificationModal');
+    if (!modal.classList.contains('hidden')) {
+      displayNotifications(data);
+    }
+  } catch (error) {
+    console.error('Error loading notifications:', error);
+  }
+}
+
+function updateNotificationBadge(count) {
+  const badge = document.getElementById('notificationBadge');
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+}
+
+function openNotificationModal() {
+  const modal = document.getElementById('notificationModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    loadNotifications();
+  }
+}
+
+function closeNotifications() {
+  const modal = document.getElementById('notificationModal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+function displayNotifications(notifications) {
+  const notificationsList = document.getElementById('notificationsList');
+
+  if (!notificationsList) {
+    return;
+  }
+
+  if (!notifications || notifications.length === 0) {
+    notificationsList.innerHTML = '<div class="text-center py-8"><p class="text-gray-500">No notifications</p></div>';
+    return;
+  }
+
+  notificationsList.innerHTML = notifications
+    .map(notif => {
+      const createdDate = new Date(notif.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const notificationTypeIcon = {
+        'claim_submission': '🔍',
+        'claim_approved': '✅',
+        'claim_rejected': '❌',
+        'claim_update': '📢',
+        'message': '💬',
+        'item_match': '🎯',
+        'default': '📬'
+      };
+
+      const icon = notificationTypeIcon[notif.type] || notificationTypeIcon['default'];
+
+      return `
+        <div class="border-b border-gray-200 p-3 hover:bg-blue-50 transition flex items-start gap-3 group">
+          <div class="text-2xl flex-shrink-0">${icon}</div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-gray-800 text-sm">${notif.title}</h3>
+            <p class="text-gray-600 text-xs mt-1">${notif.message}</p>
+            <p class="text-gray-400 text-xs mt-2">${createdDate}</p>
+          </div>
+          <button onclick="deleteNotificationUI(${notif.id})" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">✕</button>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+async function deleteNotificationUI(notificationId) {
+  try {
+    await deleteNotification(notificationId);
+    loadNotifications();
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+  }
+}
+
+async function markAllRead() {
+  try {
+    await markAllNotificationsAsRead();
+    updateNotificationBadge(0);
+    loadNotifications();
+  } catch (error) {
+    console.error('Error marking all as read:', error);
   }
 }
