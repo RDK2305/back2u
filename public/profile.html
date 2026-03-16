@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your Back2U profile securely">
+    <meta name="color-scheme" content="light">
     <title>Profile - Back2u</title>
     <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
     <script src="https://cdn.tailwindcss.com" defer></script>
@@ -101,12 +103,12 @@
 
                         <div class="mb-6">
                             <label for="currentPassword" class="block mb-2 font-medium text-gray-800">Current Password</label>
-                            <input type="password" id="currentPassword" name="password" placeholder="Enter your current password" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            <input type="password" id="currentPassword" name="password" placeholder="Enter your current password" autocomplete="current-password" spellcheck="false" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
                         </div>
 
                         <div class="mb-6">
                             <label for="newPassword" class="block mb-2 font-medium text-gray-800">New Password</label>
-                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" autocomplete="new-password" spellcheck="false" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
                             <small class="block mt-1 text-gray-500 text-sm">Min 8 characters, include 1 number and 1 special character (!@#$%^&*)</small>
                             <div id="passwordRequirements" class="mt-2 p-3 bg-gray-100 rounded-md text-sm" style="display: none;">
                                 <p class="my-1 text-gray-600"><span id="req-length" class="mr-2 font-bold text-gray-500">✗</span> At least 8 characters</p>
@@ -117,7 +119,7 @@
 
                         <div class="mb-6">
                             <label for="confirmPassword" class="block mb-2 font-medium text-gray-800">Confirm New Password</label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" autocomplete="new-password" spellcheck="false" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
                         </div>
                     </div>
 

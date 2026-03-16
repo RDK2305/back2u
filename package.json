@@ -1,5 +1,5 @@
 {
-  "name": "Back2u",
+  "name": "back2u",
   "version": "1.0.0",
   "description": "Back2u - Lost & Found System API",
   "main": "server.js",

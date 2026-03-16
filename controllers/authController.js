@@ -252,8 +252,10 @@ const forgotPassword = async (req, res) => {
     // Check if user exists
     const user = await User.findByEmail(email.trim());
     if (!user) {
-      // Don't reveal if email exists for security reasons
-      return res.status(200).json({ message: 'If the email exists, OTP will be sent' });
+      return res.status(404).json({
+        message: 'Email not registered. Please register first.',
+        notRegistered: true
+      });
     }
 
     // Generate 6-digit OTP

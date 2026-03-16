@@ -47,6 +47,7 @@ app.use(helmet({
       connectSrc: ["'self'", "https://back2u-h67h.onrender.com/"],
     },
   },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
 app.use(securityHeaders);
 app.use(requestLogger);

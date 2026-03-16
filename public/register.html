@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Register for Back2U securely">
+    <meta name="color-scheme" content="light">
     <title>Register - Back2u</title>
     <!-- Load fallback CSS first, then CDN for best compatibility -->
     <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
@@ -105,7 +107,7 @@
 
                     <div>
                         <label for="password" class="block mb-2 font-semibold text-gray-700 text-sm">Password</label>
-                        <input type="password" id="password" name="password" required placeholder="Enter password" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                        <input type="password" id="password" name="password" required placeholder="Enter password" autocomplete="new-password" spellcheck="false" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
                         <small class="block mt-1.5 text-gray-500 text-xs">Min 8 characters, 1 number & 1 special char (!@#$%^&*)</small>
                         <div id="passwordRequirements" class="mt-3 p-3 bg-gray-50 rounded-lg text-xs space-y-1">
                             <p class="text-gray-600"><span id="req-length" class="mr-2 font-bold text-red-500">✗</span> At least 8 characters</p>
@@ -116,7 +118,7 @@
 
                     <div>
                         <label for="confirmPassword" class="block mb-2 font-semibold text-gray-700 text-sm">Confirm Password</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm password" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm password" autocomplete="new-password" spellcheck="false" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
                     </div>
 
 

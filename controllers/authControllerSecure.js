@@ -589,8 +589,12 @@ const forgotPassword = async (req, res) => {
     const user = await User.findByEmail(email.trim());
     if (!user) {
       console.log(`⚠️ [FORGOT PASSWORD] User not found: ${email}`);
-      // Don't reveal if email exists (security best practice)
-      return res.status(200).json({ message: 'If the email exists, OTP will be sent' });
+      // Return 404 with registration warning
+      return res.status(404).json({ 
+        notRegistered: true,
+        message: '❌ This email is not registered. Please register first before resetting your password.',
+        registerLink: '/register.html'
+      });
     }
 
     console.log(`✅ [FORGOT PASSWORD] User found: ${user.email}`);
