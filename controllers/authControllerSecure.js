@@ -583,33 +583,44 @@ const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
+    console.log(`📧 [FORGOT PASSWORD] Request for email: ${email}`);
+
     // Check if user exists
     const user = await User.findByEmail(email.trim());
     if (!user) {
+      console.log(`⚠️ [FORGOT PASSWORD] User not found: ${email}`);
       // Don't reveal if email exists (security best practice)
       return res.status(200).json({ message: 'If the email exists, OTP will be sent' });
     }
 
+    console.log(`✅ [FORGOT PASSWORD] User found: ${user.email}`);
+
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`🔐 [FORGOT PASSWORD] Generated OTP: ${otp}`);
 
     // Save OTP to database (will be hashed)
+    console.log(`💾 [FORGOT PASSWORD] Saving OTP to database...`);
     await User.saveOTP(email.trim(), otp, 10); // 10 minutes expiry
+    console.log(`✅ [FORGOT PASSWORD] OTP saved successfully`);
 
     // Send OTP via email
+    console.log(`📬 [FORGOT PASSWORD] Sending OTP email...`);
     const emailSent = await sendOTPEmail(email.trim(), otp);
 
     if (emailSent) {
+      console.log(`✅ [FORGOT PASSWORD] Email sent successfully`);
       res.status(200).json({ 
         message: 'OTP sent successfully',
         info: `Check your email at ${email} for the one-time password` 
       });
     } else {
+      console.error(`❌ [FORGOT PASSWORD] Email failed to send`);
       res.status(500).json({ message: 'Failed to send email. Try again later.' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error(`❌ [FORGOT PASSWORD] Error:`, error);
+    res.status(500).json({ message: 'Server error during forgot password request' });
   }
 };
 
@@ -711,21 +722,28 @@ const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
+    console.log(`🔐 [VERIFY OTP] Request for email: ${email}`);
+
     // Validate input
     if (!email || !otp) {
+      console.log(`⚠️ [VERIFY OTP] Missing email or OTP`);
       return res.status(400).json({ message: 'Email and OTP are required' });
     }
 
     // Check if user exists
     const user = await User.findByEmail(email.trim());
     if (!user) {
+      console.log(`⚠️ [VERIFY OTP] User not found: ${email}`);
       return res.status(400).json({ message: 'User not found' });
     }
+
+    console.log(`✅ [VERIFY OTP] User found, verifying OTP...`);
 
     // Verify OTP
     const isValidOTP = await User.verifyOTP(email.trim(), otp.trim());
 
     if (isValidOTP) {
+      console.log(`✅ [VERIFY OTP] OTP is valid for: ${email}`);
       // OTP is valid, generate a temporary token for password reset
       const resetToken = jwt.sign(
         { id: user.id, email: user.email, type: 'password_reset' },
@@ -739,13 +757,14 @@ const verifyOtp = async (req, res) => {
         verified: true
       });
     } else {
+      console.log(`❌ [VERIFY OTP] OTP verification failed for: ${email}`);
       res.status(400).json({ 
         message: 'Invalid or expired OTP',
         verified: false 
       });
     }
   } catch (error) {
-    console.error(error);
+    console.error(`❌ [VERIFY OTP] Error:`, error);
     res.status(500).json({ message: 'Server error' });
   }
 };

@@ -104,13 +104,18 @@ class User {
     const connection = await pool.getConnection();
     try {
       const hashedOTP = await bcrypt.hash(otpCode, 10);
-      const expiryTime = new Date(Date.now() + expiryMinutes * 60000);
+      // Use UTC timestamp that works consistently across timezones
+      const expiryTime = new Date(Date.now() + expiryMinutes * 60000).toISOString();
       
       await connection.query(
         `UPDATE users SET otp_code = ?, otp_expires_at = ? WHERE email = ?`,
         [hashedOTP, expiryTime, email]
       );
+      console.log(`✅ OTP saved for ${email}, expires at: ${expiryTime}`);
       return true;
+    } catch (err) {
+      console.error('❌ Error saving OTP:', err.message);
+      throw err;
     } finally {
       connection.release();
     }
@@ -125,19 +130,39 @@ class User {
       );
       
       if (rows.length === 0) {
+        console.log(`⚠️  OTP verification failed: User not found - ${email}`);
         return false;
       }
 
       const user = rows[0];
       
-      // Check if OTP has expired
-      if (!user.otp_expires_at || new Date() > new Date(user.otp_expires_at)) {
+      if (!user.otp_code) {
+        console.log(`⚠️  OTP verification failed: No OTP set for ${email}`);
+        return false;
+      }
+      
+      // Check if OTP has expired - use UTC timestamps for consistency
+      const now = new Date().toISOString();
+      const expiryTime = new Date(user.otp_expires_at).toISOString();
+      
+      if (!user.otp_expires_at || now > expiryTime) {
+        console.log(`⚠️  OTP verification failed: OTP expired for ${email}`);
+        console.log(`   Current time (UTC): ${now}`);
+        console.log(`   Expiry time (UTC): ${expiryTime}`);
         return false;
       }
 
       // Compare OTP
       const isValid = await bcrypt.compare(otpCode, user.otp_code);
+      if (isValid) {
+        console.log(`✅ OTP verification successful for ${email}`);
+      } else {
+        console.log(`⚠️  OTP verification failed: Invalid OTP code for ${email}`);
+      }
       return isValid;
+    } catch (err) {
+      console.error(`❌ Error verifying OTP for ${email}:`, err.message);
+      throw err;
     } finally {
       connection.release();
     }

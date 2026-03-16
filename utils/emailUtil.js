@@ -32,17 +32,28 @@ async function getTransporter() {
   
   // Production mode - use Gmail SMTP
   try {
+    console.log('📧 Initializing Gmail SMTP transporter...');
+    console.log(`   Host: ${process.env.EMAIL_HOST}`);
+    console.log(`   Port: ${process.env.EMAIL_PORT}`);
+    console.log(`   User: ${process.env.EMAIL_USER}`);
+    
     transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
+      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.EMAIL_PORT) || 587,
-      secure: false,
+      secure: false, // Use TLS, not SSL
+      requireTLS: true, // Force TLS
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
       },
-      logger: false,
-      debug: false
+      logger: true,
+      debug: process.env.DEBUG_EMAIL === 'true',
+      tls: {
+        rejectUnauthorized: false // Allow self-signed certificates on Render
+      }
     });
+    
+    console.log('✅ Gmail SMTP transporter initialized successfully');
     return transporter;
   } catch (err) {
     console.error('❌ Failed to initialize production email transporter:', err.message);
@@ -251,6 +262,7 @@ const sendOTPEmail = async (email, otp) => {
       `
     };
 
+    console.log(`📧 Sending OTP email to: ${email}`);
     const transporter = await getTransporter();
     
     if (!transporter) {
@@ -263,7 +275,10 @@ const sendOTPEmail = async (email, otp) => {
     }
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ OTP email sent:', info.response);
+    console.log('✅ OTP email sent successfully');
+    console.log(`   Response: ${info.response}`);
+    console.log(`   Message ID: ${info.messageId}`);
+    
     if (process.env.NODE_ENV !== 'production') {
       console.log(`\n🔐 [DEV MODE - OTP CODE] ${otp}`);
       if (info.messageUrl) {
@@ -273,6 +288,18 @@ const sendOTPEmail = async (email, otp) => {
     return true;
   } catch (error) {
     console.error('❌ Error sending OTP email:', error.message);
+    console.error('   Error code:', error.code);
+    console.error('   Error details:', error);
+    
+    // Gmail-specific error handling
+    if (error.code === 'EAUTH') {
+      console.error('\n⚠️ GMAIL AUTHENTICATION ERROR - Check:');
+      console.error('1. Gmail 2-Step Verification is enabled');
+      console.error('2. App password created at https://myaccount.google.com/apppasswords');
+      console.error('3. EMAIL_PASSWORD in .env is the 16-character app password (no spaces)');
+      console.error('4. EMAIL_USER in .env is your Gmail address');
+    }
+    
     return false;
   }
 };
