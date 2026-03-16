@@ -8,7 +8,7 @@ async function getTransporter() {
   if (transporter) return transporter;
   
   if (process.env.NODE_ENV !== 'production') {
-    // Development mode - create a test account
+    // Development mode - create a test account or use console logging
     try {
       const testAccount = await nodemailer.createTestAccount();
       transporter = nodemailer.createTransport({
@@ -18,27 +18,36 @@ async function getTransporter() {
         auth: {
           user: testAccount.user,
           pass: testAccount.pass
-        }
+        },
+        logger: false,
+        debug: false
       });
       console.log('📧 Development mode: Using Ethereal test email service');
       return transporter;
     } catch (err) {
-      console.log('⚠️  Development mode: Email sending disabled (console logging only)');
+      console.log('⚠️  Development mode: Email sending disabled (console logging only)\nReason:', err.message);
       return null;
     }
   }
   
-  // Production mode
-  transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false, // true for 465, false for other ports like 587
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  });
-  return transporter;
+  // Production mode - use Gmail SMTP
+  try {
+    transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT) || 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      },
+      logger: false,
+      debug: false
+    });
+    return transporter;
+  } catch (err) {
+    console.error('❌ Failed to initialize production email transporter:', err.message);
+    return null;
+  }
 }
 
 /**
@@ -96,7 +105,7 @@ const sendVerificationEmail = async (email, token) => {
 
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ Verification email sent:', info.response);
-    if (!process.env.NODE_ENV === 'production' && info.messageUrl) {
+    if (process.env.NODE_ENV !== 'production' && info.messageUrl) {
       console.log('📬 Preview:', info.messageUrl);
     }
     return true;
@@ -255,8 +264,11 @@ const sendOTPEmail = async (email, otp) => {
 
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ OTP email sent:', info.response);
-    if (process.env.NODE_ENV !== 'production' && info.messageUrl) {
-      console.log('📬 Preview:', info.messageUrl);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n🔐 [DEV MODE - OTP CODE] ${otp}`);
+      if (info.messageUrl) {
+        console.log('📬 Preview:', info.messageUrl);
+      }
     }
     return true;
   } catch (error) {

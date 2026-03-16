@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { generateRoleSpecificId, generatePasswordResetToken } = require('../utils/authUtil');
-const { sendVerificationEmail: sendVerificationEmailUtil, sendPasswordResetEmail: sendPasswordResetEmailUtil } = require('../utils/emailUtil');
+const { sendVerificationEmail: sendVerificationEmailUtil, sendPasswordResetEmail: sendPasswordResetEmailUtil, sendOTPEmail } = require('../utils/emailUtil');
 
 // security registration code (stored securely)
 const VALID_security_CODES = {
@@ -584,35 +584,32 @@ const forgotPassword = async (req, res) => {
     }
 
     // Check if user exists
-    const user = await User.findByEmail(email);
+    const user = await User.findByEmail(email.trim());
     if (!user) {
       // Don't reveal if email exists (security best practice)
-      return res.json({
-        message: 'If an account exists with this email, a password reset link will be sent'
-      });
+      return res.status(200).json({ message: 'If the email exists, OTP will be sent' });
     }
 
-    // Generate password reset token
-    const { token, hashedToken, expiresAt } = generatePasswordResetToken();
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store reset token
-    passwordResetTokens.set(hashedToken, {
-      userId: user.id,
-      email: user.email,
-      createdAt: Date.now(),
-      expiresAt: expiresAt
-    });
+    // Save OTP to database (will be hashed)
+    await User.saveOTP(email.trim(), otp, 10); // 10 minutes expiry
 
-    // Send password reset email
-    await sendPasswordResetEmail(email, token, `${user.first_name} ${user.last_name}`);
+    // Send OTP via email
+    const emailSent = await sendOTPEmail(email.trim(), otp);
 
-    res.json({
-      message: 'If an account exists with this email, a password reset link will be sent',
-      sentAt: new Date().toISOString()
-    });
+    if (emailSent) {
+      res.status(200).json({ 
+        message: 'OTP sent successfully',
+        info: `Check your email at ${email} for the one-time password` 
+      });
+    } else {
+      res.status(500).json({ message: 'Failed to send email. Try again later.' });
+    }
   } catch (error) {
-    console.error('Forgot password error:', error);
-    res.status(500).json({ message: 'Server error during password reset request' });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -621,43 +618,32 @@ const forgotPassword = async (req, res) => {
 // @access  Public
 const resetPassword = async (req, res) => {
   try {
-    const { token, newPassword, confirmPassword } = req.body;
+    const { email, otp, newPassword } = req.body;
 
-    if (!token || !newPassword || !confirmPassword) {
-      return res.status(400).json({ message: 'Token and new password are required' });
+    // Validate input
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' });
     }
 
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: 'Passwords do not match' });
-    }
-
-    // Hash the token to match what's stored
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-    // Check if token exists and is valid
-    const tokenData = passwordResetTokens.get(hashedToken);
-    if (!tokenData) {
-      return res.status(400).json({ message: 'Invalid or expired reset token' });
-    }
-
-    if (tokenData.expiresAt < Date.now()) {
-      passwordResetTokens.delete(hashedToken);
-      return res.status(400).json({ message: 'Password reset token has expired. Please request a new one.' });
-    }
-
-    // Validate password strength
+    // Validate new password
     const passwordErrors = validatePassword(newPassword);
     if (passwordErrors.length > 0) {
-      return res.status(400).json({ 
-        message: 'Password does not meet security requirements',
-        errors: passwordErrors 
+      return res.status(400).json({
+        message: 'Password validation failed',
+        errors: passwordErrors
       });
     }
 
-    // Find user
-    const user = await User.findById(tokenData.userId);
+    // Check if user exists
+    const user = await User.findByEmail(email.trim());
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    // Verify OTP
+    const isValidOTP = await User.verifyOTP(email.trim(), otp.trim());
+    if (!isValidOTP) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
     // Hash new password
@@ -665,10 +651,10 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     // Update user password
-    await User.update(tokenData.userId, { password: hashedPassword });
+    await User.update(user.id, { password: hashedPassword });
 
-    // Clean up reset token
-    passwordResetTokens.delete(hashedToken);
+    // Clear OTP from database
+    await User.clearOTP(email.trim());
 
     console.log(`🔐 Password reset successfully for user: ${user.email}`);
 
@@ -718,6 +704,52 @@ const verifyResetToken = async (req, res) => {
   }
 };
 
+// @desc    Step 2: Verify OTP for password reset
+// @route   POST /api/auth/verify-otp
+// @access  Public
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Validate input
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required' });
+    }
+
+    // Check if user exists
+    const user = await User.findByEmail(email.trim());
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    // Verify OTP
+    const isValidOTP = await User.verifyOTP(email.trim(), otp.trim());
+
+    if (isValidOTP) {
+      // OTP is valid, generate a temporary token for password reset
+      const resetToken = jwt.sign(
+        { id: user.id, email: user.email, type: 'password_reset' },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' } // 15 minutes to complete password reset
+      );
+
+      res.status(200).json({
+        message: 'OTP verified successfully',
+        resetToken: resetToken,
+        verified: true
+      });
+    } else {
+      res.status(400).json({ 
+        message: 'Invalid or expired OTP',
+        verified: false 
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = { 
   registersecurity,
   registerStudent,
@@ -730,6 +762,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   verifyResetToken,
+  verifyOtp,
   validatePassword,
   validateEmailDomain,
   generateToken

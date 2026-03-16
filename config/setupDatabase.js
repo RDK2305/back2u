@@ -75,7 +75,7 @@ async function setupDatabase() {
         role VARCHAR(20) DEFAULT 'student' CHECK (role IN ('student', 'security', 'professor')),
         reset_token_hash VARCHAR(255),
         reset_token_expires_at TIMESTAMP NULL,
-        otp_code VARCHAR(10),
+        otp_code VARCHAR(255),
         otp_expires_at TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -224,7 +224,7 @@ async function setupDatabase() {
 
       // Add OTP columns for forgot password flow
       await connection.query(`
-        ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_code VARCHAR(10)
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_code VARCHAR(255)
       `).catch(() => {
         console.log("Note: otp_code column may already exist");
       });
