@@ -104,14 +104,15 @@ class User {
     const connection = await pool.getConnection();
     try {
       const hashedOTP = await bcrypt.hash(otpCode, 10);
-      // Use UTC timestamp that works consistently across timezones
-      const expiryTime = new Date(Date.now() + expiryMinutes * 60000).toISOString();
+      // Convert to MySQL TIMESTAMP format (YYYY-MM-DD HH:MM:SS)
+      const expiryTime = new Date(Date.now() + expiryMinutes * 60000);
+      const mysqlTime = expiryTime.toISOString().slice(0, 19).replace('T', ' ');
       
       await connection.query(
         `UPDATE users SET otp_code = ?, otp_expires_at = ? WHERE email = ?`,
-        [hashedOTP, expiryTime, email]
+        [hashedOTP, mysqlTime, email]
       );
-      console.log(`✅ OTP saved for ${email}, expires at: ${expiryTime}`);
+      console.log(`✅ OTP saved for ${email}, expires at: ${mysqlTime}`);
       return true;
     } catch (err) {
       console.error('❌ Error saving OTP:', err.message);
@@ -141,14 +142,14 @@ class User {
         return false;
       }
       
-      // Check if OTP has expired - use UTC timestamps for consistency
-      const now = new Date().toISOString();
-      const expiryTime = new Date(user.otp_expires_at).toISOString();
+      // Check if OTP has expired - MySQL TIMESTAMP format
+      const now = new Date();
+      const expiryTimestamp = new Date(user.otp_expires_at);
       
-      if (!user.otp_expires_at || now > expiryTime) {
+      if (!user.otp_expires_at || now > expiryTimestamp) {
         console.log(`⚠️  OTP verification failed: OTP expired for ${email}`);
-        console.log(`   Current time (UTC): ${now}`);
-        console.log(`   Expiry time (UTC): ${expiryTime}`);
+        console.log(`   Current time: ${now.toISOString()}`);
+        console.log(`   Expiry time: ${expiryTimestamp.toISOString()}`);
         return false;
       }
 
