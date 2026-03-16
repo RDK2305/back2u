@@ -49,7 +49,10 @@ async function getTransporter() {
       logger: true,
       debug: process.env.DEBUG_EMAIL === 'true',
       tls: {
-        rejectUnauthorized: false // Allow self-signed certificates on Render
+        rejectUnauthorized: false, // Allow self-signed certificates on Render
+      },
+      connection: {
+        family: 4 // Force IPv4 (disable IPv6 to avoid ENETUNREACH errors on Render)
       }
     });
     
