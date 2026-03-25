@@ -1,0 +1,23 @@
+﻿Backend API Endpoints - Iteration 3
+=====================================
+Notifications:
+  GET    /api/notifications
+  PUT    /api/notifications/:id/read
+  PUT    /api/notifications/read-all
+  DELETE /api/notifications/:id
+
+Messages:
+  GET    /api/messages/inbox
+  GET    /api/messages/claim/:id
+  POST   /api/messages
+  GET    /api/messages/unread/count
+
+Ratings:
+  POST   /api/ratings
+  GET    /api/ratings/user/:id
+  GET    /api/ratings/user/:id/average
+  GET    /api/ratings/claim/:id
+
+All endpoints tested via Postman - Status: OK
+Author: Gurjant Singh
+Date  : Mar 25, 2026
