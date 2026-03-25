@@ -1,0 +1,13 @@
+﻿Iteration 3 Plan - Back2U Web Application
+==========================================
+Features:
+  1. Notifications Page
+  2. Messages Chat Interface
+  3. Ratings System
+  4. Navigation Updates on all pages
+
+Timeline : Mar 25 - Apr 6, 2026
+Lead     : Rudraksh Kharadi (Full Stack)
+Frontend : Gagan Singh
+Backend  : Gurjant Singh
+Docs/DB  : Bishal Paudel
