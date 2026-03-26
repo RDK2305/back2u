@@ -1,0 +1,31 @@
+﻿Database Schema Updates - Iteration 3
+=======================================
+Table: notifications
+  id          INT AUTO_INCREMENT PRIMARY KEY
+  user_id     INT NOT NULL (FK users.id)
+  type        ENUM('claim','message','system')
+  title       VARCHAR(255)
+  message     TEXT
+  is_read     BOOLEAN DEFAULT FALSE
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Table: messages
+  id          INT AUTO_INCREMENT PRIMARY KEY
+  claim_id    INT NOT NULL (FK claims.id)
+  sender_id   INT NOT NULL (FK users.id)
+  receiver_id INT NOT NULL (FK users.id)
+  message     TEXT
+  is_read     BOOLEAN DEFAULT FALSE
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Table: ratings
+  id          INT AUTO_INCREMENT PRIMARY KEY
+  claim_id    INT NOT NULL (FK claims.id)
+  rater_id    INT NOT NULL (FK users.id)
+  ratee_id    INT NOT NULL (FK users.id)
+  rating      INT (1-5)
+  comment     TEXT
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Author: Bishal Paudel
+Date  : Mar 26, 2026
