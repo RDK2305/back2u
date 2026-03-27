@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Back2u</title>
+    <link rel="stylesheet" href="/stylesheets/style.min.css">
+    <style>
+@layer components {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+        nav { background: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 1px solid #f3f4f6; }
+        nav > div:first-child { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+        @media (max-width: 640px) { nav > div:first-child { padding: 1rem 0.25rem; gap: 1rem; } }
+        footer { background: linear-gradient(to right, #111827, #1f2937); color: #d1d5db; text-align: center; padding: 2rem; border-top: 1px solid #374151; margin-top: auto; }
+        .sidebar { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; position: sticky; top: 6rem; }
+        .nav-item-active { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: all 0.3s; }
+        .nav-item { color: #1f2937; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: background-color 0.3s; }
+        .nav-item:hover { background-color: #dbeafe; }
+        .notif-card { transition: all 0.2s; border-left: 4px solid transparent; }
+        .notif-card.unread { border-left-color: #2563eb; background-color: #eff6ff; }
+        .notif-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .tab-btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; border: none; }
+        .tab-btn.active { background: linear-gradient(135deg, #2563eb, #06b6d4); color: white; }
+        .tab-btn:not(.active) { background: #f1f5f9; color: #64748b; }
+        .tab-btn:not(.active):hover { background: #e2e8f0; }
+}
+    </style>
+</head>
+<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
+    <nav class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl animate-pulse">🔍</span>
+                <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
+            </div>
+            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display:none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
+                <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
+                    ✉️ Messages
+                    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+                </a>
+                <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl bg-gradient-to-r from-blue-100 to-cyan-100 hover:shadow-md transform hover:scale-105">
+                    🔔 Notifications
+                    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+                </a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
+            </div>
+            <div class="lg:hidden">
+                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
+                    <span class="text-3xl">☰</span>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="lg:hidden hidden bg-white border-t border-gray-100 px-4 py-6 shadow-lg">
+            <div class="flex flex-col gap-4">
+                <a href="browse-found.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">📝 Report Lost</a>
+                <a href="dashboard.html" id="dashboardLinkMobile" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50" style="display:none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">🔍 My Claims</a>
+                <a href="messages.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">✉️ Messages</a>
+                <a href="notifications.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl bg-blue-50">🔔 Notifications</a>
+                <a href="profile.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">👤 Profile</a>
+                <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white rounded-xl font-semibold text-center mt-2">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
+        <!-- Page Header -->
+        <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white p-8 rounded-2xl mb-8 shadow-xl">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h1 class="text-4xl font-bold mb-1">🔔 Notifications</h1>
+                    <p class="text-blue-100">Stay updated on your claims, messages, and activity</p>
+                </div>
+                <button id="markAllReadBtn" class="px-5 py-2.5 bg-white text-blue-700 font-semibold rounded-xl hover:bg-blue-50 transition-all shadow-md">
+                    ✅ Mark All as Read
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex gap-2 flex-wrap mb-6">
+            <button class="tab-btn active" data-type="all">All</button>
+            <button class="tab-btn" data-type="claim">Claims</button>
+            <button class="tab-btn" data-type="message">Messages</button>
+            <button class="tab-btn" data-type="system">System</button>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+
+        <!-- Notifications List -->
+        <div id="notificationsContainer">
+            <div class="text-center py-16">
+                <div class="text-5xl mb-3">⏳</div>
+                <p class="text-gray-500 font-medium">Loading notifications...</p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div class="text-6xl mb-4">🔕</div>
+            <h2 class="text-2xl font-bold text-gray-700 mb-2">No notifications</h2>
+            <p class="text-gray-500">You're all caught up! Check back later.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationContainer" class="flex justify-center items-center gap-3 mt-8 hidden">
+            <button id="prevBtn" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all">← Previous</button>
+            <span id="pageInfo" class="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg"></span>
+            <button id="nextBtn" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all">Next →</button>
+        </div>
+    </div>
+
+    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
+        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script>
+        const NOTIF_ICONS = {
+            claim: '📋',
+            message: '✉️',
+            system: '⚙️',
+            item: '📦',
+            rating: '⭐',
+            default: '🔔'
+        };
+
+        let currentPage = 1;
+        let currentType = 'all';
+        let totalPages = 1;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            redirectToLoginIfNeeded();
+            setupNav();
+            setupEventListeners();
+            await loadNotifications();
+            await loadBadgeCounts();
+        });
+
+        function setupNav() {
+            const user = getUser();
+            if (!user) return;
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+            const dashboardLink = document.getElementById('dashboardLink');
+            const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
+
+            if (user.role === 'security') {
+                if (dashboardLink) dashboardLink.style.display = 'inline-flex';
+                if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
+            }
+
+            const handleLogout = (e) => {
+                e.preventDefault();
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    window.location.href = 'index.html';
+                }
+            };
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            }
+        }
+
+        async function loadBadgeCounts() {
+            try {
+                const [msgCount, notifCount] = await Promise.all([
+                    getUnreadMessageCount(),
+                    getUnreadNotificationCount()
+                ]);
+                const msgBadge = document.getElementById('msgBadge');
+                const notifBadge = document.getElementById('notifBadge');
+                if (msgBadge && msgCount > 0) { msgBadge.textContent = msgCount > 99 ? '99+' : msgCount; msgBadge.classList.remove('hidden'); }
+                if (notifBadge && notifCount > 0) { notifBadge.textContent = notifCount > 99 ? '99+' : notifCount; notifBadge.classList.remove('hidden'); }
+            } catch (e) { /* silent */ }
+        }
+
+        function setupEventListeners() {
+            // Tab filters
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentType = btn.dataset.type;
+                    currentPage = 1;
+                    await loadNotifications();
+                });
+            });
+
+            // Mark all read
+            document.getElementById('markAllReadBtn').addEventListener('click', async () => {
+                try {
+                    await markAllNotificationsAsRead();
+                    await loadNotifications();
+                    await loadBadgeCounts();
+                } catch (e) {
+                    console.error('Error marking all read:', e);
+                }
+            });
+
+            // Pagination
+            document.getElementById('prevBtn').addEventListener('click', async () => {
+                if (currentPage > 1) { currentPage--; await loadNotifications(); }
+            });
+            document.getElementById('nextBtn').addEventListener('click', async () => {
+                if (currentPage < totalPages) { currentPage++; await loadNotifications(); }
+            });
+        }
+
+        async function loadNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            const emptyState = document.getElementById('emptyState');
+            const pagination = document.getElementById('paginationContainer');
+
+            container.innerHTML = `<div class="text-center py-16"><div class="text-5xl mb-3">⏳</div><p class="text-gray-500 font-medium">Loading...</p></div>`;
+
+            try {
+                let response;
+                if (currentType === 'all') {
+                    response = await getNotifications(currentPage, 10);
+                } else {
+                    response = await getNotificationsByType(currentType);
+                }
+
+                if (!response || !response.data || response.data.length === 0) {
+                    container.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    pagination.classList.add('hidden');
+                    return;
+                }
+
+                emptyState.classList.add('hidden');
+                const notifications = response.data;
+
+                if (response.pagination) {
+                    totalPages = response.pagination.totalPages || 1;
+                    currentPage = response.pagination.currentPage || 1;
+                    if (totalPages > 1) {
+                        pagination.classList.remove('hidden');
+                        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+                        document.getElementById('prevBtn').disabled = currentPage === 1;
+                        document.getElementById('nextBtn').disabled = currentPage === totalPages;
+                    } else {
+                        pagination.classList.add('hidden');
+                    }
+                }
+
+                container.innerHTML = notifications.map(n => renderNotification(n)).join('');
+
+                // Bind action buttons
+                container.querySelectorAll('.mark-read-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const id = btn.dataset.id;
+                        await markNotificationAsRead(id);
+                        await loadNotifications();
+                        await loadBadgeCounts();
+                    });
+                });
+                container.querySelectorAll('.delete-notif-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const id = btn.dataset.id;
+                        if (confirm('Delete this notification?')) {
+                            await deleteNotification(id);
+                            await loadNotifications();
+                        }
+                    });
+                });
+
+                // Click on notification to navigate
+                container.querySelectorAll('.notif-card[data-link]').forEach(card => {
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('click', async () => {
+                        const id = card.dataset.id;
+                        const link = card.dataset.link;
+                        if (!card.classList.contains('read-notif')) {
+                            await markNotificationAsRead(id);
+                        }
+                        if (link) window.location.href = link;
+                    });
+                });
+
+            } catch (error) {
+                container.innerHTML = `<div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">Failed to load notifications: ${error.message}</div>`;
+            }
+        }
+
+        function renderNotification(n) {
+            const icon = NOTIF_ICONS[n.type] || NOTIF_ICONS.default;
+            const isUnread = !n.is_read;
+            const timeAgo = getTimeAgo(n.created_at);
+            const link = getNotifLink(n);
+
+            return `
+                <div class="notif-card bg-white rounded-xl p-5 mb-3 shadow-sm border border-gray-100 flex gap-4 items-start ${isUnread ? 'unread' : ''} ${n.id ? 'read-notif' : ''}"
+                     data-id="${n.id}" ${link ? `data-link="${link}"` : ''}>
+                    <div class="text-3xl flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full ${isUnread ? 'bg-blue-100' : 'bg-gray-100'}">${icon}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-2 flex-wrap">
+                            <h3 class="font-semibold text-gray-800 ${isUnread ? 'text-blue-900' : ''}">${n.title || 'Notification'}</h3>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                ${isUnread ? `<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>` : ''}
+                                <span class="text-xs text-gray-400">${timeAgo}</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">${n.message || ''}</p>
+                        <div class="flex gap-2 mt-3">
+                            ${isUnread ? `<button class="mark-read-btn text-xs px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition-all" data-id="${n.id}">✅ Mark Read</button>` : ''}
+                            ${link ? `<a href="${link}" class="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-all">View →</a>` : ''}
+                            <button class="delete-notif-btn text-xs px-3 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium transition-all" data-id="${n.id}">🗑️ Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getNotifLink(n) {
+            if (!n.related_id) return null;
+            switch (n.type) {
+                case 'claim': return `my-claims.html?viewClaim=${n.related_id}`;
+                case 'message': return `messages.html`;
+                case 'item': return `browse-found.html`;
+                default: return null;
+            }
+        }
+
+        function getTimeAgo(dateStr) {
+            if (!dateStr) return '';
+            const now = new Date();
+            const date = new Date(dateStr);
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+    </script>
+</body>
+</html>
