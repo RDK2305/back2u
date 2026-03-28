@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Back2u</title>
+    <link rel="stylesheet" href="/stylesheets/style.min.css">
+    <style>
+@layer components {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+        nav { background: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 1px solid #f3f4f6; }
+        nav > div:first-child { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+        @media (max-width: 640px) { nav > div:first-child { padding: 1rem 0.25rem; gap: 1rem; } }
+        footer { background: linear-gradient(to right, #111827, #1f2937); color: #d1d5db; text-align: center; padding: 2rem; border-top: 1px solid #374151; margin-top: auto; }
+        .chat-panel { height: calc(100vh - 220px); min-height: 500px; }
+        .convo-item { transition: all 0.2s; cursor: pointer; border-left: 3px solid transparent; }
+        .convo-item:hover { background-color: #eff6ff; }
+        .convo-item.active { background-color: #dbeafe; border-left-color: #2563eb; }
+        .convo-item.has-unread { border-left-color: #ef4444; }
+        .msg-bubble-sent { background: linear-gradient(135deg, #2563eb, #06b6d4); color: white; border-radius: 1rem 1rem 0.25rem 1rem; }
+        .msg-bubble-recv { background: #f1f5f9; color: #1f2937; border-radius: 1rem 1rem 1rem 0.25rem; }
+        .messages-area { overflow-y: auto; }
+        .messages-area::-webkit-scrollbar { width: 4px; }
+        .messages-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .convo-list { overflow-y: auto; }
+        .convo-list::-webkit-scrollbar { width: 4px; }
+        .convo-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        textarea:focus { outline: none; }
+        .no-convo-selected { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #9ca3af; }
+}
+    </style>
+</head>
+<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
+    <nav class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl animate-pulse">🔍</span>
+                <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
+            </div>
+            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
+                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
+                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display:none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
+                <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl bg-gradient-to-r from-blue-100 to-cyan-100 hover:shadow-md transform hover:scale-105">
+                    ✉️ Messages
+                    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+                </a>
+                <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
+                    🔔 Notifications
+                    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+                </a>
+                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
+            </div>
+            <div class="lg:hidden">
+                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
+                    <span class="text-3xl">☰</span>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="lg:hidden hidden bg-white border-t border-gray-100 px-4 py-6 shadow-lg">
+            <div class="flex flex-col gap-4">
+                <a href="browse-found.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">📦 Browse Found</a>
+                <a href="report-lost.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">📝 Report Lost</a>
+                <a href="dashboard.html" id="dashboardLinkMobile" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50" style="display:none;">📊 Dashboard</a>
+                <a href="my-claims.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">🔍 My Claims</a>
+                <a href="messages.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl bg-blue-50">✉️ Messages</a>
+                <a href="notifications.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">🔔 Notifications</a>
+                <a href="profile.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">👤 Profile</a>
+                <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white rounded-xl font-semibold text-center mt-2">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-6 flex-1 w-full">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">✉️ Messages</h1>
+                <p class="text-gray-500 text-sm mt-1">Communicate with claim participants</p>
+            </div>
+            <a href="my-claims.html" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all text-sm">📋 View My Claims</a>
+        </div>
+
+        <!-- Chat Layout -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex chat-panel">
+            <!-- Left: Conversation List -->
+            <div class="w-80 border-r border-gray-200 flex flex-col flex-shrink-0">
+                <!-- Search -->
+                <div class="p-4 border-b border-gray-100">
+                    <input type="text" id="searchConvos" placeholder="Search conversations..." class="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+                <!-- Conversation List -->
+                <div id="convoList" class="convo-list flex-1">
+                    <div class="flex items-center justify-center h-full text-gray-400">
+                        <div class="text-center p-6">
+                            <div class="text-4xl mb-2">⏳</div>
+                            <p class="text-sm">Loading conversations...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Chat Thread -->
+            <div class="flex-1 flex flex-col">
+                <!-- Chat Header -->
+                <div id="chatHeader" class="p-5 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
+                    <div class="no-convo-selected" style="min-height: unset;">
+                        <p class="text-gray-500 font-medium">Select a conversation to start chatting</p>
+                    </div>
+                </div>
+
+                <!-- Messages Display -->
+                <div id="messagesArea" class="messages-area flex-1 p-6 bg-gradient-to-b from-gray-50 to-white">
+                    <div class="no-convo-selected">
+                        <div class="text-5xl mb-4">💬</div>
+                        <h3 class="text-xl font-semibold text-gray-500 mb-2">No conversation selected</h3>
+                        <p class="text-sm text-gray-400">Pick a claim conversation from the left panel</p>
+                    </div>
+                </div>
+
+                <!-- Message Input -->
+                <div id="messageInputArea" class="p-4 border-t border-gray-200 bg-white hidden">
+                    <div class="flex gap-3 items-end">
+                        <textarea id="messageInput"
+                            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-sm resize-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                            placeholder="Type a message..."
+                            rows="2"
+                            maxlength="1000"></textarea>
+                        <button id="sendBtn" class="px-5 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex-shrink-0">
+                            Send ➤
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1 text-right"><span id="charCount">0</span>/1000</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
+        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    </footer>
+
+    <script src="/javascripts/api.js"></script>
+    <script>
+        let currentClaimId = null;
+        let currentReceiverId = null;
+        let allConversations = [];
+        let refreshInterval = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            redirectToLoginIfNeeded();
+            setupNav();
+            await loadConversations();
+            await loadBadgeCounts();
+            setupInputEvents();
+
+            // Check if a specific claim is linked from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const claimId = urlParams.get('claim');
+            if (claimId) {
+                setTimeout(() => openConversation(parseInt(claimId)), 600);
+            }
+        });
+
+        function setupNav() {
+            const user = getUser();
+            if (!user) return;
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+            const dashboardLink = document.getElementById('dashboardLink');
+            const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
+
+            if (user.role === 'security') {
+                if (dashboardLink) dashboardLink.style.display = 'inline-flex';
+                if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
+            }
+
+            const handleLogout = (e) => {
+                e.preventDefault();
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    window.location.href = 'index.html';
+                }
+            };
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            }
+        }
+
+        async function loadBadgeCounts() {
+            try {
+                const [msgCount, notifCount] = await Promise.all([
+                    getUnreadMessageCount(),
+                    getUnreadNotificationCount()
+                ]);
+                const msgBadge = document.getElementById('msgBadge');
+                const notifBadge = document.getElementById('notifBadge');
+                if (msgBadge && msgCount > 0) { msgBadge.textContent = msgCount > 99 ? '99+' : msgCount; msgBadge.classList.remove('hidden'); }
+                if (notifBadge && notifCount > 0) { notifBadge.textContent = notifCount > 99 ? '99+' : notifCount; notifBadge.classList.remove('hidden'); }
+            } catch (e) { /* silent */ }
+        }
+
+        function setupInputEvents() {
+            const input = document.getElementById('messageInput');
+            const charCount = document.getElementById('charCount');
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (input) {
+                input.addEventListener('input', () => {
+                    charCount.textContent = input.value.length;
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                    }
+                });
+            }
+            if (sendBtn) sendBtn.addEventListener('click', handleSend);
+        }
+
+        async function loadConversations() {
+            const convoList = document.getElementById('convoList');
+            try {
+                const response = await getUserMessages();
+                if (!response || !response.data || response.data.length === 0) {
+                    convoList.innerHTML = `
+                        <div class="text-center p-8">
+                            <div class="text-4xl mb-3">📭</div>
+                            <p class="text-gray-500 font-medium text-sm">No conversations yet</p>
+                            <p class="text-gray-400 text-xs mt-1">Start messaging via a claim</p>
+                            <a href="my-claims.html" class="inline-block mt-3 text-xs text-blue-600 hover:underline font-medium">View My Claims →</a>
+                        </div>`;
+                    return;
+                }
+
+                // Group messages by claim_id — keep only latest per claim
+                const claimMap = new Map();
+                response.data.forEach(msg => {
+                    const key = msg.claim_id;
+                    if (!claimMap.has(key) || new Date(msg.created_at) > new Date(claimMap.get(key).created_at)) {
+                        claimMap.set(key, msg);
+                    }
+                });
+                allConversations = Array.from(claimMap.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                renderConvoList(allConversations);
+
+                // Search filter
+                const searchInput = document.getElementById('searchConvos');
+                if (searchInput) {
+                    searchInput.addEventListener('input', () => {
+                        const q = searchInput.value.toLowerCase();
+                        const filtered = allConversations.filter(c =>
+                            (c.item_title || '').toLowerCase().includes(q) ||
+                            (c.sender_name || '').toLowerCase().includes(q) ||
+                            (c.receiver_name || '').toLowerCase().includes(q)
+                        );
+                        renderConvoList(filtered);
+                    });
+                }
+            } catch (e) {
+                convoList.innerHTML = `<div class="p-4 text-red-500 text-sm">Failed to load: ${e.message}</div>`;
+            }
+        }
+
+        function renderConvoList(conversations) {
+            const convoList = document.getElementById('convoList');
+            const user = getUser();
+
+            if (!conversations.length) {
+                convoList.innerHTML = `<div class="text-center p-6 text-gray-400 text-sm">No conversations found</div>`;
+                return;
+            }
+
+            convoList.innerHTML = conversations.map(msg => {
+                const isActive = msg.claim_id === currentClaimId;
+                const hasUnread = !msg.is_read && msg.receiver_id === user.id;
+                const otherPerson = msg.sender_id === user.id ? (msg.receiver_name || 'Unknown') : (msg.sender_name || 'Unknown');
+                const timeAgo = getTimeAgo(msg.created_at);
+                const preview = msg.message ? (msg.message.length > 40 ? msg.message.substring(0, 40) + '…' : msg.message) : '';
+
+                return `
+                    <div class="convo-item px-4 py-4 border-b border-gray-100 ${isActive ? 'active' : ''} ${hasUnread ? 'has-unread' : ''}"
+                         onclick="openConversation(${msg.claim_id})">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                ${otherPerson.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-center">
+                                    <p class="font-semibold text-gray-800 text-sm truncate">${otherPerson}</p>
+                                    <span class="text-xs text-gray-400 flex-shrink-0 ml-2">${timeAgo}</span>
+                                </div>
+                                <p class="text-xs text-blue-600 font-medium truncate">📦 ${msg.item_title || 'Unknown Item'}</p>
+                                <p class="text-xs text-gray-500 truncate mt-0.5">${msg.sender_id === user.id ? 'You: ' : ''}${preview}</p>
+                            </div>
+                            ${hasUnread ? '<span class="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0 mt-1"></span>' : ''}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        async function openConversation(claimId) {
+            currentClaimId = claimId;
+            const user = getUser();
+
+            // Highlight active conversation
+            document.querySelectorAll('.convo-item').forEach(el => el.classList.remove('active'));
+            const activeEl = document.querySelector(`.convo-item[onclick="openConversation(${claimId})"]`);
+            if (activeEl) activeEl.classList.add('active');
+
+            // Find conversation details
+            const convo = allConversations.find(c => c.claim_id === claimId);
+
+            // Update chat header
+            const chatHeader = document.getElementById('chatHeader');
+            chatHeader.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-lg">
+                        ${convo ? (convo.sender_id === user.id ? (convo.receiver_name || '?').charAt(0).toUpperCase() : (convo.sender_name || '?').charAt(0).toUpperCase()) : '?'}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">${convo ? (convo.sender_id === user.id ? (convo.receiver_name || 'Unknown') : (convo.sender_name || 'Unknown')) : 'Conversation'}</h3>
+                        <p class="text-sm text-blue-600">📦 ${convo ? (convo.item_title || 'Unknown Item') : ''} &nbsp;•&nbsp;
+                            <a href="my-claims.html?viewClaim=${claimId}" class="hover:underline">View Claim →</a>
+                        </p>
+                    </div>
+                </div>`;
+
+            // Show input area
+            document.getElementById('messageInputArea').classList.remove('hidden');
+
+            // Load messages
+            await loadMessages(claimId);
+
+            // Determine receiver from claim details
+            try {
+                const claimResp = await apiCall(`/claims/${claimId}`, 'GET');
+                if (claimResp) {
+                    currentReceiverId = claimResp.claimer_id === user.id ? claimResp.owner_id : claimResp.claimer_id;
+                }
+            } catch (e) { console.error('Could not fetch claim details:', e); }
+
+            // Auto-refresh every 8 seconds
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                if (currentClaimId === claimId) loadMessages(claimId);
+            }, 8000);
+
+            await loadBadgeCounts();
+        }
+
+        async function loadMessages(claimId) {
+            const messagesArea = document.getElementById('messagesArea');
+            try {
+                const response = await getClaimMessages(claimId);
+                if (!response || !response.data) {
+                    messagesArea.innerHTML = `<div class="no-convo-selected"><p class="text-gray-400">No messages yet. Say hello!</p></div>`;
+                    return;
+                }
+                displayMessages(response.data);
+            } catch (e) {
+                messagesArea.innerHTML = `<div class="p-4 text-red-500 text-sm">Error loading messages: ${e.message}</div>`;
+            }
+        }
+
+        function displayMessages(messages) {
+            const messagesArea = document.getElementById('messagesArea');
+            const user = getUser();
+
+            if (!messages.length) {
+                messagesArea.innerHTML = `<div class="no-convo-selected"><div class="text-4xl mb-3">👋</div><p class="text-gray-400">No messages yet. Start the conversation!</p></div>`;
+                return;
+            }
+
+            // Group by date
+            const grouped = {};
+            messages.forEach(msg => {
+                const date = new Date(msg.created_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                if (!grouped[date]) grouped[date] = [];
+                grouped[date].push(msg);
+            });
+
+            let html = '';
+            Object.entries(grouped).forEach(([date, msgs]) => {
+                html += `<div class="text-center my-4"><span class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">${date}</span></div>`;
+                msgs.forEach(msg => {
+                    const isSent = msg.sender_id === user.id;
+                    const time = new Date(msg.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                    const name = isSent ? 'You' : (msg.sender_name || 'User');
+
+                    html += `
+                        <div class="flex ${isSent ? 'justify-end' : 'justify-start'} mb-4 gap-2 items-end">
+                            ${!isSent ? `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${name.charAt(0).toUpperCase()}</div>` : ''}
+                            <div class="flex flex-col ${isSent ? 'items-end' : 'items-start'} max-w-[65%]">
+                                <span class="text-xs text-gray-500 mb-1 px-1">${name}</span>
+                                <div class="px-4 py-3 text-sm shadow-sm ${isSent ? 'msg-bubble-sent' : 'msg-bubble-recv'}" style="word-break: break-word;">
+                                    ${escapeHtml(msg.message)}
+                                </div>
+                                <span class="text-xs text-gray-400 mt-1 px-1">${time}</span>
+                            </div>
+                            ${isSent ? `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">You</div>` : ''}
+                        </div>`;
+                });
+            });
+
+            messagesArea.innerHTML = html;
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        async function handleSend() {
+            if (!currentClaimId || !currentReceiverId) {
+                alert('Please select a conversation first');
+                return;
+            }
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+
+            try {
+                const response = await sendMessage(currentClaimId, currentReceiverId, message);
+                if (response) {
+                    input.value = '';
+                    document.getElementById('charCount').textContent = '0';
+                    await loadMessages(currentClaimId);
+                    await loadConversations();
+                    await loadBadgeCounts();
+                } else {
+                    alert('Failed to send message. Please try again.');
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send ➤';
+            }
+        }
+
+        function getTimeAgo(dateStr) {
+            if (!dateStr) return '';
+            const now = new Date();
+            const date = new Date(dateStr);
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffMins < 1) return 'now';
+            if (diffMins < 60) return `${diffMins}m`;
+            if (diffHours < 24) return `${diffHours}h`;
+            if (diffDays < 7) return `${diffDays}d`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+</html>
