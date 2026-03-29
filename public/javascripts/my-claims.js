@@ -152,11 +152,24 @@ async function viewClaim(claimId) {
                 <button onclick="openMessagingModal(${claim.id})" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
                   💬 Send Message
                 </button>
+                ${(claim.status === 'verified' || claim.status === 'completed') ? `
+                  <button onclick="openRatingModal(${claim.id}, ${claim.claimer_id === user.id ? claim.owner_id : claim.claimer_id})" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
+                    ⭐ Rate User
+                  </button>
+                ` : ''}
                 ${claim.claimer_id === user.id && claim.status === 'pending' ? `
                   <button onclick="cancelClaim(${claim.id})" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
                     Cancel Claim
                   </button>
                 ` : ''}
+              </div>
+
+              <!-- Ratings Display Section -->
+              <div id="ratingsSection_${claim.id}" class="mt-4 hidden">
+                <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                  <h4 class="font-semibold text-gray-700 mb-3">⭐ Ratings for this Claim</h4>
+                  <div id="ratingsContent_${claim.id}">Loading ratings...</div>
+                </div>
               </div>
             </div>`;
 
@@ -395,5 +408,152 @@ async function handleSendMessage(claimId) {
   } catch (error) {
     alert('Error sending message: ' + error.message);
     console.error('Send message error:', error);
+  }
+}
+
+// =============================================
+// RATING SYSTEM FUNCTIONS
+// =============================================
+
+let ratingModalClaimId = null;
+let ratingModalUserId = null;
+let selectedStars = 0;
+
+async function openRatingModal(claimId, rateeUserId) {
+  ratingModalClaimId = claimId;
+  ratingModalUserId = rateeUserId;
+  selectedStars = 0;
+
+  // Close claim modal first
+  closeClaimModal();
+
+  // Check if already rated this claim
+  let existingRating = null;
+  try {
+    const ratingResp = await apiCall(`/ratings/claim/${claimId}`);
+    if (ratingResp && ratingResp.data) {
+      const user = getUser();
+      existingRating = ratingResp.data.find(r => r.rater_id === user.id);
+    }
+  } catch (e) { /* no existing rating */ }
+
+  const modalHtml = `
+    <div class="space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">⭐</span>
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800">${existingRating ? 'Update Your Rating' : 'Rate User'}</h2>
+          <p class="text-gray-500 text-sm">Share your experience with this claim</p>
+        </div>
+      </div>
+
+      ${existingRating ? `
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
+          📝 You previously rated this user <strong>${existingRating.rating} star${existingRating.rating !== 1 ? 's' : ''}</strong>. Submitting again will update your rating.
+        </div>` : ''}
+
+      <div class="text-center">
+        <p class="text-gray-600 mb-4 font-medium">How was your experience?</p>
+        <div id="starRatingContainer" class="flex justify-center gap-2 mb-2">
+          ${[1,2,3,4,5].map(s => `
+            <button type="button" onclick="setStarRating(${s})" id="star_${s}"
+              class="text-5xl transition-transform hover:scale-110 cursor-pointer star-btn"
+              style="color: ${existingRating && existingRating.rating >= s ? '#f59e0b' : '#d1d5db'}; background: none; border: none;">★</button>
+          `).join('')}
+        </div>
+        <p id="starLabel" class="text-sm font-semibold text-gray-500 h-5">${existingRating ? getRatingLabel(existingRating.rating) : 'Click to rate'}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Comment (optional)</label>
+        <textarea id="ratingComment" rows="3"
+          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none text-sm"
+          placeholder="Share your experience with this user..."
+          maxlength="500">${existingRating ? (existingRating.comment || '') : ''}</textarea>
+        <p class="text-xs text-gray-400 text-right mt-1"><span id="commentCount">${existingRating ? (existingRating.comment || '').length : 0}</span>/500</p>
+      </div>
+
+      <div id="ratingError" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded-lg hidden text-sm"></div>
+      <div id="ratingSuccess" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-3 rounded-lg hidden text-sm"></div>
+
+      <div class="flex gap-3">
+        <button onclick="submitRating()" class="flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+          ⭐ Submit Rating
+        </button>
+        <button onclick="closeClaimModal()" class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-all">
+          Cancel
+        </button>
+      </div>
+    </div>`;
+
+  if (window.Modal) {
+    Modal.show('appModal', modalHtml);
+  }
+
+  // Set existing rating stars if applicable
+  if (existingRating) {
+    selectedStars = existingRating.rating;
+    updateStarDisplay(selectedStars);
+  }
+
+  // Comment character counter
+  setTimeout(() => {
+    const commentField = document.getElementById('ratingComment');
+    if (commentField) {
+      commentField.addEventListener('input', () => {
+        document.getElementById('commentCount').textContent = commentField.value.length;
+      });
+    }
+  }, 100);
+}
+
+function setStarRating(stars) {
+  selectedStars = stars;
+  updateStarDisplay(stars);
+  const label = document.getElementById('starLabel');
+  if (label) label.textContent = getRatingLabel(stars);
+}
+
+function updateStarDisplay(stars) {
+  for (let i = 1; i <= 5; i++) {
+    const star = document.getElementById(`star_${i}`);
+    if (star) star.style.color = i <= stars ? '#f59e0b' : '#d1d5db';
+  }
+}
+
+function getRatingLabel(stars) {
+  const labels = { 1: '😞 Poor', 2: '😐 Fair', 3: '🙂 Good', 4: '😊 Very Good', 5: '🤩 Excellent!' };
+  return labels[stars] || 'Click to rate';
+}
+
+async function submitRating() {
+  const errorDiv = document.getElementById('ratingError');
+  const successDiv = document.getElementById('ratingSuccess');
+
+  if (selectedStars === 0) {
+    errorDiv.textContent = 'Please select a star rating before submitting.';
+    errorDiv.classList.remove('hidden');
+    return;
+  }
+
+  errorDiv.classList.add('hidden');
+  const comment = (document.getElementById('ratingComment')?.value || '').trim();
+
+  try {
+    const response = await apiCall('/ratings', 'POST', {
+      claim_id: ratingModalClaimId,
+      ratee_id: ratingModalUserId,
+      rating: selectedStars,
+      comment: comment || null
+    });
+
+    if (response) {
+      successDiv.textContent = `✅ Rating submitted successfully! You gave ${selectedStars} star${selectedStars !== 1 ? 's' : ''}.`;
+      successDiv.classList.remove('hidden');
+      setTimeout(() => closeClaimModal(), 2000);
+    }
+  } catch (error) {
+    errorDiv.textContent = 'Failed to submit rating: ' + (error.message || 'Unknown error');
+    errorDiv.classList.remove('hidden');
   }
 }
