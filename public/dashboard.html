@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>security Dashboard - Back2u</title>
-    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="/stylesheets/style.min.css">
     <style>
+@layer components {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; }
         body {
@@ -19,8 +19,8 @@
             background: linear-gradient(to bottom, #f8fafc, #ffffff);
         }
         nav { background: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 1px solid #f3f4f6; }
-        nav > div { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-        @media (max-width: 640px) { nav > div { padding: 1rem 0.25rem; gap: 1rem; } }
+        nav > div:first-child { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+        @media (max-width: 640px) { nav > div:first-child { padding: 1rem 0.25rem; gap: 1rem; } }
         main { flex: 1; }
         footer { background: linear-gradient(to right, #111827, #1f2937); color: #d1d5db; text-align: center; padding: 2rem; border-top: 1px solid #374151; margin-top: auto; }
         .grid { display: grid; gap: 2rem; }
@@ -33,6 +33,7 @@
         .nav-item-active { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: all 0.3s; }
         .nav-item { color: #1f2937; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: background-color 0.3s; }
         .nav-item:hover { background-color: #dbeafe; }
+}
     </style>
 </head>
 <body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
@@ -47,14 +48,15 @@
                 <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
                 <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
                 <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
+                <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
+                    ✉️ Messages
+                    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+                </a>
+                <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
+                    🔔 Notifications
+                    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+                </a>
                 <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
-                <!-- Notifications Bell -->
-                <div class="relative">
-                    <button id="notificationsBtn" class="relative p-3 text-gray-700 hover:text-blue-600 transition-all font-semibold rounded-xl hover:bg-blue-50">
-                        <span class="text-2xl">🔔</span>
-                        <span id="notificationBadge" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-                    </button>
-                </div>
                 <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
             </div>
             <!-- Mobile menu button -->
@@ -71,6 +73,8 @@
                 <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📝 Report Lost</a>
                 <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📊 Dashboard</a>
                 <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔍 My Claims</a>
+                <a href="messages.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">✉️ Messages</a>
+                <a href="notifications.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔔 Notifications</a>
                 <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">👤 Profile</a>
                 <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold text-center mt-2">Logout</a>
             </div>
