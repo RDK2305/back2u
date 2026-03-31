@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Back2u - Lost & Found System</title>
-    <link rel="stylesheet" href="/stylesheets/tailwind-fallback.css">
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="/stylesheets/style.min.css">
     <style>
+@layer components {
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -34,6 +34,7 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 16px rgba(2, 132, 199, 0.3);
       }
+}
     </style>
   </head>
   <body
@@ -110,6 +111,14 @@
             class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
             >🔍 My Claims</a
           >
+          <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
+            ✉️ Messages
+            <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+          </a>
+          <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
+            🔔 Notifications
+            <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
+          </a>
           <a
             href="profile.html"
             class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
@@ -158,6 +167,8 @@
             class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50"
             >🔍 My Claims</a
           >
+          <a href="messages.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">✉️ Messages</a>
+          <a href="notifications.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔔 Notifications</a>
           <a
             href="profile.html"
             class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50"
