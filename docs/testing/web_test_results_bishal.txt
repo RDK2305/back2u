@@ -1,0 +1,20 @@
+﻿=== WEB TESTING — BISHAL PAUDEL — Apr 1, 2026 ===
+
+MODULE: Messaging
+  TC-M-01  View Messages Page loads correctly            [PASS]
+  TC-M-02  Send a message via chat                       [PASS]
+  TC-M-03  XSS prevention in message content             [PASS]
+
+MODULE: Notifications
+  TC-N-01  Notifications page renders all items          [PASS]
+  TC-N-02  Filter tabs (Claims/Messages/System)          [PASS]
+  TC-N-03  Mark all as read clears unread state          [PASS]
+  TC-N-04  Deep-link routes to correct claim/message     [PASS]
+
+MODULE: Ratings
+  TC-R-01  Rate User button visible on verified claims   [PASS]
+  TC-R-02  Submit 4-star rating with comment             [PASS]
+  TC-R-03  Duplicate rating shows update warning         [PASS]
+
+Total: 10/10 PASSED
+Tester: Bishal Paudel
