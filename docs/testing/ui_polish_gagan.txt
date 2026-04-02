@@ -1,0 +1,9 @@
+﻿UI Polish Notes — Gagan Singh — Apr 2, 2026
+=============================================
+- Sent messages: blue gradient bubble (right-aligned)
+- Received messages: gray bubble (left-aligned)
+- Date separators added between message groups
+- Unread red dot shown on conversation list items
+- Chat auto-refresh every 8 seconds implemented
+- escapeHtml() applied to all message content (XSS safe)
+- Notification filter tab active state highlighted
