@@ -1,0 +1,7 @@
+﻿Bug Fixes — Rudraksh Kharadi — Apr 2, 2026
+=============================================
+FIX-1: browse-found.html was missing JS mobile menu toggle handler -> Added
+FIX-2: dashboard.html notification bell replaced with proper nav link -> Fixed
+FIX-3: @layer CSS fix verified working across all 6 pages -> Confirmed
+FIX-4: Messages page auto-refresh 8s interval verified -> OK
+Status: All bugs resolved
