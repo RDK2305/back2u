@@ -1,0 +1,8 @@
+﻿API Hardening Notes — Gurjant Singh — Apr 3, 2026
+===================================================
+- 401 token expiry handled gracefully (redirect to login)
+- Message send failure shows user-facing error toast
+- Notification badge updates on page focus event
+- Rating duplicate check returns 200 with existing rating data
+- All endpoints return consistent JSON: { message, errors }
+Tested via Postman — 12/12 endpoints passing
