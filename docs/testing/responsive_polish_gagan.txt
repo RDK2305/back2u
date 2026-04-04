@@ -1,0 +1,8 @@
+﻿Responsive Design Polish — Gagan Singh — Apr 4, 2026
+======================================================
+- Fixed mobile hamburger menu z-index (was hidden behind content)
+- Improved chat panel max-height scroll on screens < 480px
+- Notification filter tabs now wrap correctly at 375px
+- Rating star picker centered correctly on all screen sizes
+- Messages page two-panel stacks properly on mobile view
+All changes verified at 375px, 414px, 768px, 1024px, 1280px
