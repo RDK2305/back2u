@@ -1,0 +1,16 @@
+﻿=== END-TO-END TESTING — GURJANT SINGH — Apr 5, 2026 ===
+
+Flow 1: Student loses item
+  Login -> Report Lost -> Browse -> Claim -> Message finder -> Verify -> Rate  [PASS]
+
+Flow 2: Student finds item
+  Login -> Report Found -> Receive notification -> View claim -> Verify -> Rated  [PASS]
+
+Flow 3: Notification center
+  Login -> Receive notification -> Open page -> Filter by Claims -> Deep-link  [PASS]
+
+Flow 4: Rating history
+  Login -> My Claims -> Open verified claim -> Rate -> Re-open -> See warning  [PASS]
+
+All 4 end-to-end flows PASSED.
+Tester: Gurjant Singh
