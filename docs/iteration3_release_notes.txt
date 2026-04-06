@@ -1,0 +1,23 @@
+﻿ITERATION 3 RELEASE NOTES
+==========================
+Date    : Apr 6, 2026
+Version : 3.0.0
+Status  : RELEASED
+
+Features Delivered:
+  - Notifications page (filter, mark-read, deep-link)
+  - Messages chat interface (two-panel, XSS-safe, auto-refresh)
+  - Ratings system (5-star, duplicate detection, comment)
+  - Navigation updated on all 6 pages (desktop + mobile)
+  - CSS Tailwind v4 cascade layer fix
+
+Testing:
+  - 29 manual test cases - 29/29 PASSED
+  - Cross-browser tested: Chrome, Edge, Firefox, Mobile
+  - End-to-end flows verified
+
+Team:
+  Rudraksh Kharadi - Team Lead / Full Stack
+  Bishal Paudel    - Database / Documentation
+  Gagan Singh      - Frontend Developer
+  Gurjant Singh    - Backend / Database
