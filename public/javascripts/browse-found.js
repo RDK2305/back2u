@@ -1,6 +1,7 @@
 // Browse Found Items page functionality
 let currentPage = 1;
 let currentFilters = {};
+let userLostItems = []; // Cache user's lost items for match detection
 
 document.addEventListener('DOMContentLoaded', () => {
   redirectToLoginIfNeeded();
@@ -54,9 +55,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Load initial items
-  loadItems();
+  // Load user's lost items for match detection, then load found items
+  loadUserLostItems().then(() => loadItems());
 });
+
+// Fetch current user's open lost items for match detection
+async function loadUserLostItems() {
+  try {
+    const user = getUser();
+    if (!user) return;
+    const response = await apiCall('/items/lost/my-items', 'GET');
+    if (response && response.data) {
+      userLostItems = response.data.filter(i => i.status === 'Reported');
+    }
+  } catch (e) {
+    // Non-critical — silently ignore if fails
+  }
+}
 
 async function loadItems() {
   const container = document.getElementById('itemsContainer');
@@ -96,8 +111,17 @@ async function loadItems() {
         emptyState.style.display = 'none';
         container.style.display = 'grid';
 
-        container.innerHTML = items.map(item => `
-          <div class="bg-white rounded-lg overflow-hidden shadow-md transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer item-card" data-id="${item.id}">
+        container.innerHTML = items.map(item => {
+          const match = getMatchStrength(item);
+          const matchBadge = match === 'high'
+            ? `<div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">🎯 High Match</div>`
+            : match === 'medium'
+            ? `<div class="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow">⚡ Possible Match</div>`
+            : '';
+          const borderClass = match === 'high' ? 'ring-2 ring-green-400' : match === 'medium' ? 'ring-2 ring-yellow-300' : '';
+          return `
+          <div class="relative bg-white rounded-lg overflow-hidden shadow-md transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer item-card ${borderClass}" data-id="${item.id}">
+            ${matchBadge}
             <div class="w-full h-52 bg-gray-100 flex items-center justify-center text-5xl ${!item.image_url ? 'bg-gradient-to-br from-gray-100 to-gray-200' : ''}">
               ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">` : '📦'}
             </div>
@@ -112,8 +136,8 @@ async function loadItems() {
               </div>
               <span class="inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${getStatusClass(item.status)}">${item.status}</span>
             </div>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
 
         // Update pagination
         if (response.pages > 1) {
@@ -227,7 +251,22 @@ async function viewItemDetails(itemId) {
 function makeClaimForItem(itemId) {
   // Close modal first
   document.getElementById('itemModal').style.display = 'none';
-  
+
   // Navigate to claim page with item ID
   window.location.href = `my-claims.html?itemId=${itemId}`;
+}
+
+/**
+ * Compare a found item against user's lost items.
+ * Returns 'high' (same category + campus), 'medium' (same category), or null.
+ */
+function getMatchStrength(foundItem) {
+  if (!userLostItems || userLostItems.length === 0) return null;
+  for (const lost of userLostItems) {
+    if (lost.category === foundItem.category && lost.campus === foundItem.campus) return 'high';
+  }
+  for (const lost of userLostItems) {
+    if (lost.category === foundItem.category) return 'medium';
+  }
+  return null;
 }

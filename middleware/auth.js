@@ -47,4 +47,18 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+// Attaches req.user if a valid token is present, but never blocks the request
+const optionalAuth = async (req, res, next) => {
+  try {
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id);
+    }
+  } catch (_) {
+    // Invalid token — treat as unauthenticated
+  }
+  next();
+};
+
+module.exports = { protect, authorize, optionalAuth };

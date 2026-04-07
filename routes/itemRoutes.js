@@ -12,14 +12,17 @@ const {
   getUserFoundItems,
   getPublicFoundItems,
   createItemBysecurity,
-  updateItemBysecurity
+  updateItemBysecurity,
+  deactivateItem,
+  activateItem,
+  getMatchingItems
 } = require('../controllers/itemController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const { getItemClaims } = require('../controllers/claimController');
 
-// Public routes
-router.get('/', getItems);
+// Public routes (optionalAuth so security dashboard can pass includeInactive)
+router.get('/', optionalAuth, getItems);
 router.get('/public/found-items', getPublicFoundItems);
 
 // Specific GET routes (must come before /:id)
@@ -30,11 +33,20 @@ router.get('/found/my-items', protect, getUserFoundItems);
 router.post('/lost', protect, upload.single('image'), reportLostItem);
 router.post('/found', protect, upload.single('image'), reportFoundItem);
 
-// GET/:id routes with specific sub-routes
+// Item matching — GET /api/items/:id/matches
+router.get('/:id/matches', protect, getMatchingItems);
+
+// Claims for an item
 router.get('/:id/claims', protect, getItemClaims);
+
+// Single item
 router.get('/:id', getItem);
 
-// security operations
+// Security moderation — deactivate / activate
+router.patch('/:id/deactivate', protect, authorize('security'), deactivateItem);
+router.patch('/:id/activate',   protect, authorize('security'), activateItem);
+
+// Security CRUD
 router.post('/security', protect, authorize('security'), upload.single('image'), createItemBysecurity);
 router.put('/security/:id', protect, authorize('security'), upload.single('image'), updateItemBysecurity);
 

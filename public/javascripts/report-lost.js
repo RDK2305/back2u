@@ -42,20 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadFormData.append('distinguishing_features', formData.get('distinguishing_features'));
         
         if (fileInput.files && fileInput.files[0]) {
-          // Validate file size (max 5MB)
-          if (fileInput.files[0].size > 5 * 1024 * 1024) {
-            showError(errorMessage, 'File size must be less than 5MB');
-            return;
-          }
-          
+          const file = fileInput.files[0];
+
           // Validate file type
-          const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-          if (!validTypes.includes(fileInput.files[0].type)) {
-            showError(errorMessage, 'File must be JPG, PNG, or GIF');
+          const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+          if (!validTypes.includes(file.type)) {
+            showError(errorMessage, 'File must be JPG, PNG, GIF, or WEBP');
             return;
           }
-          
-          uploadFormData.append('image', fileInput.files[0]);
+
+          // Validate raw file size (max 10MB before compression)
+          if (file.size > 10 * 1024 * 1024) {
+            showError(errorMessage, 'File size must be less than 10MB');
+            return;
+          }
+
+          // Compress image client-side to max 1024×1024 px and ~500KB
+          const compressedBlob = await compressImage(file, 1024, 0.8);
+          uploadFormData.append('image', compressedBlob, file.name);
         }
 
         const response = await apiCallFormData('/items/lost', 'POST', uploadFormData);
@@ -80,3 +84,54 @@ document.addEventListener('DOMContentLoaded', () => {
     dateLostInput.value = formatDate(today);
   }
 });
+
+/**
+ * Compress an image file using Canvas API
+ * @param {File} file - Original image file
+ * @param {number} maxDim - Maximum width or height in pixels (default 1024)
+ * @param {number} quality - JPEG quality 0-1 (default 0.8)
+ * @returns {Promise<Blob>} - Compressed image blob
+ */
+function compressImage(file, maxDim = 1024, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      let { width, height } = img;
+
+      // Scale down if larger than maxDim
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width  = maxDim;
+        } else {
+          width  = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width  = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error('Image compression failed'));
+          console.log(`🗜️ Image compressed: ${(file.size / 1024).toFixed(0)}KB → ${(blob.size / 1024).toFixed(0)}KB`);
+          resolve(blob);
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+
+    img.onerror = () => reject(new Error('Failed to load image for compression'));
+    img.src = url;
+  });
+}

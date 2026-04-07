@@ -8,21 +8,25 @@ const { transformItemsImageUrls } = require('../utils/imageUrlUtil');
 // @access  Public
 const getItems = async (req, res) => {
   try {
-    const { category, campus, status, search, limit = 20, page = 1 } = req.query;
-    
+    const { category, campus, status, search, limit = 20, page = 1, includeInactive } = req.query;
+
+    // Only security staff can request deactivated items
+    const showInactive = includeInactive === 'true' && req.user && req.user.role === 'security';
+
     const filters = {
       category,
       campus,
       status,
       search,
       limit: parseInt(limit),
-      offset: (parseInt(page) - 1) * parseInt(limit)
+      offset: (parseInt(page) - 1) * parseInt(limit),
+      includeInactive: showInactive
     };
 
     const items = await Item.findAll(filters);
-    
+
     // Get total count for pagination
-    const countFilters = { category, campus, status, search };
+    const countFilters = { category, campus, status, search, includeInactive: showInactive };
     const allItems = await Item.findAll(countFilters);
     
     // Transform image URLs to absolute paths
@@ -109,7 +113,6 @@ const reportFoundItem = async (req, res) => {
 const reportLostItem = async (req, res) => {
   try {
     const { title, category, description, location_lost, campus, date_lost, distinguishing_features } = req.body;
-    console.log({ title, category, description, location_lost, campus, date_lost, distinguishing_features });
     // Validate required fields
     if (!title || !category || !location_lost || !campus || !date_lost) {
       return res.status(400).json({ message: 'Missing required fields: title, category, location_lost, campus, date_lost' });
@@ -194,20 +197,14 @@ const updateItem = async (req, res) => {
 const updateItemStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    console.log('updateItemStatus called with id:', req.params.id, 'status:', status);
-
     const item = await Item.updateStatus(req.params.id, status);
-    console.log('Item.updateStatus returned:', item);
 
     if (!item) {
-      console.log('Item not found');
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Transform image URL to absolute path
     const transformedItem = transformItemsImageUrls(item, req);
 
-    console.log('Item status updated successfully');
     res.json({
       message: 'Item status updated successfully',
       item: transformedItem
@@ -451,6 +448,64 @@ const updateItemBysecurity = async (req, res) => {
   }
 };
 
+// @desc    Deactivate (soft-delete) an item — security/admin moderation
+// @route   PATCH /api/items/:id/deactivate
+// @access  Private/security
+const deactivateItem = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+
+    const updated = await Item.deactivate(req.params.id);
+    res.json({ message: 'Item deactivated successfully', item: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Re-activate a deactivated item
+// @route   PATCH /api/items/:id/activate
+// @access  Private/security
+const activateItem = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+
+    const updated = await Item.activate(req.params.id);
+    res.json({ message: 'Item activated successfully', item: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Get found items that match a lost item (by category + campus)
+// @route   GET /api/items/:id/matches
+// @access  Private
+const getMatchingItems = async (req, res) => {
+  try {
+    const lostItem = await Item.findById(req.params.id);
+    if (!lostItem) return res.status(404).json({ message: 'Item not found' });
+    if (lostItem.type !== 'lost') {
+      return res.status(400).json({ message: 'Matching is only available for lost items' });
+    }
+
+    const matches = await Item.findMatchingItems(lostItem);
+    const transformedMatches = transformItemsImageUrls(matches, req);
+
+    res.json({
+      success: true,
+      lostItem: { id: lostItem.id, title: lostItem.title, category: lostItem.category, campus: lostItem.campus },
+      count: transformedMatches.length,
+      matches: transformedMatches
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   getItems,
   getItem,
@@ -463,5 +518,8 @@ module.exports = {
   getUserFoundItems,
   getPublicFoundItems,
   createItemBysecurity,
-  updateItemBysecurity
+  updateItemBysecurity,
+  deactivateItem,
+  activateItem,
+  getMatchingItems
 };

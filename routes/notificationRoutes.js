@@ -20,7 +20,7 @@ router.put('/:id/read', protect, markAsRead);
 router.delete('/:id', protect, deleteNotification);
 router.get('/', protect, getUserNotifications);
 
-// Internal route (for server-side notification creation)
-router.post('/', createNotification);
+// Internal route — requires auth to prevent unauthenticated abuse
+router.post('/', protect, createNotification);
 
 module.exports = router;

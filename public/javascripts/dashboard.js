@@ -57,25 +57,17 @@ function setupItemActions() {
   const itemsContainer = document.getElementById('itemsContainer');
   if (itemsContainer) {
     itemsContainer.addEventListener('click', (e) => {
-      const viewBtn = e.target.closest('.action-view');
-      const editBtn = e.target.closest('.action-edit');
-      const deleteBtn = e.target.closest('.action-delete');
+      const viewBtn       = e.target.closest('.action-view');
+      const editBtn       = e.target.closest('.action-edit');
+      const deleteBtn     = e.target.closest('.action-delete');
+      const deactivateBtn = e.target.closest('.action-deactivate');
+      const activateBtn   = e.target.closest('.action-activate');
 
-      if (viewBtn) {
-        const id = Number(viewBtn.dataset.id);
-        if (!Number.isNaN(id)) viewItem(id);
-        return;
-      }
-      if (editBtn) {
-        const id = Number(editBtn.dataset.id);
-        if (!Number.isNaN(id)) editItem(id);
-        return;
-      }
-      if (deleteBtn) {
-        const id = Number(deleteBtn.dataset.id);
-        if (!Number.isNaN(id)) deleteItem(id);
-        return;
-      }
+      if (viewBtn)       { viewItem(Number(viewBtn.dataset.id));               return; }
+      if (editBtn)       { editItem(Number(editBtn.dataset.id));               return; }
+      if (deleteBtn)     { deleteItem(Number(deleteBtn.dataset.id));           return; }
+      if (deactivateBtn) { toggleItemActive(Number(deactivateBtn.dataset.id), false); return; }
+      if (activateBtn)   { toggleItemActive(Number(activateBtn.dataset.id),   true);  return; }
     });
   }
 
@@ -154,6 +146,7 @@ async function loadItems() {
     if (filters.campus) query.append('campus', filters.campus);
     query.append('limit', filters.limit);
     query.append('page', filters.page);
+    query.append('includeInactive', 'true'); // Security dashboard sees all items including deactivated
 
     const response = await apiCall(`/items?${query.toString()}`, 'GET');
 
@@ -208,8 +201,13 @@ async function loadItems() {
               <div class="flex gap-2 flex-wrap mt-4">
                 <button class="px-4 py-2 bg-blue-600 text-white text-sm hover:bg-blue-700 rounded font-medium cursor-pointer action-view" data-id="${item.id}">View Details</button>
                 <button class="px-4 py-2 bg-green-600 text-white text-sm hover:bg-green-700 rounded font-medium cursor-pointer action-edit" data-id="${item.id}">Edit</button>
+                ${item.is_active
+                  ? `<button class="px-4 py-2 bg-yellow-500 text-white text-sm hover:bg-yellow-600 rounded font-medium cursor-pointer action-deactivate" data-id="${item.id}" title="Hide this item from public listings">🚫 Deactivate</button>`
+                  : `<button class="px-4 py-2 bg-emerald-500 text-white text-sm hover:bg-emerald-600 rounded font-medium cursor-pointer action-activate" data-id="${item.id}" title="Restore this item to public listings">✅ Activate</button>`
+                }
                 <button class="px-4 py-2 bg-red-600 text-white text-sm hover:bg-red-700 rounded font-medium cursor-pointer action-delete" data-id="${item.id}">Delete</button>
               </div>
+              ${!item.is_active ? `<p class="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded px-2 py-1 mt-2 inline-block">⚠️ Deactivated — hidden from public</p>` : ''}
             </div>
           </div>
         `).join('');
@@ -769,6 +767,28 @@ async function deleteItem(itemId) {
     alert('Failed to delete item: ' + error.message);
   }
 }
+// ==================== MODERATION ====================
+
+async function toggleItemActive(itemId, activate) {
+  const action  = activate ? 'activate' : 'deactivate';
+  const label   = activate ? 'Activate' : 'Deactivate';
+  const confirm_msg = activate
+    ? 'Restore this item to public listings?'
+    : 'Hide this item from public listings? Users will no longer see it.';
+
+  if (!confirm(confirm_msg)) return;
+
+  try {
+    const response = await apiCall(`/items/${itemId}/${action}`, 'PATCH');
+    if (response) {
+      alert(`Item ${label}d successfully!`);
+      loadItems();
+    }
+  } catch (error) {
+    alert(`Failed to ${action} item: ` + error.message);
+  }
+}
+
 // ==================== NOTIFICATION SYSTEM ====================
 
 function setupNotifications() {

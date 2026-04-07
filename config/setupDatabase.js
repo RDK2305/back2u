@@ -97,12 +97,25 @@ async function setupDatabase() {
         date_lost DATE,
         date_found DATE,
         image_url VARCHAR(500),
+        is_active BOOLEAN DEFAULT TRUE,
         user_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
+
+    // Migration: add is_active column if it doesn't exist (compatible with all MySQL versions)
+    try {
+      await connection.query(`ALTER TABLE items ADD COLUMN is_active BOOLEAN DEFAULT TRUE`);
+      console.log('✅ Migration: is_active column added to items table');
+    } catch (e) {
+      if (e.code === 'ER_DUP_FIELDNAME') {
+        console.log('ℹ️  Migration: is_active column already exists, skipping');
+      } else {
+        throw e;
+      }
+    }
 
     // Create Claims table
     await connection.query(`

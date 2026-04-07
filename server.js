@@ -19,6 +19,7 @@ const itemRoutes = require('./routes/itemRoutes');
 const claimRoutes = require('./routes/claimRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const ratingRoutes  = require('./routes/ratingRoutes');
 
 // Security middleware imports
 const {
@@ -35,14 +36,14 @@ const {
 // Initialize express
 const app = express();
 
-// Security headers with CSP allowing Tailwind CDN
+// Security headers with CSP (no external CDN — all CSS served from /stylesheets/style.min.css)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-hashes'", "https://cdn.tailwindcss.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-hashes'"],
       scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'", "https://back2u-h67h.onrender.com/"],
     },
@@ -117,6 +118,7 @@ app.use('/api/items', apiLimiter, itemRoutes);
 app.use('/api/claims', apiLimiter, claimRoutes);
 app.use('/api/notifications', apiLimiter, notificationRoutes);
 app.use('/api/messages', apiLimiter, messageRoutes);
+app.use('/api/ratings',  apiLimiter, ratingRoutes);
 
 // 404 handler
 app.use((req, res) => {
