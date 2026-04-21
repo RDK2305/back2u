@@ -3,144 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Manage your Back2U profile securely">
+    <meta name="description" content="Manage your CampusFind profile">
     <meta name="color-scheme" content="light">
-    <title>Profile - Back2u</title>
+    <title>Profile — CampusFind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/stylesheets/style.min.css">
     <style>
-@layer components {
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-in { animation: slideIn 0.6s ease-out; }
-        .input-focus:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-}
+      *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+      body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:#F8FAFC;}
+      a{text-decoration:none;}
+      .cf-nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,.8);position:sticky;top:0;z-index:100;}
+      .cf-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;}
+      .cf-logo{display:flex;align-items:center;gap:10px;}
+      .cf-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+      .cf-logo-text{font-size:20px;font-weight:800;background:linear-gradient(135deg,#4F46E5,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+      .nav-link{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:10px;color:#475569;font-weight:500;font-size:14px;transition:all .2s;position:relative;white-space:nowrap;}
+      .nav-link:hover{color:#4F46E5;background:#EEF2FF;}
+      .nav-link.active{color:#4F46E5;background:#EEF2FF;}
+      .btn-primary{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;padding:10px 22px;border-radius:11px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(79,70,229,.35);}
+      .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(79,70,229,.45);}
+      .cf-section{max-width:900px;margin:0 auto;padding:40px 24px;}
+      .cf-card{background:#fff;border-radius:20px;padding:40px 36px;box-shadow:0 4px 32px rgba(0,0,0,.07);border:1px solid #E2E8F0;}
+      .cf-section-title{font-size:28px;font-weight:800;color:#0F172A;letter-spacing:-1px;margin:0 0 12px;}
+      .cf-section-desc{color:#64748B;font-size:14px;margin:0 0 24px;line-height:1.6;}
+      .cf-label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:7px;}
+      .cf-input{width:100%;padding:12px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:15px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;margin-bottom:16px;}
+      .cf-input:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+      .cf-input:disabled{background:#F1F5F9;color:#94A3B8;}
+      .cf-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(79,70,229,.35);}
+      .cf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.45);}
+      .cf-btn-secondary{width:100%;padding:14px;background:#fff;color:#4F46E5;border:2px solid #E0E7FF;border-radius:12px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;}
+      .cf-btn-secondary:hover{background:#EEF2FF;transform:translateY(-2px);}
+      .cf-success{background:#F0FDF4;border-left:4px solid #22C55E;color:#166534;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+      .cf-error{background:#FEF2F2;border-left:4px solid #EF4444;color:#B91C1C;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+      .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+      .form-section{border-bottom:1px solid #E2E8F0;padding-bottom:24px;margin-bottom:24px;}
+      .form-section:last-child{border-bottom:none;}
+      @media(max-width:640px){.form-grid{grid-template-columns:1fr;}.cf-card{padding:24px 16px;}.cf-section-title{font-size:22px;}}
     </style>
 </head>
-<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
-    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🔍</span>
-                <div class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
-            </div>
-            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
-                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
-                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
-                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
-                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
-                <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-    ✉️ Messages
-    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-</a>
-                <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-    🔔 Notifications
-    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-</a>
-                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105 bg-gradient-to-r from-blue-100 to-cyan-100">👤 Profile</a>
-                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
+<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white">
+    <nav class="cf-nav">
+        <div class="cf-nav-inner">
+            <a href="index.html" class="cf-logo">
+                <div class="cf-logo-icon">🎒</div>
+                <span class="cf-logo-text">CampusFind</span>
+            </a>
+            <div style="display:flex;gap:12px;align-items:center;">
+                <a href="browse-found.html" class="nav-link">📦 Browse</a>
+                <a href="report-lost.html" class="nav-link">📝 Report</a>
+                <a href="my-claims.html" class="nav-link">🔍 Claims</a>
+                <a href="messages.html" class="nav-link">✉️ Messages</a>
+                <a href="notifications.html" class="nav-link">🔔 Notifications</a>
+                <a href="profile.html" class="nav-link active">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="btn-primary" style="padding:8px 16px;font-size:13px;">Logout</a>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full">
-        <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-100 animate-slide-in">
-            <div class="flex items-center gap-3 mb-2">
-                <span class="text-4xl">⚙️</span>
-                <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">My Profile</h1>
-            </div>
-            <p class="text-gray-600 mb-8">Update your account information and preferences</p>
+    <div class="cf-section">
+        <div class="cf-card">
+            <h1 class="cf-section-title">⚙️ My Profile</h1>
+            <p class="cf-section-desc">Update your account information and manage your password</p>
 
-            <div id="successMessage" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
-            <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+            <div id="successMessage" class="cf-success" role="alert"></div>
+            <div id="errorMessage" class="cf-error" role="alert"></div>
 
-                <form id="profileForm">
-                    <div class="mb-8">
-                        <h3 class="mb-4 text-gray-800 border-b-2 border-blue-600 pb-2 text-lg font-semibold">Basic Information</h3>
-                        <div class="grid grid-cols-2 gap-6 md:grid-cols-1">
-                            <div class="mb-6">
-                                <label class="block mb-2 font-medium text-gray-800">Student/security ID</label>
-                                <input type="text" id="studentId" disabled placeholder="S001" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100">
-                                <small class="block mt-1 text-gray-500 text-sm">This cannot be changed</small>
-                            </div>
-                            <div class="mb-6">
-                                <label class="block mb-2 font-medium text-gray-800">Email Address</label>
-                                <input type="email" id="email" disabled placeholder="user@conestogac.on.ca" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100">
-                                <small class="block mt-1 text-gray-500 text-sm">This cannot be changed</small>
-                            </div>
+            <form id="profileForm" style="margin-top:24px;">
+                <div class="form-section">
+                    <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin:0 0 16px;">Basic Information</h3>
+                    <div class="form-grid">
+                        <div>
+                            <label for="studentId" class="cf-label">Student ID</label>
+                            <input type="text" id="studentId" disabled placeholder="S001" class="cf-input">
+                            <small style="color:#64748B;font-size:12px;">Cannot be changed</small>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-6 md:grid-cols-1">
-                            <div class="mb-6">
-                                <label for="firstName" class="block mb-2 font-medium text-gray-800">First Name</label>
-                                <input type="text" id="firstName" name="first_name" required placeholder="John" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
-                            </div>
-                            <div class="mb-6">
-                                <label for="lastName" class="block mb-2 font-medium text-gray-800">Last Name</label>
-                                <input type="text" id="lastName" name="last_name" required placeholder="Doe" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-6 md:grid-cols-1">
-                            <div class="mb-6">
-                                <label for="campus" class="block mb-2 font-medium text-gray-800">Campus</label>
-                                <select id="campus" name="campus" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
-                                    <option value="">Select Campus</option>
-                                    <option value="Main">Main (Kitchener)</option>
-                                    <option value="Waterloo">Waterloo</option>
-                                    <option value="Cambridge">Cambridge</option>
-                                    <option value="Doon">Doon</option>
-                                </select>
-                            </div>
-                            <div class="mb-6">
-                                <label for="program" class="block mb-2 font-medium text-gray-800">Program</label>
-                                <input type="text" id="program" name="program" placeholder="e.g., Computer Science" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
-                            </div>
+                        <div>
+                            <label for="email" class="cf-label">Email Address</label>
+                            <input type="email" id="email" disabled placeholder="user@conestogac.on.ca" class="cf-input">
+                            <small style="color:#64748B;font-size:12px;">Cannot be changed</small>
                         </div>
                     </div>
-
-                    <hr class="border-gray-300 my-8">
-
-                    <div class="mb-8">
-                        <h3 class="mb-4 text-gray-800 border-b-2 border-blue-600 pb-2 text-lg font-semibold">Change Password</h3>
-                        <p class="text-gray-600 mb-6 text-sm">Leave empty if you don't want to change your password</p>
-
-                        <div class="mb-6">
-                            <label for="currentPassword" class="block mb-2 font-medium text-gray-800">Current Password</label>
-                            <input type="password" id="currentPassword" name="password" placeholder="Enter your current password" autocomplete="current-password" spellcheck="false" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                    <div class="form-grid">
+                        <div>
+                            <label for="firstName" class="cf-label">First Name *</label>
+                            <input type="text" id="firstName" name="first_name" required placeholder="John" class="cf-input">
                         </div>
-
-                        <div class="mb-6">
-                            <label for="newPassword" class="block mb-2 font-medium text-gray-800">New Password</label>
-                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" autocomplete="new-password" spellcheck="false" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
-                            <small class="block mt-1 text-gray-500 text-sm">Min 8 characters, include 1 number and 1 special character (!@#$%^&*)</small>
-                            <div id="passwordRequirements" class="mt-2 p-3 bg-gray-100 rounded-md text-sm" style="display: none;">
-                                <p class="my-1 text-gray-600"><span id="req-length" class="mr-2 font-bold text-gray-500">✗</span> At least 8 characters</p>
-                                <p class="my-1 text-gray-600"><span id="req-number" class="mr-2 font-bold text-gray-500">✗</span> Contains a number</p>
-                                <p class="my-1 text-gray-600"><span id="req-special" class="mr-2 font-bold text-gray-500">✗</span> Contains special character (!@#$%^&*)</p>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <label for="confirmPassword" class="block mb-2 font-medium text-gray-800">Confirm New Password</label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" autocomplete="new-password" spellcheck="false" class="w-full px-3 py-2 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+                        <div>
+                            <label for="lastName" class="cf-label">Last Name *</label>
+                            <input type="text" id="lastName" name="last_name" required placeholder="Doe" class="cf-input">
                         </div>
                     </div>
-
-                    <div class="flex gap-4 mt-8 flex-wrap">
-                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer">Save Changes</button>
-                        <a href="dashboard.html" class="px-6 py-3 bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all font-semibold rounded-lg cursor-pointer text-center">Cancel</a>
+                    <div class="form-grid">
+                        <div>
+                            <label for="campus" class="cf-label">Campus *</label>
+                            <select id="campus" name="campus" required style="width:100%;padding:12px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:15px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;margin-bottom:16px;">
+                                <option value="">Select Campus</option>
+                                <option value="Main">Main (Kitchener)</option>
+                                <option value="Waterloo">Waterloo</option>
+                                <option value="Cambridge">Cambridge</option>
+                                <option value="Doon">Doon</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="program" class="cf-label">Program</label>
+                            <input type="text" id="program" name="program" placeholder="e.g., Computer Science" class="cf-input">
+                        </div>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin:0 0 16px;">Change Password</h3>
+                    <p style="color:#64748B;font-size:14px;margin:0 0 16px;">Leave empty if you don't want to change your password</p>
+                    <div>
+                        <label for="currentPassword" class="cf-label">Current Password</label>
+                        <input type="password" id="currentPassword" name="password" placeholder="Enter your current password" autocomplete="current-password" spellcheck="false" class="cf-input">
+                    </div>
+                    <div>
+                        <label for="newPassword" class="cf-label">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" autocomplete="new-password" spellcheck="false" class="cf-input">
+                        <small style="color:#64748B;font-size:12px;display:block;margin:0 0 8px;">Min 8 characters, 1 number, 1 special character (!@#$%^&*)</small>
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="cf-label">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" autocomplete="new-password" spellcheck="false" class="cf-input">
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
+                    <button type="submit" class="cf-btn" style="flex:1;">Save Changes</button>
+                    <a href="dashboard.html" class="cf-btn-secondary" style="flex:1;text-align:center;display:flex;align-items:center;justify-content:center;">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
 
-    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
-        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    <footer style="background:linear-gradient(to right,#0F172A,#1E1B4B);color:#94A3B8;text-align:center;padding:32px 24px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);">
+        <p style="margin:0;font-weight:500;font-size:14px;">&copy; 2026 CampusFind. Connecting Conestoga students.</p>
     </footer>
 
     <script src="/javascripts/api.js"></script>

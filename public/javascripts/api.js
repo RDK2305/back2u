@@ -20,8 +20,15 @@ function removeToken() {
 
 // Helper function to get user from localStorage
 function getUser() {
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  try {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error('Error parsing user data from localStorage:', error);
+    // Clear corrupted data
+    localStorage.removeItem('user');
+    return null;
+  }
 }
 
 // Helper function to set user in localStorage
@@ -75,7 +82,22 @@ async function apiCall(endpoint, method = 'GET', data = null) {
       return null;
     }
 
-    const responseData = await response.json();
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get('content-type');
+    let responseData;
+    
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        console.error('JSON Parse Error:', parseError);
+        throw new Error('Invalid JSON response from server');
+      }
+    } else {
+      // Response is not JSON (could be text, HTML, etc)
+      const text = await response.text();
+      throw new Error(text || 'Invalid response from server');
+    }
     
     if (!response.ok) {
       throw new Error(responseData.message || 'API call failed');
@@ -112,7 +134,22 @@ async function apiCallFormData(endpoint, method = 'POST', formData) {
       return null;
     }
 
-    const responseData = await response.json();
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get('content-type');
+    let responseData;
+    
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        console.error('JSON Parse Error:', parseError);
+        throw new Error('Invalid JSON response from server');
+      }
+    } else {
+      // Response is not JSON
+      const text = await response.text();
+      throw new Error(text || 'Invalid response from server');
+    }
     
     if (!response.ok) {
       throw new Error(responseData.message || 'API call failed');
@@ -120,7 +157,7 @@ async function apiCallFormData(endpoint, method = 'POST', formData) {
 
     return responseData;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('Form Data API Error:', error);
     throw error;
   }
 }

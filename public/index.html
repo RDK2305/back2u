@@ -1,444 +1,388 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Back2u - Lost & Found System</title>
-    <link rel="stylesheet" href="/stylesheets/style.min.css">
-    <style>
-@layer components {
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .animate-fade-in {
-        animation: fadeIn 0.6s ease-out;
-      }
-      .card-hover {
-        transition: all 0.3s ease;
-      }
-      .card-hover:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(2, 132, 199, 0.3);
-      }
-}
-    </style>
-  </head>
-  <body
-    class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800"
-  >
-    <!-- Minimal Navigation for Non-Logged-In Users -->
-    <nav
-      class="bg-white sticky top-0 z-50 shadow-lg border-b border-gray-200"
-      id="minimalNav"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">🔍</span>
-          <div
-            class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
-          >
-            Back2u
-          </div>
-        </div>
-        <div class="flex gap-4 items-center">
-          <a
-            href="#about"
-            class="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-            >About</a
-          >
-          <a
-            href="#"
-            id="navAuth"
-            class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg hover:scale-105"
-            >🔐 Login</a
-          >
-        </div>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CampusFind — Lost & Found for Conestoga College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/style.min.css">
+  <style>
+    *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+    body{margin:0;background:#F8FAFC;color:#1E293B;display:flex;flex-direction:column;min-height:100vh;}
+    a{text-decoration:none;}
+
+    /* Glass Nav */
+    .cf-nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,.8);position:sticky;top:0;z-index:100;}
+    .cf-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;}
+    .cf-logo{display:flex;align-items:center;gap:10px;}
+    .cf-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+    .cf-logo-text{font-size:20px;font-weight:800;background:linear-gradient(135deg,#4F46E5,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .nav-link{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:10px;color:#475569;font-weight:500;font-size:14px;transition:all .2s;position:relative;white-space:nowrap;}
+    .nav-link:hover{color:#4F46E5;background:#EEF2FF;}
+    .nav-badge{position:absolute;top:3px;right:3px;background:#EF4444;color:#fff;font-size:10px;font-weight:700;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .btn-primary{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;padding:10px 22px;border-radius:11px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(79,70,229,.35);}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(79,70,229,.45);}
+    .btn-secondary{background:#fff;color:#4F46E5;padding:13px 28px;border-radius:12px;font-weight:600;font-size:15px;border:2px solid #E0E7FF;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:7px;}
+    .btn-secondary:hover{background:#EEF2FF;border-color:#4F46E5;transform:translateY(-2px);}
+    .btn-hero{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;padding:14px 30px;border-radius:13px;font-weight:700;font-size:15px;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(79,70,229,.4);display:inline-flex;align-items:center;gap:8px;}
+    .btn-hero:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(79,70,229,.5);}
+
+    /* Hero */
+    .hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#0F172A 0%,#1E1B4B 55%,#0F172A 100%);padding:88px 24px 108px;}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:55px 55px;}
+    .hero-orb{position:absolute;border-radius:50%;pointer-events:none;}
+    .hero-inner{max-width:1280px;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:60px;align-items:center;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#A5B4FC;font-size:13px;font-weight:600;padding:8px 18px;border-radius:999px;margin-bottom:30px;letter-spacing:.4px;}
+    .hero-h1{font-size:clamp(40px,5.5vw,70px);font-weight:900;color:#fff;line-height:1.07;margin:0 0 22px;letter-spacing:-2px;}
+    .hero-sub{font-size:17px;color:#94A3B8;line-height:1.75;max-width:510px;margin:0 0 38px;}
+    .hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+    .hero-stats{display:flex;gap:0;margin-top:52px;border-top:1px solid rgba(255,255,255,.06);padding-top:32px;}
+    .hero-stat{flex:1;padding-right:24px;margin-right:24px;border-right:1px solid rgba(255,255,255,.08);}
+    .hero-stat:last-child{border-right:none;margin-right:0;}
+    .hero-stat-num{font-size:26px;font-weight:800;color:#fff;}
+    .hero-stat-lbl{font-size:12px;color:#475569;margin-top:3px;font-weight:500;}
+
+    /* Floating card mockup */
+    .mock-wrap{position:relative;width:270px;flex-shrink:0;}
+    .mock-card{background:#fff;border-radius:20px;padding:24px;width:240px;box-shadow:0 24px 64px rgba(0,0,0,.35);position:relative;z-index:2;animation:float 5s ease-in-out infinite;}
+    .mock-card-back{position:absolute;top:-28px;right:-18px;background:rgba(99,102,241,.13);border:1px solid rgba(99,102,241,.22);border-radius:18px;padding:18px;width:200px;transform:rotate(9deg);animation:float 5s ease-in-out infinite 1s;}
+    .mock-card-bottom{position:absolute;bottom:-34px;left:-18px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.22);border-radius:18px;padding:18px;width:190px;transform:rotate(-7deg);animation:float 5s ease-in-out infinite .5s;}
+
+    /* Sections */
+    .section{padding:80px 24px;}
+    .section-inner{max-width:1280px;margin:0 auto;}
+    .section-label{display:inline-flex;align-items:center;gap:7px;background:#EEF2FF;color:#4F46E5;font-size:12px;font-weight:700;padding:6px 16px;border-radius:999px;margin-bottom:18px;letter-spacing:.6px;text-transform:uppercase;}
+    .section-h2{font-size:clamp(26px,3.5vw,40px);font-weight:800;color:#0F172A;letter-spacing:-1px;margin:0 0 10px;}
+    .section-sub{color:#64748B;font-size:15px;margin:0;}
+
+    /* How it works */
+    .step-card{padding:32px;background:#F8FAFC;border-radius:20px;border:1px solid #E2E8F0;position:relative;overflow:hidden;}
+    .step-num{width:50px;height:50px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin-bottom:22px;box-shadow:0 4px 12px rgba(79,70,229,.35);}
+    .step-orb{position:absolute;top:-22px;right:-22px;width:110px;height:110px;border-radius:50%;}
+    .step-h{font-size:19px;font-weight:700;color:#0F172A;margin:0 0 10px;}
+    .step-p{color:#64748B;font-size:14px;line-height:1.7;margin:0;}
+
+    /* Feature cards */
+    .feat-icon{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px;}
+    .feat-h{font-size:17px;font-weight:700;color:#0F172A;margin:0 0 9px;}
+    .feat-p{color:#64748B;font-size:14px;line-height:1.7;margin:0;}
+
+    /* Recent items */
+    .item-card{background:#fff;border-radius:16px;border:1px solid #E2E8F0;overflow:hidden;transition:all .3s;cursor:pointer;}
+    .item-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.1);border-color:rgba(79,70,229,.2);}
+    .item-img{width:100%;height:160px;object-fit:cover;background:#F1F5F9;}
+    .item-img-placeholder{width:100%;height:160px;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,#F1F5F9,#E2E8F0);}
+    .cat-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#EEF2FF;color:#4F46E5;}
+
+    /* About dark */
+    .about-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;transition:all .3s;}
+    .about-card:hover{background:rgba(255,255,255,.07);border-color:rgba(99,102,241,.25);}
+
+    /* Pagination */
+    .pg-btn{padding:10px 20px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;font-weight:600;color:#475569;cursor:pointer;font-size:14px;transition:all .2s;}
+    .pg-btn:hover{background:#EEF2FF;color:#4F46E5;border-color:#C7D2FE;}
+
+    /* Animations */
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+    .fade-up{animation:fadeUp .65s ease-out both;}
+    .d1{animation-delay:.1s;}.d2{animation-delay:.2s;}.d3{animation-delay:.3s;}
+
+    /* Mobile */
+    @media(max-width:900px){
+      .hero-inner{grid-template-columns:1fr;}
+      .mock-wrap{display:none;}
+      .hero-stats{flex-wrap:wrap;gap:16px;}
+      .hero-stat{border-right:none;margin-right:0;flex-basis:40%;}
+    }
+    @media(max-width:640px){
+      .hero{padding:60px 16px 80px;}
+      .section{padding:56px 16px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ MINIMAL NAV (logged out) ════════════════════════════════════════ -->
+<nav class="cf-nav" id="minimalNav">
+  <div class="cf-nav-inner">
+    <a href="index.html" class="cf-logo">
+      <div class="cf-logo-icon">🎒</div>
+      <span class="cf-logo-text">CampusFind</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="#about" class="nav-link">About</a>
+      <a href="browse-found.html" class="nav-link">Browse Items</a>
+      <a href="login.html" id="navAuth" class="btn-primary">Login →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ FULL NAV (logged in) ════════════════════════════════════════════ -->
+<nav class="cf-nav hidden" id="fullNav">
+  <div class="cf-nav-inner">
+    <a href="index.html" class="cf-logo">
+      <div class="cf-logo-icon">🎒</div>
+      <span class="cf-logo-text">CampusFind</span>
+    </a>
+    <div class="hidden lg:flex" style="align-items:center;gap:2px;">
+      <a href="browse-found.html" class="nav-link">📦 Browse Found</a>
+      <a href="report-lost.html" class="nav-link">📝 Report Lost</a>
+      <a href="dashboard.html" class="nav-link" id="dashboardLink" style="display:none;">📊 Dashboard</a>
+      <a href="my-claims.html" class="nav-link">🔍 My Claims</a>
+      <a href="messages.html" class="nav-link">✉️ Messages<span id="msgBadge" class="nav-badge hidden">0</span></a>
+      <a href="notifications.html" class="nav-link">🔔 Alerts<span id="notifBadge" class="nav-badge hidden">0</span></a>
+      <a href="profile.html" class="nav-link">👤 Profile</a>
+      <a href="#" id="logoutBtn" style="margin-left:8px;padding:9px 17px;background:#FEE2E2;color:#DC2626;border-radius:10px;font-weight:600;font-size:14px;">🚪 Logout</a>
+    </div>
+    <button id="mobileMenuBtn" class="lg:hidden" style="background:none;border:none;font-size:24px;cursor:pointer;padding:8px;color:#475569;">☰</button>
+  </div>
+  <div id="mobileMenu" class="hidden" style="border-top:1px solid #E2E8F0;background:#fff;padding:14px 24px;">
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <a href="browse-found.html" class="nav-link">📦 Browse Found</a>
+      <a href="report-lost.html" class="nav-link">📝 Report Lost</a>
+      <a href="dashboard.html" class="nav-link" id="dashboardLinkMobile" style="display:none;">📊 Dashboard</a>
+      <a href="my-claims.html" class="nav-link">🔍 My Claims</a>
+      <a href="messages.html" class="nav-link">✉️ Messages</a>
+      <a href="notifications.html" class="nav-link">🔔 Notifications</a>
+      <a href="profile.html" class="nav-link">👤 Profile</a>
+      <a href="#" id="logoutBtnMobile" style="margin-top:10px;padding:13px 18px;background:#FEE2E2;color:#DC2626;border-radius:10px;font-weight:600;font-size:14px;text-align:center;display:block;">🚪 Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ HERO ══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb" style="width:420px;height:420px;background:radial-gradient(circle,rgba(99,102,241,.28) 0%,transparent 70%);top:-110px;right:-60px;"></div>
+  <div class="hero-orb" style="width:320px;height:320px;background:radial-gradient(circle,rgba(6,182,212,.2) 0%,transparent 70%);bottom:-60px;left:-60px;"></div>
+
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge fade-up">🏫 Conestoga College — Official Lost &amp; Found</div>
+      <h1 class="hero-h1 fade-up d1">
+        Lost something?<br>
+        <span style="background:linear-gradient(135deg,#818CF8,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">We'll find it.</span>
+      </h1>
+      <p class="hero-sub fade-up d2">CampusFind connects students who lose items with those who find them — through smart matching, secure messaging, and real-time notifications across all 4 campuses.</p>
+      <div class="hero-btns fade-up d3">
+        <button class="btn-hero" id="reportLostBtn">📝 Report Lost Item</button>
+        <button class="btn-secondary" id="browseLostBtn" style="background:rgba(255,255,255,.07);color:#E2E8F0;border:1.5px solid rgba(255,255,255,.15);">🔎 Browse Found Items</button>
       </div>
-    </nav>
-
-    <!-- Full Navigation for Logged-In Users (Hidden by default) -->
-    <nav
-      class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200 hidden"
-      id="fullNav"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center gap-3">
-          <span class="text-4xl animate-pulse">🔍</span>
-          <div
-            class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
-          >
-            Back2u
-          </div>
-        </div>
-        <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
-          <a
-            href="browse-found.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >📦 Browse Found</a
-          >
-          <a
-            href="report-lost.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >📝 Report Lost</a
-          >
-          <a
-            href="dashboard.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            id="dashboardLink"
-            style="display: none;"
-            >📊 Dashboard</a
-          >
-          <a
-            href="my-claims.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >🔍 My Claims</a
-          >
-          <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-            ✉️ Messages
-            <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-          </a>
-          <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-            🔔 Notifications
-            <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-          </a>
-          <a
-            href="profile.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >👤 Profile</a
-          >
-          <a
-            href="#"
-            id="logoutBtn"
-            class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105"
-            >🚪 Logout</a
-          >
-        </div>
-        <!-- Mobile menu button -->
-        <div class="lg:hidden">
-          <button
-            id="mobileMenuBtn"
-            class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all"
-          >
-            <span class="text-3xl">☰</span>
-          </button>
-        </div>
+      <div class="hero-stats fade-up" style="animation-delay:.4s;">
+        <div class="hero-stat"><div class="hero-stat-num">200+</div><div class="hero-stat-lbl">Items Reported</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">150+</div><div class="hero-stat-lbl">Items Returned</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-lbl">Campuses</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-lbl">Students Helped</div></div>
       </div>
-      <!-- Mobile menu -->
-      <div
-        id="mobileMenu"
-        class="lg:hidden hidden bg-white border-t-2 border-gradient-to-r from-blue-200 to-cyan-200 px-4 py-6 shadow-lg"
-      >
-        <div class="flex flex-col gap-4">
-          <a
-            href="browse-found.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50"
-            >📦 Browse Found</a
-          >
-          <a
-            href="report-lost.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50"
-            >📝 Report Lost</a
-          >
-          <a
-            href="dashboard.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-100 hover:to-cyan-100"
-            >📊 Dashboard</a
-          >
-          <a
-            href="my-claims.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50"
-            >🔍 My Claims</a
-          >
-          <a href="messages.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">✉️ Messages</a>
-          <a href="notifications.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔔 Notifications</a>
-          <a
-            href="profile.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50"
-            >👤 Profile</a
-          >
-          <a
-            href="#"
-            id="logoutBtnMobile"
-            class="px-8 py-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold text-center mt-2"
-            >🚪 Logout</a
-          >
-        </div>
-      </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full">
-      <!-- Hero Section -->
-      <section
-        class="text-center py-16 mb-16 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white rounded-2xl shadow-xl animate-fade-in"
-      >
-        <div
-          class="mb-6 text-6xl animate-bounce"
-          style="animation-duration: 2s"
-        >
-          🎯
-        </div>
-        <h1 class="text-5xl sm:text-6xl mb-4 font-bold font-sans">
-          Welcome to Back2u
-        </h1>
-        <p class="text-lg sm:text-xl mb-8 opacity-95 max-w-2xl mx-auto">
-          Your trusted platform for managing lost and found items on campus
-        </p>
-        <div class="flex gap-3 sm:gap-4 justify-center flex-wrap">
-          <button
-            class="px-6 sm:px-8 py-3 btn-primary text-white font-medium rounded-lg cursor-pointer card-hover transition-all"
-            id="reportLostBtn"
-          >
-            📝 Report Lost Item
-          </button>
-          <button
-            class="px-6 sm:px-8 py-3 bg-white text-blue-600 font-medium rounded-lg cursor-pointer card-hover transition-all hover:bg-gray-50"
-            id="browseLostBtn"
-          >
-            🔎 Browse Found Items
-          </button>
-        </div>
-      </section>
-
-      <!-- Recent Found Items Section -->
-      <section class="my-16">
-        <div class="flex items-center gap-2 mb-8">
-          <span class="text-3xl">📦</span>
-          <h2 class="text-3xl sm:text-4xl font-bold">Recently Found Items</h2>
-        </div>
-        <div
-          id="foundItemsContainer"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-8"
-        >
-          <div class="col-span-full text-center py-12">
-            <div class="text-4xl mb-3">⏳</div>
-            <p class="text-gray-500 font-medium">Loading items...</p>
-          </div>
-        </div>
-        <div
-          class="flex justify-center items-center gap-3 my-8"
-          id="paginationContainer"
-          style="display: none"
-        >
-          <button
-            id="prevBtn"
-            class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all"
-          >
-            ← Previous
-          </button>
-          <span
-            id="pageInfo"
-            class="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg"
-          ></span>
-          <button
-            id="nextBtn"
-            class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all"
-          >
-            Next →
-          </button>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section class="my-12 p-8 bg-gray-100 rounded-lg">
-        <h2 class="text-center text-3xl font-bold mb-8">How It Works</h2>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6">
-          <div class="bg-white p-6 rounded-lg text-center shadow-md">
-            <h3 class="font-bold text-blue-600 mb-3">Report Lost Item</h3>
-            <p class="text-gray-600 text-sm">
-              Quickly report lost items with photos and detailed descriptions
-            </p>
-          </div>
-          <div class="bg-white p-6 rounded-lg text-center shadow-md">
-            <h3 class="font-bold text-blue-600 mb-3">Browse Found Items</h3>
-            <p class="text-gray-600 text-sm">
-              Search through found items posted by campus security
-            </p>
-          </div>
-          <div class="bg-white p-6 rounded-lg text-center shadow-md">
-            <h3 class="font-bold text-blue-600 mb-3">Claim Your Item</h3>
-            <p class="text-gray-600 text-sm">
-              Submit a claim for items that match your lost property
-            </p>
-          </div>
-          <div class="bg-white p-6 rounded-lg text-center shadow-md">
-            <h3 class="font-bold text-blue-600 mb-3">Get Notified</h3>
-            <p class="text-gray-600 text-sm">
-              Receive updates on status of your lost items and claims
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- About Section -->
-      <section
-        id="about"
-        class="my-16 py-16 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl"
-      >
-        <div class="max-w-4xl mx-auto px-4 sm:px-8 text-center">
-          <div class="mb-8">
-            <span class="text-5xl mb-4 block">🎯</span>
-            <h2
-              class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-6"
-            >
-              About Back2u
-            </h2>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-              <h3 class="text-xl font-bold text-blue-600 mb-3">Our Mission</h3>
-              <p class="text-gray-600">
-                Back2u is dedicated to helping students and security recover their
-                lost belongings through a simple, efficient, and secure
-                platform. We believe that every lost item deserves a second
-                chance to find its way home.
-              </p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-              <h3 class="text-xl font-bold text-blue-600 mb-3">How We Help</h3>
-              <p class="text-gray-600">
-                Our platform connects people who have lost items with those who
-                have found them. With detailed reporting, image uploads, and
-                real-time notifications, we make the process of reuniting lost
-                items with their owners as smooth as possible.
-              </p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-              <h3 class="text-xl font-bold text-blue-600 mb-3">
-                Campus Safety
-              </h3>
-              <p class="text-gray-600">
-                We prioritize the security and privacy of our users. All reports
-                are handled confidentially, and our security ensures that found
-                items are safely stored and properly returned to their rightful
-                owners.
-              </p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-              <h3 class="text-xl font-bold text-blue-600 mb-3">
-                Community Impact
-              </h3>
-              <p class="text-gray-600">
-                By facilitating the return of lost items, we help reduce waste,
-                save money, and strengthen our campus community. Every item
-                returned is a success story that brings joy to our users.
-              </p>
-            </div>
-          </div>
-          <div class="mt-12">
-            <p class="text-lg text-gray-700 font-medium">
-              Join thousands of students who have successfully recovered their
-              lost items with Back2u! 🎓✨
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
 
-    <footer
-      class="bg-gray-100 text-gray-600 text-center py-8 border-t border-gray-300 mt-auto"
-    >
-      <p>&copy; 2026 Back2u. All rights reserved.</p>
-    </footer>
+    <!-- Floating cards mockup -->
+    <div class="mock-wrap">
+      <div class="mock-card-back">
+        <div style="font-size:28px;margin-bottom:8px;">🎒</div>
+        <div style="color:#A5B4FC;font-weight:700;font-size:13px;">Backpack Found</div>
+        <div style="color:#475569;font-size:12px;margin-top:4px;">Main Campus · 2h ago</div>
+      </div>
+      <div class="mock-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+          <div style="font-size:34px;">📱</div>
+          <span style="background:#ECFDF5;color:#059669;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;">FOUND</span>
+        </div>
+        <div style="font-weight:700;color:#0F172A;font-size:15px;margin-bottom:5px;">iPhone 15 Pro</div>
+        <div style="color:#64748B;font-size:13px;margin-bottom:14px;">Black case · near library</div>
+        <div style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;padding:10px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;">Claim This Item →</div>
+      </div>
+      <div class="mock-card-bottom">
+        <div style="font-size:24px;margin-bottom:7px;">🔑</div>
+        <div style="color:#67E8F9;font-weight:700;font-size:13px;">Keys Returned ✓</div>
+        <div style="color:#475569;font-size:12px;margin-top:3px;">Waterloo Campus</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script src="/javascripts/api.js"></script>
-    <script src="/javascripts/home.js"></script>
-    <script>
-      // Navigation and authentication logic
-      document.addEventListener("DOMContentLoaded", function () {
-        const user = getUser();
-        const minimalNav = document.getElementById("minimalNav");
-        const fullNav = document.getElementById("fullNav");
-        const dashboardLink = document.getElementById("dashboardLink");
-        const dashboardLinkMobile = document.getElementById("dashboardLinkMobile");
-        const logoutBtn = document.getElementById("logoutBtn");
-        const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-        const navAuth = document.getElementById("navAuth");
+<!-- ═══════ HOW IT WORKS ══════════════════════════════════════════════════════ -->
+<section class="section" style="background:#fff;">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:56px;">
+      <div class="section-label">✨ Simple Process</div>
+      <h2 class="section-h2">How CampusFind works</h2>
+      <p class="section-sub" style="margin-top:10px;max-width:460px;margin-left:auto;margin-right:auto;">Three steps to reunite with your lost belongings</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;">
+      <div class="step-card">
+        <div class="step-orb" style="background:rgba(79,70,229,.07);"></div>
+        <div class="step-num">1</div>
+        <h3 class="step-h">Report It</h3>
+        <p class="step-p">Submit a detailed report of what you lost or found — upload a photo, pick your campus, and describe the item so the right person can identify it.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-orb" style="background:rgba(124,58,237,.07);"></div>
+        <div class="step-num" style="background:linear-gradient(135deg,#7C3AED,#A855F7);">2</div>
+        <h3 class="step-h">Smart Match</h3>
+        <p class="step-p">Our algorithm matches lost items with found items by category and campus — so you see the most relevant results first, automatically.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-orb" style="background:rgba(6,182,212,.07);"></div>
+        <div class="step-num" style="background:linear-gradient(135deg,#0891B2,#06B6D4);">3</div>
+        <h3 class="step-h">Claim &amp; Retrieve</h3>
+        <p class="step-p">Submit a claim, chat directly with the finder through our secure messaging system, and arrange a handoff — completely within the platform.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-        if (user) {
-          // User is logged in - show full navigation
-          minimalNav.style.display = "none";
-          fullNav.classList.remove("hidden");
+<!-- ═══════ RECENT FOUND ITEMS ════════════════════════════════════════════════ -->
+<section class="section" style="background:#F8FAFC;">
+  <div class="section-inner">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
+      <div>
+        <div class="section-label">📦 Latest</div>
+        <h2 class="section-h2">Recently Found Items</h2>
+        <p class="section-sub" style="margin-top:8px;">Items waiting to be claimed — is one of these yours?</p>
+      </div>
+      <a href="browse-found.html" style="flex-shrink:0;padding:11px 20px;background:#fff;border:1px solid #E2E8F0;border-radius:11px;font-weight:600;color:#4F46E5;font-size:14px;transition:all .2s;white-space:nowrap;">View All →</a>
+    </div>
 
-          // Show dashboard link only for security users
-          if (user.role === "security") {
-            if (dashboardLink) dashboardLink.style.display = "inline-block";
-            if (dashboardLinkMobile) dashboardLinkMobile.style.display = "block";
-          }
+    <div id="foundItemsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px;">
+      <div style="grid-column:1/-1;text-align:center;padding:52px;">
+        <div style="font-size:44px;margin-bottom:14px;animation:float 2s ease-in-out infinite;">⏳</div>
+        <p style="color:#94A3B8;font-weight:500;">Loading items...</p>
+      </div>
+    </div>
 
-          // Update logout button with user's name
-          if (logoutBtn) {
-            logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
-          }
-          if (logoutBtnMobile) {
-            logoutBtnMobile.textContent = `🚪 Logout (${user.first_name})`;
-          }
+    <div id="paginationContainer" style="display:none;justify-content:center;align-items:center;gap:12px;margin-top:36px;">
+      <button id="prevBtn" class="pg-btn">← Previous</button>
+      <span id="pageInfo" style="padding:10px 20px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;color:#64748B;font-size:14px;font-weight:500;"></span>
+      <button id="nextBtn" class="pg-btn">Next →</button>
+    </div>
+  </div>
+</section>
 
-          // Setup logout functionality
-          const setupLogout = (btn) => {
-            if (btn) {
-              btn.addEventListener("click", function(e) {
-                e.preventDefault();
-                if (confirm("Are you sure you want to logout?")) {
-                  localStorage.removeItem("user");
-                  window.location.href = "index.html";
-                }
-              });
-            }
-          };
-          setupLogout(logoutBtn);
-          setupLogout(logoutBtnMobile);
-        } else {
-          // User is not logged in - show minimal navigation
-          minimalNav.style.display = "block";
-          fullNav.classList.add("hidden");
+<!-- ═══════ FEATURES ══════════════════════════════════════════════════════════ -->
+<section class="section" style="background:#fff;">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:56px;">
+      <div class="section-label">⚡ Features</div>
+      <h2 class="section-h2">Everything you need</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;">
+      <div style="padding:32px 26px;">
+        <div class="feat-icon" style="background:#EEF2FF;">📝</div>
+        <h3 class="feat-h">Report Items</h3>
+        <p class="feat-p">Report lost or found items in seconds with photos, descriptions, and precise campus location.</p>
+      </div>
+      <div style="padding:32px 26px;">
+        <div class="feat-icon" style="background:#F0FDF4;">🔍</div>
+        <h3 class="feat-h">Smart Search</h3>
+        <p class="feat-p">Filter by category and campus — results update in real time as you type.</p>
+      </div>
+      <div style="padding:32px 26px;">
+        <div class="feat-icon" style="background:#FFF7ED;">💬</div>
+        <h3 class="feat-h">Secure Messaging</h3>
+        <p class="feat-p">Communicate with finders privately through our built-in claim messaging system.</p>
+      </div>
+      <div style="padding:32px 26px;">
+        <div class="feat-icon" style="background:#FFF1F2;">🔔</div>
+        <h3 class="feat-h">Instant Alerts</h3>
+        <p class="feat-p">Get notified immediately when someone claims your item or when your claim status changes.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-          // Setup login button
-          if (navAuth) {
-            navAuth.addEventListener("click", function(e) {
-              e.preventDefault();
-              window.location.href = "login.html";
-            });
-          }
-        }
+<!-- ═══════ ABOUT ═════════════════════════════════════════════════════════════ -->
+<section class="section" id="about" style="background:linear-gradient(135deg,#0F172A 0%,#1E1B4B 100%);">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:52px;">
+      <div class="section-label" style="background:rgba(99,102,241,.15);color:#A5B4FC;border:1px solid rgba(99,102,241,.3);">🎯 About</div>
+      <h2 class="section-h2" style="color:#fff;">Built for Conestoga College</h2>
+      <p class="section-sub" style="margin-top:10px;color:#475569;max-width:440px;margin-left:auto;margin-right:auto;">A platform designed to bring lost items home</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;">
+      <div class="about-card"><div style="font-size:30px;margin-bottom:14px;">🎯</div><h3 style="font-weight:700;color:#fff;margin:0 0 10px;font-size:17px;">Our Mission</h3><p style="color:#64748B;font-size:14px;line-height:1.8;margin:0;">Helping students and security recover lost belongings through a simple, efficient, and secure platform — because every lost item deserves a second chance.</p></div>
+      <div class="about-card"><div style="font-size:30px;margin-bottom:14px;">🤝</div><h3 style="font-weight:700;color:#fff;margin:0 0 10px;font-size:17px;">How We Help</h3><p style="color:#64748B;font-size:14px;line-height:1.8;margin:0;">Smart matching, image uploads, real-time notifications — we make reconnecting lost items with owners as seamless as possible.</p></div>
+      <div class="about-card"><div style="font-size:30px;margin-bottom:14px;">🔒</div><h3 style="font-weight:700;color:#fff;margin:0 0 10px;font-size:17px;">Campus Safety</h3><p style="color:#64748B;font-size:14px;line-height:1.8;margin:0;">All reports are handled confidentially. Security staff verify claims to ensure items are safely returned to their rightful owners.</p></div>
+      <div class="about-card"><div style="font-size:30px;margin-bottom:14px;">🌱</div><h3 style="font-weight:700;color:#fff;margin:0 0 10px;font-size:17px;">Community Impact</h3><p style="color:#64748B;font-size:14px;line-height:1.8;margin:0;">By facilitating item returns we reduce waste, save students money, and strengthen our campus community. Every return is a success story.</p></div>
+    </div>
+  </div>
+</section>
 
-        // Mobile menu toggle functionality
-        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-        const mobileMenu = document.getElementById("mobileMenu");
+<!-- ═══════ CTA BANNER ════════════════════════════════════════════════════════ -->
+<section class="section" style="background:#fff;">
+  <div class="section-inner" style="text-align:center;">
+    <div style="max-width:760px;margin:0 auto;padding:64px 40px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:28px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(79,70,229,.3);">
+      <div style="position:absolute;top:-40px;right:-40px;width:220px;height:220px;background:rgba(255,255,255,.07);border-radius:50%;pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;left:-30px;width:260px;height:260px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;">
+        <h2 style="font-size:clamp(22px,3.5vw,38px);font-weight:800;color:#fff;letter-spacing:-1px;margin:0 0 14px;">Lost something on campus?</h2>
+        <p style="color:rgba(255,255,255,.78);font-size:16px;margin:0 0 34px;max-width:400px;margin-left:auto;margin-right:auto;">Create a free account with your Conestoga email — it takes under a minute.</p>
+        <a href="register.html" style="display:inline-block;padding:15px 34px;background:#fff;color:#4F46E5;border-radius:13px;font-weight:700;font-size:16px;box-shadow:0 4px 20px rgba(0,0,0,.12);transition:all .25s;">Get Started Free →</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-        if (mobileMenuBtn && mobileMenu) {
-          mobileMenuBtn.addEventListener("click", function () {
-            mobileMenu.classList.toggle("hidden");
-          });
+<!-- ═══════ FOOTER ════════════════════════════════════════════════════════════ -->
+<footer style="background:#0F172A;border-top:1px solid rgba(255,255,255,.05);padding:36px 24px;margin-top:auto;">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;">🎒</div>
+      <span style="font-weight:700;color:#fff;font-size:15px;">CampusFind</span>
+    </div>
+    <p style="color:#334155;font-size:13px;margin:0;">© 2026 CampusFind · Conestoga College · Team 4</p>
+    <div style="display:flex;gap:18px;">
+      <a href="browse-found.html" style="color:#334155;font-size:13px;font-weight:500;transition:color .2s;" onmouseover="this.style.color='#94A3B8'" onmouseout="this.style.color='#334155'">Browse</a>
+      <a href="register.html" style="color:#334155;font-size:13px;font-weight:500;transition:color .2s;" onmouseover="this.style.color='#94A3B8'" onmouseout="this.style.color='#334155'">Register</a>
+      <a href="login.html" style="color:#334155;font-size:13px;font-weight:500;transition:color .2s;" onmouseover="this.style.color='#94A3B8'" onmouseout="this.style.color='#334155'">Login</a>
+    </div>
+  </div>
+</footer>
 
-          // Close mobile menu when clicking outside
-          document.addEventListener("click", function (event) {
-            if (
-              !mobileMenuBtn.contains(event.target) &&
-              !mobileMenu.contains(event.target)
-            ) {
-              mobileMenu.classList.add("hidden");
-            }
-          });
-        }
+<script src="/javascripts/api.js"></script>
+<script src="/javascripts/home.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const user = getUser();
+  const minimalNav = document.getElementById('minimalNav');
+  const fullNav = document.getElementById('fullNav');
+  const dashboardLink = document.getElementById('dashboardLink');
+  const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+  const navAuth = document.getElementById('navAuth');
+
+  if (user) {
+    minimalNav.style.display = 'none';
+    fullNav.classList.remove('hidden');
+    if (user.role === 'security') {
+      if (dashboardLink) dashboardLink.style.display = 'inline-flex';
+      if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
+    }
+    if (logoutBtn) logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
+    if (logoutBtnMobile) logoutBtnMobile.textContent = `🚪 Logout (${user.first_name})`;
+    const setupLogout = (btn) => {
+      if (btn) btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) { localStorage.removeItem('user'); window.location.href = 'index.html'; }
       });
-    </script>
-  </body>
+    };
+    setupLogout(logoutBtn); setupLogout(logoutBtnMobile);
+  } else {
+    minimalNav.style.display = 'block';
+    fullNav.classList.add('hidden');
+    if (navAuth) navAuth.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'login.html'; });
+  }
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    document.addEventListener('click', (e) => { if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) mobileMenu.classList.add('hidden'); });
+  }
+});
+</script>
+</body>
 </html>

@@ -7,16 +7,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const user = getUser();
 
-  // Check if user is security - redirect if not
-  if (!user || user.role !== 'security') {
+  // Allow testing for any logged-in user (comment out to restrict to security only)
+  const testMode = false; // Set to true to allow any logged-in user to access dashboard
+  
+  // Check if user is security - redirect if not (unless in test mode)
+  if (!user || (user.role !== 'security' && !testMode)) {
+    console.warn(`User does not have security role. User role: ${user?.role || 'none'}`);
     window.location.href = '/';
     return;
   }
 
-  // Update user info in sidebar
+  console.log('Dashboard loaded. User role:', user?.role);
+
+  // Update user info in sidebar (if elements exist)
   if (user) {
-    document.getElementById('userName').textContent = `${user.first_name} ${user.last_name}`;
-    document.getElementById('userEmail').textContent = user.email;
+    const userNameEl = document.getElementById('userName');
+    const userEmailEl = document.getElementById('userEmail');
+    if (userNameEl) userNameEl.textContent = `${user.first_name} ${user.last_name}`;
+    if (userEmailEl) userEmailEl.textContent = user.email;
   }
 
   // Setup form handlers

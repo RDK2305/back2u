@@ -3,93 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Lost Item - Back2u</title>
+    <title>Report Lost Item — CampusFind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/stylesheets/style.min.css">
     <style>
-@layer components {
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-in { animation: slideIn 0.6s ease-out; }
-        .input-focus:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-}
+      *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+      body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:#F8FAFC;}
+      a{text-decoration:none;}
+      .cf-nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,.8);position:sticky;top:0;z-index:100;}
+      .cf-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;}
+      .cf-logo{display:flex;align-items:center;gap:10px;}
+      .cf-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+      .cf-logo-text{font-size:20px;font-weight:800;background:linear-gradient(135deg,#4F46E5,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+      .nav-link{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:10px;color:#475569;font-weight:500;font-size:14px;transition:all .2s;position:relative;white-space:nowrap;}
+      .nav-link:hover{color:#4F46E5;background:#EEF2FF;}
+      .nav-link.active{color:#4F46E5;background:#EEF2FF;}
+      .btn-primary{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;padding:10px 22px;border-radius:11px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(79,70,229,.35);}
+      .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(79,70,229,.45);}
+      .cf-section{max-width:900px;margin:0 auto;padding:40px 24px;}
+      .cf-card{background:#fff;border-radius:20px;padding:40px 36px;box-shadow:0 4px 32px rgba(0,0,0,.07);border:1px solid #E2E8F0;}
+      .cf-section-title{font-size:28px;font-weight:800;color:#0F172A;letter-spacing:-1px;margin:0 0 12px;}
+      .cf-section-desc{color:#64748B;font-size:14px;margin:0 0 24px;line-height:1.6;}
+      .cf-label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:7px;}
+      .cf-input{width:100%;padding:12px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:15px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;margin-bottom:16px;}
+      .cf-input:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+      .cf-select{width:100%;padding:12px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:15px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;margin-bottom:16px;}
+      .cf-select:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+      .cf-textarea{width:100%;padding:12px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:15px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;margin-bottom:16px;resize:vertical;min-height:100px;}
+      .cf-textarea:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+      .cf-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(79,70,229,.35);margin-top:8px;}
+      .cf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.45);}
+      .cf-btn-secondary{width:100%;padding:14px;background:#fff;color:#4F46E5;border:2px solid #E0E7FF;border-radius:12px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;margin-top:8px;}
+      .cf-btn-secondary:hover{background:#EEF2FF;transform:translateY(-2px);}
+      .cf-success{background:#F0FDF4;border-left:4px solid #22C55E;color:#166534;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+      .cf-error{background:#FEF2F2;border-left:4px solid #EF4444;color:#B91C1C;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+      .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+      @media(max-width:640px){.form-grid{grid-template-columns:1fr;}.cf-card{padding:24px 16px;}.cf-section-title{font-size:22px;}}
     </style>
 </head>
 <body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
-    <nav class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <span class="text-4xl animate-pulse">🔍</span>
-                <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
-            </div>
-            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
-                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
-                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105 bg-gradient-to-r from-blue-100 to-cyan-100">📝 Report Lost</a>
-                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
-                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
-                <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-    ✉️ Messages
-    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-</a>
-                <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-    🔔 Notifications
-    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-</a>
-                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
-                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
-            </div>
-            <!-- Mobile menu button -->
-            <div class="lg:hidden">
-                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
-                    <span class="text-3xl">☰</span>
-                </button>
-            </div>
-        </div>
-        <!-- Mobile menu -->
-        <div id="mobileMenu" class="lg:hidden hidden bg-white border-t-2 border-gradient-to-r from-blue-200 to-cyan-200 px-4 py-6 shadow-lg">
-            <div class="flex flex-col gap-4">
-                <a href="index.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🏠 Home</a>
-                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📦 Browse Found</a>
-                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-100 hover:to-cyan-100 bg-gradient-to-r from-blue-100 to-cyan-100">📝 Report Lost</a>
-                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📊 Dashboard</a>
-                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔍 My Claims</a>
-                <a href="messages.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">✉️ Messages</a>
-                <a href="notifications.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔔 Notifications</a>
-                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">👤 Profile</a>
-                <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold text-center mt-2">Logout</a>
+    <nav class="cf-nav">
+        <div class="cf-nav-inner">
+            <a href="index.html" class="cf-logo">
+                <div class="cf-logo-icon">🎒</div>
+                <span class="cf-logo-text">CampusFind</span>
+            </a>
+            <div style="display:flex;gap:12px;align-items:center;">
+                <a href="browse-found.html" class="nav-link">📦 Browse</a>
+                <a href="report-lost.html" class="nav-link active">📝 Report</a>
+                <a href="my-claims.html" class="nav-link">🔍 Claims</a>
+                <a href="messages.html" class="nav-link">✉️ Messages</a>
+                <a href="notifications.html" class="nav-link">🔔 Notifications</a>
+                <a href="profile.html" class="nav-link">👤 Profile</a>
+                <a href="#" id="logoutBtn" class="btn-primary" style="padding:8px 16px;font-size:13px;">Logout</a>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full">
-        <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-100 animate-slide-in">
-            <div class="flex items-center gap-3 mb-2">
-                <span class="text-4xl">📝</span>
-                <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Report Lost Item</h1>
-            </div>
-            <p class="text-gray-600 mb-8">Provide details about your lost item so we can help you find it</p>
+    <div class="cf-section">
+        <div class="cf-card">
+            <h1 class="cf-section-title">📝 Report Lost Item</h1>
+            <p class="cf-section-desc">Help us find your lost item by providing detailed information. The more details you provide, the better chance we have of finding it.</p>
 
-            <div id="successMessage" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
-            <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
+            <div id="successMessage" class="cf-success" role="alert"></div>
+            <div id="errorMessage" class="cf-error" role="alert"></div>
 
-            <form id="reportLostForm" class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <form id="reportLostForm" style="margin-top:24px;">
+                <div class="form-grid">
                     <div>
-                        <label for="title" class="block mb-2 font-semibold text-gray-700 text-sm">Item Title *</label>
-                        <input type="text" id="title" name="title" required placeholder="e.g., iPhone 13 Pro" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                        <label for="title" class="cf-label">Item Title *</label>
+                        <input type="text" id="title" name="title" required placeholder="e.g., iPhone 13 Pro" class="cf-input">
                     </div>
-
                     <div>
-                        <label for="category" class="block mb-2 font-semibold text-gray-700 text-sm">Category *</label>
-                        <select id="category" name="category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                        <label for="category" class="cf-label">Category *</label>
+                        <select id="category" name="category" required class="cf-select">
                             <option value="">Select Category</option>
                             <option value="phone">📱 Phone</option>
                             <option value="wallet">👛 Wallet</option>
                             <option value="keys">🔑 Keys</option>
-                            <option value="id">🆔 Student/security ID</option>
+                            <option value="id">🆔 Student ID</option>
                             <option value="clothing">👕 Clothing</option>
                             <option value="bag">🎒 Bag</option>
                             <option value="textbook">📚 Textbook</option>
@@ -99,15 +93,14 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="form-grid">
                     <div>
-                        <label for="dateLost" class="block mb-2 font-semibold text-gray-700 text-sm">Date Lost *</label>
-                        <input type="date" id="dateLost" name="date_lost" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                        <label for="dateLost" class="cf-label">Date Lost *</label>
+                        <input type="date" id="dateLost" name="date_lost" required class="cf-input">
                     </div>
-
                     <div>
-                        <label for="campus" class="block mb-2 font-semibold text-gray-700 text-sm">Campus *</label>
-                        <select id="campus" name="campus" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                        <label for="campus" class="cf-label">Campus *</label>
+                        <select id="campus" name="campus" required class="cf-select">
                             <option value="">Select Campus</option>
                             <option value="Main">🏢 Main (Kitchener)</option>
                             <option value="Waterloo">🏢 Waterloo</option>
@@ -118,37 +111,37 @@
                 </div>
 
                 <div>
-                    <label for="location" class="block mb-2 font-semibold text-gray-700 text-sm">Location Lost *</label>
-                    <input type="text" id="location" name="location_lost" required placeholder="e.g., Library Building, Ground Floor" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
+                    <label for="location" class="cf-label">Location Lost *</label>
+                    <input type="text" id="location" name="location_lost" required placeholder="e.g., Library Building, Ground Floor" class="cf-input">
                 </div>
 
                 <div>
-                    <label for="description" class="block mb-2 font-semibold text-gray-700 text-sm">Description</label>
-                    <textarea id="description" name="description" rows="4" placeholder="Describe your item in detail (color, brand, condition, etc.)" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none resize-none"></textarea>
+                    <label for="description" class="cf-label">Description</label>
+                    <textarea id="description" name="description" placeholder="Describe your item in detail (color, brand, condition, etc.)" class="cf-textarea"></textarea>
                 </div>
 
                 <div>
-                    <label for="features" class="block mb-2 font-semibold text-gray-700 text-sm">Distinguishing Features</label>
-                    <textarea id="features" name="distinguishing_features" rows="3" placeholder="Any unique marks, scratches, or identifying features (e.g., cracked screen, engraved initials)" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none resize-none"></textarea>
+                    <label for="features" class="cf-label">Distinguishing Features</label>
+                    <textarea id="features" name="distinguishing_features" placeholder="Any unique marks, scratches, or identifying features" class="cf-textarea"></textarea>
                 </div>
 
                 <div>
-                    <label for="image" class="block mb-2 font-semibold text-gray-700 text-sm">Upload Image (Optional)</label>
-                    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" class="w-full px-4 py-2.5 border-2 border-dashed border-gray-300 rounded-lg text-base transition-all focus:outline-none focus:border-blue-500 hover:border-blue-400">
-                    <small class="block mt-2 text-gray-500 text-xs">Max 5MB. Supported formats: JPG, PNG, GIF</small>
-                    <img id="imagePreview" style="display: none; max-width: 300px; margin-top: 12px; border-radius: 8px;">
+                    <label for="image" class="cf-label">Upload Image (Optional)</label>
+                    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" class="cf-input" style="margin-bottom:8px;">
+                    <small style="color:#64748B;font-size:12px;display:block;margin-bottom:16px;">Max 5MB. Supported: JPG, PNG, GIF</small>
+                    <img id="imagePreview" style="display:none;max-width:100%;max-height:200px;border-radius:8px;margin-bottom:16px;">
                 </div>
 
-                <div class="flex gap-3 flex-wrap pt-4">
-                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer flex-1 sm:flex-none">📬 Report Lost Item</button>
-                    <a href="dashboard.html" class="px-6 py-3 bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all font-semibold rounded-lg cursor-pointer flex-1 sm:flex-none text-center">Cancel</a>
+                <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
+                    <button type="submit" class="cf-btn" style="flex:1;">Report Lost Item</button>
+                    <a href="dashboard.html" class="cf-btn-secondary" style="flex:1;text-align:center;display:flex;align-items:center;justify-content:center;">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
-        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    <footer style="background:linear-gradient(to right,#0F172A,#1E1B4B);color:#94A3B8;text-align:center;padding:32px 24px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);">
+        <p style="margin:0;font-weight:500;font-size:14px;">&copy; 2026 CampusFind. Connecting Conestoga students.</p>
     </footer>
 
     <script src="/javascripts/api.js"></script>

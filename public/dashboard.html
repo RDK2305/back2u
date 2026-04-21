@@ -1,399 +1,1601 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>security Dashboard - Back2u</title>
-    <link rel="stylesheet" href="/stylesheets/style.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security Dashboard — CampusFind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/stylesheets/style.min.css" />
     <style>
-@layer components {
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #1f2937;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+      * {
+        font-family: "Inter", sans-serif;
+        box-sizing: border-box;
+      }
+      @layer components {
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
-        nav { background: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 1px solid #f3f4f6; }
-        nav > div:first-child { max-width: 80rem; margin: 0 auto; padding: 1rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-        @media (max-width: 640px) { nav > div:first-child { padding: 1rem 0.25rem; gap: 1rem; } }
-        main { flex: 1; }
-        footer { background: linear-gradient(to right, #111827, #1f2937); color: #d1d5db; text-align: center; padding: 2rem; border-top: 1px solid #374151; margin-top: auto; }
-        .grid { display: grid; gap: 2rem; }
-        .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        @media (max-width: 1024px) { .lg\\:grid-cols-4 { grid-template-columns: 1fr; } }
-        .lg\\:col-span-1 { grid-column: span 1; }
-        .lg\\:col-span-3 { grid-column: span 3; }
-        @media (max-width: 1024px) { .lg\\:col-span-1, .lg\\:col-span-3 { grid-column: auto; } }
-        .sidebar { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; position: sticky; top: 6rem; }
-        .nav-item-active { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: all 0.3s; }
-        .nav-item { color: #1f2937; padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-weight: 500; text-decoration: none; transition: background-color 0.3s; }
-        .nav-item:hover { background-color: #dbeafe; }
-}
+        html,
+        body {
+          width: 100%;
+          height: 100%;
+        }
+        body {
+          font-family:
+            -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+          font-size: 16px;
+          line-height: 1.5;
+          color: #1f2937;
+          display: flex;
+          flex-direction: column;
+          background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+        .cf-nav {
+          background: rgba(255, 255, 255, 0.93);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+        .cf-nav-inner {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 0 24px;
+          height: 68px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .cf-logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .cf-logo-icon {
+          width: 36px;
+          height: 36px;
+          background: linear-gradient(135deg, #4f46e5, #7c3aed);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          flex-shrink: 0;
+        }
+        .cf-logo-text {
+          font-size: 19px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #4f46e5, #7c3aed);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .nav-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 8px 12px;
+          border-radius: 10px;
+          color: #475569;
+          font-weight: 500;
+          font-size: 14px;
+          transition: all 0.2s;
+          position: relative;
+          white-space: nowrap;
+        }
+        .nav-link:hover {
+          color: #4f46e5;
+          background: #eef2ff;
+        }
+        .nav-link.active {
+          color: #4f46e5;
+          background: #eef2ff;
+          font-weight: 600;
+        }
+        .nav-badge {
+          position: absolute;
+          top: 3px;
+          right: 3px;
+          background: #ef4444;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 700;
+          width: 17px;
+          height: 17px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (max-width: 640px) {
+          nav > div:first-child {
+            padding: 1rem 0.25rem;
+            gap: 1rem;
+          }
+        }
+        main {
+          flex: 1;
+        }
+        footer {
+          background: linear-gradient(to right, #111827, #1f2937);
+          color: #d1d5db;
+          text-align: center;
+          padding: 2rem;
+          border-top: 1px solid #374151;
+          margin-top: auto;
+        }
+        .grid {
+          display: grid;
+          gap: 2rem;
+        }
+        .lg\\:grid-cols-4 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        @media (max-width: 1024px) {
+          .lg\\:grid-cols-4 {
+            grid-template-columns: 1fr;
+          }
+        }
+        .lg\\:col-span-1 {
+          grid-column: span 1;
+        }
+        .lg\\:col-span-3 {
+          grid-column: span 3;
+        }
+        @media (max-width: 1024px) {
+          .lg\\:col-span-1,
+          .lg\\:col-span-3 {
+            grid-column: auto;
+          }
+        }
+        .sidebar {
+          background: white;
+          border-radius: 1rem;
+          padding: 1.5rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border: 1px solid #f3f4f6;
+          position: sticky;
+          top: 6rem;
+        }
+        .nav-item-active {
+          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+          color: white;
+          padding: 0.75rem 1rem;
+          border-radius: 0.5rem;
+          display: flex;
+          gap: 0.75rem;
+          align-items: center;
+          font-weight: 500;
+          text-decoration: none;
+          transition: all 0.3s;
+        }
+        .nav-item {
+          color: #1f2937;
+          padding: 0.75rem 1rem;
+          border-radius: 0.5rem;
+          display: flex;
+          gap: 0.75rem;
+          align-items: center;
+          font-weight: 500;
+          text-decoration: none;
+          transition: background-color 0.3s;
+        }
+        .nav-item:hover {
+          background-color: #dbeafe;
+        }
+      }
     </style>
-</head>
-<body class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800">
-    <nav class="bg-white sticky top-0 z-50 shadow-xl border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <span class="text-4xl animate-pulse">🔍</span>
-                <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
-            </div>
-            <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
-                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📦 Browse Found</a>
-                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">📝 Report Lost</a>
-                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105" id="dashboardLink" style="display: none;">📊 Dashboard</a>
-                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">🔍 My Claims</a>
-                <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-                    ✉️ Messages
-                    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-                </a>
-                <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-                    🔔 Notifications
-                    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-                </a>
-                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">👤 Profile</a>
-                <a href="#" id="logoutBtn" class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105">Logout</a>
-            </div>
-            <!-- Mobile menu button -->
-            <div class="lg:hidden">
-                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
-                    <span class="text-3xl">☰</span>
-                </button>
-            </div>
+  </head>
+  <body
+    class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800"
+  >
+    <nav class="cf-nav">
+      <div class="cf-nav-inner">
+        <a href="index.html" class="cf-logo">
+          <div class="cf-logo-icon">🎒</div>
+          <span class="cf-logo-text">CampusFind</span>
+        </a>
+        <div class="hidden lg:flex" style="align-items: center; gap: 2px">
+          <a href="browse-found.html" class="nav-link"
+            >📦 Browse Found</a
+          >
+          <a href="report-lost.html" class="nav-link">📝 Report Lost</a>
+          <a
+            href="dashboard.html"
+            class="nav-link active"
+            id="dashboardLink"
+            style="display: none"
+            >📊 Dashboard</a
+          >
+          <a href="my-claims.html" class="nav-link">🔍 My Claims</a>
+          <a href="messages.html" class="nav-link"
+            >✉️ Messages<span id="msgBadge" class="nav-badge hidden">0</span></a
+          >
+          <a href="notifications.html" class="nav-link"
+            >🔔 Alerts<span id="notifBadge" class="nav-badge hidden">0</span></a
+          >
+          <a href="profile.html" class="nav-link">👤 Profile</a>
+          <a
+            href="#"
+            id="logoutBtn"
+            style="
+              margin-left: 8px;
+              padding: 9px 17px;
+              background: #fee2e2;
+              color: #dc2626;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 14px;
+            "
+            >🚪 Logout</a
+          >
         </div>
-        <!-- Mobile menu -->
-        <div id="mobileMenu" class="lg:hidden hidden bg-white border-t-2 border-gradient-to-r from-blue-200 to-cyan-200 px-4 py-6 shadow-lg">
-            <div class="flex flex-col gap-4">
-                <a href="browse-found.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📦 Browse Found</a>
-                <a href="report-lost.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📝 Report Lost</a>
-                <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">📊 Dashboard</a>
-                <a href="my-claims.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔍 My Claims</a>
-                <a href="messages.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">✉️ Messages</a>
-                <a href="notifications.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">🔔 Notifications</a>
-                <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-all font-semibold py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50">👤 Profile</a>
-                <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold text-center mt-2">Logout</a>
-            </div>
+        <button
+          id="mobileMenuBtn"
+          class="lg:hidden"
+          style="
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            color: #475569;
+          "
+        >
+          ☰
+        </button>
+      </div>
+      <div
+        id="mobileMenu"
+        class="hidden"
+        style="
+          border-top: 1px solid #e2e8f0;
+          background: #fff;
+          padding: 14px 24px;
+        "
+      >
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <a href="browse-found.html" class="nav-link active"
+            >📦 Browse Found</a
+          >
+          <a href="report-lost.html" class="nav-link">📝 Report Lost</a>
+          <a
+            href="dashboard.html"
+            class="nav-link"
+            id="dashboardLinkMobile"
+            style="display: none"
+            >📊 Dashboard</a
+          >
+          <a href="my-claims.html" class="nav-link">🔍 My Claims</a>
+          <a href="messages.html" class="nav-link">✉️ Messages</a>
+          <a href="notifications.html" class="nav-link">🔔 Notifications</a>
+          <a href="profile.html" class="nav-link">👤 Profile</a>
+          <a
+            href="#"
+            id="logoutBtnMobile"
+            style="
+              margin-top: 10px;
+              padding: 12px 18px;
+              background: #fee2e2;
+              color: #dc2626;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 14px;
+              text-align: center;
+              display: block;
+            "
+            >🚪 Logout</a
+          >
         </div>
+      </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Sidebar -->
-            <aside class="lg:col-span-1">
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 sticky top-24">
-                    <div class="pb-6 border-b border-gray-300 mb-6">
-                        <h3 id="userName" class="text-lg font-bold text-gray-800">security Name</h3>
-                        <p id="userEmail" class="text-sm text-gray-600 my-2">security@email.com</p>
-                        <p class="inline-block bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold mt-3">security</p>
-                    </div>
-
-                    <nav class="flex flex-col gap-2">
-                        <a href="dashboard.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
-                            <span>📋</span> My Items
-                        </a>
-                        <a href="my-claims.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
-                            <span>🔍</span> My Claims
-                        </a>
-                        <a href="browse-found.html" class="px-4 py-3 rounded-lg text-gray-700 no-underline transition-all flex items-center gap-3 font-medium nav-item">
-                            <span>📦</span> Browse Found
-                        </a>
-                    </nav>
-                </div>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="lg:col-span-3">
-                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
-                    <h1 class="text-gray-800 text-4xl font-bold">⚙️ security Dashboard</h1>
-                    <button id="openCreateItemBtn" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer">➕ Create New Item</button>
-                </div>
-
-                <!-- Filters and Search -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                            <select id="filterType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Types</option>
-                                <option value="lost">Lost</option>
-                                <option value="found">Found</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <select id="filterStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Statuses</option>
-                                <option value="Reported">Reported</option>
-                                <option value="Open">Open</option>
-                                <option value="Claimed">Claimed</option>
-                                <option value="Returned">Returned</option>
-                                <option value="Disposed">Disposed</option>
-                                <option value="Done">Done</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Verified">Verified</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                            <select id="filterCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Categories</option>
-                                <option value="phone">Phone</option>
-                                <option value="wallet">Wallet</option>
-                                <option value="keys">Keys</option>
-                                <option value="id">Student ID</option>
-                                <option value="clothing">Clothing</option>
-                                <option value="bag">Bag</option>
-                                <option value="textbook">Textbook</option>
-                                <option value="electronics">Electronics</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Campus</label>
-                            <select id="filterCampus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Campuses</option>
-                                <option value="Main">Main</option>
-                                <option value="Waterloo">Waterloo</option>
-                                <option value="Cambridge">Cambridge</option>
-                                <option value="Doon">Doon</option>
-                            </select>
-                        </div>
-                        <div class="flex items-end">
-                            <button id="applyFiltersBtn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                                Apply Filters
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats Cards -->
-                <div id="statsContainer" class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8" style="display: none;">
-                    <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-6 rounded-2xl text-center shadow-md">
-                        <div class="text-sm opacity-90 mb-2 font-medium">Total Items</div>
-                        <div class="text-4xl font-bold" id="statsTotal">0</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-green-600 to-green-800 text-white p-6 rounded-2xl text-center shadow-md">
-                        <div class="text-sm opacity-90 mb-2 font-medium">Open Items</div>
-                        <div class="text-4xl font-bold" id="statsOpen">0</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-orange-600 to-orange-800 text-white p-6 rounded-2xl text-center shadow-md">
-                        <div class="text-sm opacity-90 mb-2 font-medium">Claimed</div>
-                        <div class="text-4xl font-bold" id="statsClaimed">0</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white p-6 rounded-2xl text-center shadow-md">
-                        <div class="text-sm opacity-90 mb-2 font-medium">Resolved</div>
-                        <div class="text-4xl font-bold" id="statsResolved">0</div>
-                    </div>
-                </div>
-
-                <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
-
-                <!-- Items Container -->
-                <div id="itemsContainer" class="space-y-4">
-                    <div class="text-center py-12">
-                        <div class="text-4xl mb-3">⏳</div>
-                        <p class="text-gray-500 font-medium">Loading items...</p>
-                    </div>
-                </div>
-
-                <!-- Pagination -->
-                <div class="flex justify-center items-center gap-3 my-8" id="paginationContainer" style="display: none;">
-                    <button id="prevBtn" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all">← Previous</button>
-                    <span id="pageInfo" class="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg"></span>
-                    <button id="nextBtn" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all">Next →</button>
-                </div>
-            </main>
+    <div
+      style="
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px 32px 32px;
+        flex: 1;
+        width: 100%;
+        margin-top: 64px;
+      "
+    >
+      <!-- Main Content -->
+      <main style="width: 100%">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+          "
+        >
+          <h1
+            style="font-size: 32px; font-weight: 800; color: #1e293b; margin: 0"
+          >
+            ⚙️ Security Dashboard
+          </h1>
+          <button
+            id="openCreateItemBtn"
+            style="
+              padding: 12px 20px;
+              background: linear-gradient(135deg, #4f46e5, #7c3aed);
+              color: #fff;
+              border: none;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 14px;
+              cursor: pointer;
+              transition: all 0.2s;
+              box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+            "
+            onmouseover="
+              this.style.transform = 'translateY(-1px)';
+              this.style.boxShadow = '0 4px 12px rgba(79,70,229,.35)';
+            "
+            onmouseout="
+              this.style.transform = 'translateY(0)';
+              this.style.boxShadow = '0 2px 8px rgba(79,70,229,.25);';
+            "
+          >
+            ➕ Create Item
+          </button>
         </div>
+
+        <!-- Filters and Search -->
+        <div
+          style="
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+          "
+        >
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+              gap: 16px;
+            "
+          >
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #64748b;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                  margin-bottom: 8px;
+                "
+                >Type</label
+              >
+              <select
+                id="filterType"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 10px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                  cursor: pointer;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="">All Types</option>
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #64748b;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                  margin-bottom: 8px;
+                "
+                >Status</label
+              >
+              <select
+                id="filterStatus"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 10px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                  cursor: pointer;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="">All Statuses</option>
+                <option value="Reported">Reported</option>
+                <option value="Open">Open</option>
+                <option value="Claimed">Claimed</option>
+                <option value="Returned">Returned</option>
+                <option value="Disposed">Disposed</option>
+                <option value="Done">Done</option>
+                <option value="Pending">Pending</option>
+                <option value="Verified">Verified</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #64748b;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                  margin-bottom: 8px;
+                "
+                >Category</label
+              >
+              <select
+                id="filterCategory"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 10px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                  cursor: pointer;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="">All Categories</option>
+                <option value="phone">Phone</option>
+                <option value="wallet">Wallet</option>
+                <option value="keys">Keys</option>
+                <option value="id">Student ID</option>
+                <option value="clothing">Clothing</option>
+                <option value="bag">Bag</option>
+                <option value="textbook">Textbook</option>
+                <option value="electronics">Electronics</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #64748b;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                  margin-bottom: 8px;
+                "
+                >Campus</label
+              >
+              <select
+                id="filterCampus"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 10px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                  cursor: pointer;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="">All Campuses</option>
+                <option value="Main">Main</option>
+                <option value="Waterloo">Waterloo</option>
+                <option value="Cambridge">Cambridge</option>
+                <option value="Doon">Doon</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: flex-end">
+              <button
+                id="applyFiltersBtn"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                  color: #fff;
+                  border: none;
+                  border-radius: 10px;
+                  font-weight: 600;
+                  font-size: 13px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+                "
+                onmouseover="
+                  this.style.transform = 'translateY(-1px)';
+                  this.style.boxShadow = '0 4px 12px rgba(79,70,229,.35)';
+                "
+                onmouseout="
+                  this.style.transform = 'translateY(0)';
+                  this.style.boxShadow = '0 2px 8px rgba(79,70,229,.25);';
+                "
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div
+          id="statsContainer"
+          style="
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+          "
+        >
+          <div
+            style="
+              background: linear-gradient(135deg, #3b82f6, #1e40af);
+              color: #fff;
+              padding: 20px 24px;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+            "
+          >
+            <div
+              style="
+                font-size: 12px;
+                opacity: 0.9;
+                margin-bottom: 8px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+            >
+              Total Items
+            </div>
+            <div style="font-size: 32px; font-weight: 800" id="statsTotal">
+              0
+            </div>
+          </div>
+          <div
+            style="
+              background: linear-gradient(135deg, #10b981, #047857);
+              color: #fff;
+              padding: 20px 24px;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            "
+          >
+            <div
+              style="
+                font-size: 12px;
+                opacity: 0.9;
+                margin-bottom: 8px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+            >
+              Open Items
+            </div>
+            <div style="font-size: 32px; font-weight: 800" id="statsOpen">
+              0
+            </div>
+          </div>
+          <div
+            style="
+              background: linear-gradient(135deg, #f97316, #c2410c);
+              color: #fff;
+              padding: 20px 24px;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+            "
+          >
+            <div
+              style="
+                font-size: 12px;
+                opacity: 0.9;
+                margin-bottom: 8px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+            >
+              Claimed
+            </div>
+            <div style="font-size: 32px; font-weight: 800" id="statsClaimed">
+              0
+            </div>
+          </div>
+          <div
+            style="
+              background: linear-gradient(135deg, #a855f7, #6d28d9);
+              color: #fff;
+              padding: 20px 24px;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+            "
+          >
+            <div
+              style="
+                font-size: 12px;
+                opacity: 0.9;
+                margin-bottom: 8px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+            >
+              Resolved
+            </div>
+            <div style="font-size: 32px; font-weight: 800" id="statsResolved">
+              0
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="errorMessage"
+          style="
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            color: #b91c1c;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            display: none;
+            font-size: 14px;
+          "
+          role="alert"
+        ></div>
+
+        <!-- Items Container -->
+        <div
+          id="itemsContainer"
+          style="display: flex; flex-direction: column; gap: 16px"
+        >
+          <div style="text-align: center; padding: 48px 32px">
+            <div style="font-size: 48px; margin-bottom: 12px">⏳</div>
+            <p style="color: #64748b; font-weight: 500; margin: 0">
+              Loading items...
+            </p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div
+          style="
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 32px 0;
+          "
+          id="paginationContainer"
+        >
+          <button
+            id="prevBtn"
+            style="
+              padding: 10px 16px;
+              background: #f1f5f9;
+              color: #475569;
+              border: 1.5px solid #e2e8f0;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 13px;
+              cursor: pointer;
+              transition: all 0.2s;
+            "
+            onmouseover="this.style.background = '#E2E8F0'"
+            onmouseout="this.style.background = '#F1F5F9'"
+          >
+            ← Previous
+          </button>
+          <span
+            id="pageInfo"
+            style="
+              font-size: 14px;
+              color: #475569;
+              font-weight: 600;
+              padding: 8px 16px;
+              background: #f8fafc;
+              border-radius: 10px;
+            "
+          ></span>
+          <button
+            id="nextBtn"
+            style="
+              padding: 10px 16px;
+              background: #f1f5f9;
+              color: #475569;
+              border: 1.5px solid #e2e8f0;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 13px;
+              cursor: pointer;
+              transition: all 0.2s;
+            "
+            onmouseover="this.style.background = '#E2E8F0'"
+            onmouseout="this.style.background = '#F1F5F9'"
+          >
+            Next →
+          </button>
+        </div>
+      </main>
     </div>
 
     <!-- Create Item Modal -->
-    <div id="createItemModal" class="fixed inset-0 bg-black/50 items-center justify-center z-[1000] hidden" style="display: none;">
-        <div class="bg-white rounded-2xl p-8 max-w-2xl w-[90%] max-h-[90vh] overflow-y-auto relative shadow-2xl">
-            <span class="modal-close-btn absolute top-4 right-6 text-3xl cursor-pointer text-gray-500 hover:text-gray-800 transition-colors">&times;</span>
+    <div
+      id="createItemModal"
+      class="fixed inset-0 bg-black/50 items-center justify-center z-[1000] hidden"
+      style="
+        display: none;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          border-radius: 24px;
+          padding: 32px;
+          max-width: 560px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          position: relative;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+          border: 1px solid #e2e8f0;
+        "
+      >
+        <button
+          class="modal-close-btn"
+          onclick="closeCreateItemModal()"
+          style="
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #64748b;
+            transition: all 0.2s;
+          "
+        >
+          ✕
+        </button>
 
-            <div class="space-y-6">
-                <h2 class="text-3xl font-bold text-gray-800">Create New Item</h2>
+        <h2
+          style="
+            font-size: 26px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+            margin: 0 0 24px;
+          "
+        >
+          Create New Item
+        </h2>
 
-                <form id="createItemForm" enctype="multipart/form-data">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
-                            <input type="text" id="itemTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                            <select id="itemCategory" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Category</option>
-                                <option value="phone">Phone</option>
-                                <option value="wallet">Wallet</option>
-                                <option value="keys">Keys</option>
-                                <option value="id">Student ID</option>
-                                <option value="clothing">Clothing</option>
-                                <option value="bag">Bag</option>
-                                <option value="textbook">Textbook</option>
-                                <option value="electronics">Electronics</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Type *</label>
-                            <select id="itemType" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="found">Found</option>
-                                <option value="lost">Lost</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Campus *</label>
-                            <select id="itemCampus" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Campus</option>
-                                <option value="Main">Main</option>
-                                <option value="Waterloo">Waterloo</option>
-                                <option value="Cambridge">Cambridge</option>
-                                <option value="Doon">Doon</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Location *</label>
-                            <input type="text" id="itemLocation" required placeholder="Where was the item found/lost?" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date Found/Lost</label>
-                            <input type="date" id="itemDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <select id="itemStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="Reported">Reported</option>
-                                <option value="Open">Open</option>
-                                <option value="Done">Done</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Verified">Verified</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">User ID *</label>
-                            <input type="number" id="itemUserId" required placeholder="Enter user ID who owns/found this item" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                            <textarea id="itemDescription" rows="3" placeholder="Additional details..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Distinguishing Features</label>
-                            <textarea id="itemFeatures" rows="2" placeholder="Unique identifying features..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Image</label>
-                            <input type="file" id="itemImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4 mt-6">
-                        <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all">
-                            Create Item
-                        </button>
-                        <button type="button" onclick="closeCreateItemModal()" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-all">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+        <form
+          id="createItemForm"
+          enctype="multipart/form-data"
+          style="display: grid; gap: 16px"
+        >
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #374151;
+                  margin-bottom: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                "
+                >Title *</label
+              >
+              <input
+                type="text"
+                id="itemTitle"
+                required
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 11px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              />
             </div>
-        </div>
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #374151;
+                  margin-bottom: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                "
+                >Category *</label
+              >
+              <select
+                id="itemCategory"
+                required
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 11px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="">Select Category</option>
+                <option value="phone">📱 Phone</option>
+                <option value="wallet">👛 Wallet</option>
+                <option value="keys">🔑 Keys</option>
+                <option value="id">🆔 Student ID</option>
+                <option value="clothing">👕 Clothing</option>
+                <option value="bag">🎒 Bag</option>
+                <option value="textbook">📚 Textbook</option>
+                <option value="electronics">⚡ Electronics</option>
+                <option value="other">📦 Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #374151;
+                  margin-bottom: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                "
+                >Type *</label
+              >
+              <select
+                id="itemType"
+                required
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 11px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="found">Found</option>
+                <option value="lost">Lost</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #374151;
+                  margin-bottom: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                "
+                >Campus *</label
+              >
+              <select
+                id="itemCampus"
+                required
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 11px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="">Select Campus</option>
+                <option value="Main">🏢 Main (Kitchener)</option>
+                <option value="Waterloo">🏢 Waterloo</option>
+                <option value="Cambridge">🏢 Cambridge</option>
+                <option value="Doon">🏢 Doon</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label
+              style="
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+              >Location *</label
+            >
+            <input
+              type="text"
+              id="itemLocation"
+              required
+              placeholder="Where was the item found/lost?"
+              style="
+                width: 100%;
+                padding: 11px 16px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 11px;
+                font-size: 14px;
+                font-family: &quot;Inter&quot;, sans-serif;
+                color: #1e293b;
+                background: #fff;
+                transition: all 0.2s;
+                outline: none;
+              "
+              onfocus="
+                this.style.borderColor = '#4F46E5';
+                this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+              "
+              onblur="
+                this.style.borderColor = '#E2E8F0';
+                this.style.boxShadow = 'none';
+              "
+            />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #374151;
+                  margin-bottom: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                "
+                >Date</label
+              >
+              <input
+                type="date"
+                id="itemDate"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 11px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              />
+            </div>
+            <div>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: #374151;
+                  margin-bottom: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.4px;
+                "
+                >Status</label
+              >
+              <select
+                id="itemStatus"
+                style="
+                  width: 100%;
+                  padding: 11px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 11px;
+                  font-size: 14px;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  color: #1e293b;
+                  background: #fff;
+                  transition: all 0.2s;
+                  outline: none;
+                "
+                onfocus="
+                  this.style.borderColor = '#4F46E5';
+                  this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+                "
+                onblur="
+                  this.style.borderColor = '#E2E8F0';
+                  this.style.boxShadow = 'none';
+                "
+              >
+                <option value="Reported">Reported</option>
+                <option value="Open">Open</option>
+                <option value="Done">Done</option>
+                <option value="Pending">Pending</option>
+                <option value="Verified">Verified</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label
+              style="
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+              >User ID *</label
+            >
+            <input
+              type="number"
+              id="itemUserId"
+              required
+              placeholder="Enter user ID"
+              style="
+                width: 100%;
+                padding: 11px 16px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 11px;
+                font-size: 14px;
+                font-family: &quot;Inter&quot;, sans-serif;
+                color: #1e293b;
+                background: #fff;
+                transition: all 0.2s;
+                outline: none;
+              "
+              onfocus="
+                this.style.borderColor = '#4F46E5';
+                this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+              "
+              onblur="
+                this.style.borderColor = '#E2E8F0';
+                this.style.boxShadow = 'none';
+              "
+            />
+          </div>
+
+          <div>
+            <label
+              style="
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+              >Description</label
+            >
+            <textarea
+              id="itemDescription"
+              rows="2"
+              placeholder="Additional details..."
+              style="
+                width: 100%;
+                padding: 11px 16px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 11px;
+                font-size: 14px;
+                font-family: &quot;Inter&quot;, sans-serif;
+                color: #1e293b;
+                background: #fff;
+                transition: all 0.2s;
+                outline: none;
+                resize: vertical;
+              "
+              onfocus="
+                this.style.borderColor = '#4F46E5';
+                this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+              "
+              onblur="
+                this.style.borderColor = '#E2E8F0';
+                this.style.boxShadow = 'none';
+              "
+            ></textarea>
+          </div>
+
+          <div>
+            <label
+              style="
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+              >Distinguishing Features</label
+            >
+            <textarea
+              id="itemFeatures"
+              rows="2"
+              placeholder="Unique identifying features..."
+              style="
+                width: 100%;
+                padding: 11px 16px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 11px;
+                font-size: 14px;
+                font-family: &quot;Inter&quot;, sans-serif;
+                color: #1e293b;
+                background: #fff;
+                transition: all 0.2s;
+                outline: none;
+                resize: vertical;
+              "
+              onfocus="
+                this.style.borderColor = '#4F46E5';
+                this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+              "
+              onblur="
+                this.style.borderColor = '#E2E8F0';
+                this.style.boxShadow = 'none';
+              "
+            ></textarea>
+          </div>
+
+          <div>
+            <label
+              style="
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+              "
+              >Image</label
+            >
+            <input
+              type="file"
+              id="itemImage"
+              accept="image/*"
+              style="
+                width: 100%;
+                padding: 11px 16px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 11px;
+                font-size: 14px;
+                font-family: &quot;Inter&quot;, sans-serif;
+                color: #1e293b;
+                background: #fff;
+                transition: all 0.2s;
+                outline: none;
+              "
+              onfocus="
+                this.style.borderColor = '#4F46E5';
+                this.style.boxShadow = '0 0 0 3px rgba(79,70,229,.1)';
+              "
+              onblur="
+                this.style.borderColor = '#E2E8F0';
+                this.style.boxShadow = 'none';
+              "
+            />
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px">
+            <button
+              type="submit"
+              style="
+                flex: 1;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                color: #fff;
+                border: none;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 700;
+                font-family: &quot;Inter&quot;, sans-serif;
+                cursor: pointer;
+                transition: all 0.25s;
+                box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+              "
+              onmouseover="
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 8px 24px rgba(79,70,229,.45)';
+              "
+              onmouseout="
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 14px rgba(79,70,229,.35)';
+              "
+            >
+              Create Item
+            </button>
+            <button
+              type="button"
+              onclick="closeCreateItemModal()"
+              style="
+                padding: 12px 20px;
+                background: #f1f5f9;
+                color: #475569;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                font-family: &quot;Inter&quot;, sans-serif;
+                cursor: pointer;
+                transition: all 0.2s;
+              "
+              onmouseover="
+                this.style.background = '#E2E8F0';
+                this.style.color = '#1E293B';
+              "
+              onmouseout="
+                this.style.background = '#F1F5F9';
+                this.style.color = '#475569';
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Notification Modal -->
-    <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-96 overflow-hidden flex flex-col">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 flex justify-between items-center">
-                <h2 class="text-xl font-bold">🔔 Notifications</h2>
-                <button id="closeNotificationModal" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition">✕</button>
-            </div>
-
-            <!-- Notifications List -->
-            <div id="notificationsList" class="flex-1 overflow-y-auto p-4">
-                <div class="text-center py-8">
-                    <p class="text-gray-500">Loading notifications...</p>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="border-t border-gray-200 p-4 bg-gray-50 flex gap-2">
-                <button id="markAllReadBtn" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium text-sm">Mark All Read</button>
-                <button id="closeNotificationBtn" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-medium text-sm">Close</button>
-            </div>
+    <div
+      id="notificationModal"
+      class="fixed inset-0 bg-black hidden z-50 flex items-center justify-center p-4"
+      style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px)"
+    >
+      <div
+        style="
+          background: #fff;
+          border-radius: 24px;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+          max-width: 480px;
+          width: 100%;
+          max-height: 90vh;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          border: 1px solid #e2e8f0;
+        "
+      >
+        <!-- Modal Header -->
+        <div
+          style="
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+          "
+        >
+          <h2 style="font-size: 18px; font-weight: 700; margin: 0">
+            🔔 Notifications
+          </h2>
+          <button
+            id="closeNotificationModal"
+            style="
+              background: rgba(255, 255, 255, 0.2);
+              border: none;
+              border-radius: 8px;
+              padding: 8px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 18px;
+              color: #fff;
+              transition: all 0.2s;
+            "
+            onmouseover="this.style.background = 'rgba(255,255,255,.3)'"
+            onmouseout="this.style.background = 'rgba(255,255,255,.2)'"
+          >
+            ✕
+          </button>
         </div>
+
+        <!-- Notifications List -->
+        <div
+          id="notificationsList"
+          style="
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: linear-gradient(to bottom, #f8fafc, #fff);
+          "
+        >
+          <div style="text-align: center; padding: 32px 16px; color: #64748b">
+            <div style="font-size: 40px; margin-bottom: 12px">⏳</div>
+            <p style="font-size: 14px; margin: 0">Loading notifications...</p>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          style="
+            border-top: 1px solid #e2e8f0;
+            padding: 16px;
+            background: #fff;
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+          "
+        >
+          <button
+            id="markAllReadBtn"
+            style="
+              flex: 1;
+              padding: 10px 16px;
+              background: linear-gradient(135deg, #4f46e5, #7c3aed);
+              color: #fff;
+              border: none;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 13px;
+              cursor: pointer;
+              transition: all 0.2s;
+              box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+            "
+            onmouseover="
+              this.style.transform = 'translateY(-1px)';
+              this.style.boxShadow = '0 4px 12px rgba(79,70,229,.35)';
+            "
+            onmouseout="
+              this.style.transform = 'translateY(0)';
+              this.style.boxShadow = '0 2px 8px rgba(79,70,229,.25)';
+            "
+          >
+            Mark All Read
+          </button>
+          <button
+            id="closeNotificationBtn"
+            style="
+              flex: 1;
+              padding: 10px 16px;
+              background: #f1f5f9;
+              color: #475569;
+              border: 1.5px solid #e2e8f0;
+              border-radius: 10px;
+              font-weight: 600;
+              font-size: 13px;
+              cursor: pointer;
+              transition: all 0.2s;
+            "
+            onmouseover="this.style.background = '#E2E8F0'"
+            onmouseout="this.style.background = '#F1F5F9'"
+          >
+            Close
+          </button>
+        </div>
+      </div>
     </div>
 
-    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
-        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
+    <footer
+      style="
+        background: linear-gradient(to right, #111827, #1f2937);
+        color: #d1d5db;
+        text-align: center;
+        padding: 2rem;
+        border-top: 1px solid #374151;
+        margin-top: auto;
+      "
+    >
+      <p style="font-weight: 500">
+        &copy; 2026 CampusFind. Connecting Conestoga students.
+      </p>
     </footer>
 
     <script src="/javascripts/api.js"></script>
     <script src="/javascripts/modal.js"></script>
     <script src="/javascripts/dashboard.js"></script>
     <script>
-        // Navigation and authentication logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const user = getUser();
-            const dashboardLink = document.getElementById('dashboardLink');
-            const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+      // Navigation and authentication logic
+      document.addEventListener("DOMContentLoaded", function () {
+        const user = getUser();
+        const dashboardLink = document.getElementById("dashboardLink");
+        const dashboardLinkMobile = document.getElementById(
+          "dashboardLinkMobile",
+        );
+        const logoutBtn = document.getElementById("logoutBtn");
+        const logoutBtnMobile = document.getElementById("logoutBtnMobile");
 
-            if (user) {
-                // Show dashboard link only for security users
-                if (user.role === 'security') {
-                    if (dashboardLink) dashboardLink.style.display = 'inline-block';
-                    if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
-                }
+        if (user) {
+          // Show dashboard link only for security users
+          if (user.role === "security") {
+            if (dashboardLink) dashboardLink.style.display = "inline-block";
+            if (dashboardLinkMobile)
+              dashboardLinkMobile.style.display = "block";
+          }
 
-                // Update logout button with user's name
-                if (logoutBtn) {
-                    logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
-                }
-                if (logoutBtnMobile) {
-                    logoutBtnMobile.textContent = `🚪 Logout (${user.first_name})`;
-                }
+          // Update logout button with user's name
+          if (logoutBtn) {
+            logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
+          }
+          if (logoutBtnMobile) {
+            logoutBtnMobile.textContent = `🚪 Logout (${user.first_name})`;
+          }
 
-                // Setup logout functionality
-                const setupLogout = (btn) => {
-                    if (btn) {
-                        btn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            if (confirm('Are you sure you want to logout?')) {
-                                localStorage.removeItem('user');
-                                window.location.href = 'index.html';
-                            }
-                        });
-                    }
-                };
-                setupLogout(logoutBtn);
-                setupLogout(logoutBtnMobile);
+          // Setup logout functionality
+          const setupLogout = (btn) => {
+            if (btn) {
+              btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (confirm("Are you sure you want to logout?")) {
+                  localStorage.removeItem("user");
+                  window.location.href = "index.html";
+                }
+              });
             }
+          };
+          setupLogout(logoutBtn);
+          setupLogout(logoutBtnMobile);
+        }
 
-            // Mobile menu toggle functionality
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
+        // Mobile menu toggle functionality
+        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
 
-            if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
-                });
+        if (mobileMenuBtn && mobileMenu) {
+          mobileMenuBtn.addEventListener("click", function () {
+            mobileMenu.classList.toggle("hidden");
+          });
 
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                });
+          // Close mobile menu when clicking outside
+          document.addEventListener("click", function (event) {
+            if (
+              !mobileMenuBtn.contains(event.target) &&
+              !mobileMenu.contains(event.target)
+            ) {
+              mobileMenu.classList.add("hidden");
             }
-        });
+          });
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

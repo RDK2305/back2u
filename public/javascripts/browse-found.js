@@ -199,34 +199,51 @@ async function viewItemDetails(itemId) {
       const user = getUser();
       
       modalBody.innerHTML = `
-        <div class="space-y-6">
-          <h2 class="text-3xl font-bold text-gray-800">${item.title}</h2>
-          
-          <div class="w-full h-72 bg-gray-100 rounded-lg flex items-center justify-center text-6xl overflow-hidden">
-            ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : ''}
-            ${item.image_url ? '<div class="w-full h-full flex items-center justify-center text-6xl hidden">📦</div>' : '📦'}
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div>
+            <h2 style="font-size:24px;font-weight:700;color:#1E293B;margin:0;">${item.title}</h2>
+            <p style="font-size:13px;color:#64748B;margin:6px 0 0;font-weight:500;">Found on Campus</p>
           </div>
           
-          <div class="grid grid-cols-2 gap-4">
+          <div style="width:100%;height:280px;background:#F1F5F9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:60px;overflow:hidden;border:1.5px solid #E2E8F0;">
+            ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : ''}
+            ${item.image_url ? '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;hidden;">📦</div>' : '<div style="font-size:60px;">📦</div>'}
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;background:linear-gradient(to bottom,#F8FAFC,#fff);border-radius:12px;border:1px solid #E2E8F0;">
             <div>
-              <p class="text-sm text-gray-600"><strong>Category:</strong> ${getCategoryName(item.category)}</p>
-              <p class="text-sm text-gray-600 mt-2"><strong>Campus:</strong> ${item.campus}</p>
-              <p class="text-sm text-gray-600 mt-2"><strong>Location Found:</strong> ${item.location_found}</p>
+              <p style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin:0;">Category</p>
+              <p style="font-size:14px;color:#1E293B;font-weight:600;margin:6px 0 0;">${getCategoryName(item.category)}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600"><strong>Date Found:</strong> ${formatDisplayDate(item.date_found)}</p>
-              <p class="text-sm text-gray-600 mt-2"><strong>Status:</strong> <span class="inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(item.status)}">${item.status}</span></p>
-              <p class="text-sm text-gray-600 mt-2"><strong>Posted by:</strong> ${item.first_name} ${item.last_name}</p>
+              <p style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin:0;">Date Found</p>
+              <p style="font-size:14px;color:#1E293B;font-weight:600;margin:6px 0 0;">${formatDisplayDate(item.date_found)}</p>
+            </div>
+            <div>
+              <p style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin:0;">Campus</p>
+              <p style="font-size:14px;color:#1E293B;font-weight:600;margin:6px 0 0;">${item.campus}</p>
+            </div>
+            <div>
+              <p style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin:0;">Location</p>
+              <p style="font-size:14px;color:#1E293B;font-weight:600;margin:6px 0 0;">${item.location_found}</p>
             </div>
           </div>
           
           <div>
-            <p class="text-sm text-gray-600"><strong>Description:</strong></p>
-            <p class="text-gray-700 mt-2">${item.description}</p>
+            <h3 style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin:0;">Description</h3>
+            <p style="font-size:14px;color:#475569;line-height:1.6;margin:8px 0 0;">${item.description}</p>
+          </div>
+          
+          <div style="padding:12px 16px;background:linear-gradient(135deg,#F0F4FF,#F5EBFF);border-radius:10px;border:1px solid #E9D5FF;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:20px;">👤</span>
+            <div>
+              <p style="font-size:12px;color:#64748B;margin:0;">Posted by</p>
+              <p style="font-size:13px;color:#1E293B;font-weight:600;margin:2px 0 0;">${item.first_name} ${item.last_name}</p>
+            </div>
           </div>
           
           ${user && item.status === 'unclaimed' ? `
-            <button type="button" id="makeClaimBtn" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all">
+            <button type="button" id="makeClaimBtn" style="width:100%;padding:12px 16px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(79,70,229,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(79,70,229,.35)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(79,70,229,.25)';">
               📋 Make a Claim
             </button>
           ` : ''}

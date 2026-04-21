@@ -1,314 +1,249 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Browse Found Items - Back2u</title>
-    <link rel="stylesheet" href="/stylesheets/style.min.css" />
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Browse Found Items — CampusFind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/style.min.css"/>
+  <style>
+    *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+    body{margin:0;background:#F8FAFC;color:#1E293B;display:flex;flex-direction:column;min-height:100vh;}
+    a{text-decoration:none;}
 
-    <style>
-@layer components {
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .animate-fade-in {
-        animation: fadeIn 0.6s ease-out;
-      }
-      .card-hover {
-        transition: all 0.3s ease;
-      }
-      .card-hover:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      }
-}
-    </style>
-  </head>
-  <body
-    class="flex flex-col bg-gradient-to-b from-slate-50 to-white text-gray-800"
-  >
-    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">🔍</span>
-          <div
-            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
-          >
-            Back2u
-          </div>
-        </div>
-        <div class="hidden lg:flex gap-4 xl:gap-6 items-center">
-          <a
-            href="browse-found.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105 bg-gradient-to-r from-blue-100 to-cyan-100"
-            >📦 Browse Found</a
-          >
-          <a
-            href="report-lost.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >📝 Report Lost</a
-          >
-          <a
-            href="dashboard.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            id="dashboardLink"
-            style="display: none;"
-            >📊 Dashboard</a
-          >
-          <a
-            href="my-claims.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >🔍 My Claims</a
-          >
-          <a href="messages.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-    ✉️ Messages
-    <span id="msgBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-</a>
-          <a href="notifications.html" class="relative text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105">
-    🔔 Notifications
-    <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-</a>
-          <a
-            href="profile.html"
-            class="text-gray-700 hover:text-blue-600 transition-all font-semibold px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:shadow-md transform hover:scale-105"
-            >👤 Profile</a
-          >
-          <a
-            href="#"
-            id="logoutBtn"
-            class="px-6 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all font-semibold hover:shadow-lg transform hover:scale-105"
-            >Logout</a
-          >
-        </div>
-        <!-- Mobile menu button -->
-        <div class="lg:hidden">
-          <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 p-3 rounded-lg hover:bg-blue-50 transition-all">
-            <span class="text-3xl">☰</span>
-          </button>
-        </div>
+    /* Nav */
+    .cf-nav{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,.8);position:sticky;top:0;z-index:100;}
+    .cf-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;}
+    .cf-logo{display:flex;align-items:center;gap:10px;}
+    .cf-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .cf-logo-text{font-size:19px;font-weight:800;background:linear-gradient(135deg,#4F46E5,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .nav-link{display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:10px;color:#475569;font-weight:500;font-size:14px;transition:all .2s;position:relative;white-space:nowrap;}
+    .nav-link:hover{color:#4F46E5;background:#EEF2FF;}
+    .nav-link.active{color:#4F46E5;background:#EEF2FF;font-weight:600;}
+    .nav-badge{position:absolute;top:3px;right:3px;background:#EF4444;color:#fff;font-size:10px;font-weight:700;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+    /* Search bar */
+    .search-bar{background:#fff;border:1px solid #E2E8F0;border-radius:20px;padding:28px 32px;margin-bottom:32px;box-shadow:0 2px 16px rgba(0,0,0,.05);}
+    .search-bar-title{font-size:22px;font-weight:800;color:#0F172A;margin:0 0 6px;letter-spacing:-.5px;}
+    .search-bar-sub{color:#64748B;font-size:14px;margin:0 0 24px;}
+    .search-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px;align-items:end;}
+
+    .cf-label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+    .cf-input,.cf-select{width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;appearance:none;}
+    .cf-input:focus,.cf-select:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+    .cf-input::placeholder{color:#94A3B8;}
+
+    .btn-search{padding:11px 22px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 4px 12px rgba(79,70,229,.3);white-space:nowrap;}
+    .btn-search:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(79,70,229,.4);}
+    .btn-reset{padding:11px 16px;background:#F1F5F9;color:#475569;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .btn-reset:hover{background:#E2E8F0;color:#1E293B;}
+
+    /* Item cards */
+    .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;}
+    .item-card{background:#fff;border-radius:18px;border:1px solid #E2E8F0;overflow:hidden;transition:all .3s;cursor:pointer;}
+    .item-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.1);border-color:rgba(79,70,229,.2);}
+    .item-img-wrap{height:165px;overflow:hidden;background:linear-gradient(135deg,#F1F5F9,#E2E8F0);display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;}
+    .item-img-wrap img{width:100%;height:100%;object-fit:cover;}
+    .cat-pill{position:absolute;top:10px;left:10px;background:rgba(79,70,229,.88);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;backdrop-filter:blur(4px);}
+    .item-body{padding:16px;}
+    .item-title{font-size:15px;font-weight:700;color:#0F172A;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .item-meta{font-size:12px;color:#64748B;margin:0 0 14px;display:flex;gap:10px;flex-wrap:wrap;}
+    .item-meta span{display:flex;align-items:center;gap:4px;}
+    .item-claim-btn{width:100%;padding:9px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+    .item-claim-btn:hover{box-shadow:0 4px 12px rgba(79,70,229,.35);}
+
+    /* Pagination */
+    .pg-wrap{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:36px;}
+    .pg-btn{padding:10px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;font-weight:600;color:#475569;cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;transition:all .2s;}
+    .pg-btn:hover{background:#EEF2FF;color:#4F46E5;border-color:#C7D2FE;}
+
+    /* Empty state */
+    .empty-state{text-align:center;padding:64px 24px;background:#fff;border-radius:20px;border:1px solid #E2E8F0;}
+
+    /* Error */
+    .cf-error{background:#FEF2F2;border-left:4px solid #EF4444;color:#B91C1C;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+
+    /* Modal */
+    .cf-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+    .cf-modal{background:#fff;border-radius:24px;padding:0;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.3);}
+    .modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;background:#F1F5F9;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:#64748B;transition:all .2s;z-index:10;}
+    .modal-close:hover{background:#E2E8F0;color:#1E293B;}
+
+    /* Active filter badge */
+    .filter-badge{display:inline-flex;align-items:center;gap:5px;background:#EEF2FF;color:#4F46E5;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;margin-right:6px;margin-top:6px;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    .fade-up{animation:fadeUp .4s ease-out both;}
+
+    /* Footer */
+    footer{background:#0F172A;border-top:1px solid rgba(255,255,255,.05);padding:32px 24px;margin-top:auto;}
+
+    @media(max-width:860px){.search-grid{grid-template-columns:1fr 1fr;}.search-grid>div:last-child{grid-column:1/-1;display:flex;gap:10px;}}
+    @media(max-width:540px){.search-grid{grid-template-columns:1fr;}.cf-nav-inner{padding:0 16px;}}
+  </style>
+</head>
+<body>
+
+<!-- ═══════ NAV ════════════════════════════════════════════════════════════ -->
+<nav class="cf-nav">
+  <div class="cf-nav-inner">
+    <a href="index.html" class="cf-logo">
+      <div class="cf-logo-icon">🎒</div>
+      <span class="cf-logo-text">CampusFind</span>
+    </a>
+    <div class="hidden lg:flex" style="align-items:center;gap:2px;">
+      <a href="browse-found.html" class="nav-link active">📦 Browse Found</a>
+      <a href="report-lost.html" class="nav-link">📝 Report Lost</a>
+      <a href="dashboard.html" class="nav-link" id="dashboardLink" style="display:none;">📊 Dashboard</a>
+      <a href="my-claims.html" class="nav-link">🔍 My Claims</a>
+      <a href="messages.html" class="nav-link">✉️ Messages<span id="msgBadge" class="nav-badge hidden">0</span></a>
+      <a href="notifications.html" class="nav-link">🔔 Alerts<span id="notifBadge" class="nav-badge hidden">0</span></a>
+      <a href="profile.html" class="nav-link">👤 Profile</a>
+      <a href="#" id="logoutBtn" style="margin-left:8px;padding:9px 17px;background:#FEE2E2;color:#DC2626;border-radius:10px;font-weight:600;font-size:14px;">🚪 Logout</a>
+    </div>
+    <button id="mobileMenuBtn" class="lg:hidden" style="background:none;border:none;font-size:24px;cursor:pointer;padding:8px;color:#475569;">☰</button>
+  </div>
+  <div id="mobileMenu" class="hidden" style="border-top:1px solid #E2E8F0;background:#fff;padding:14px 24px;">
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <a href="browse-found.html" class="nav-link active">📦 Browse Found</a>
+      <a href="report-lost.html" class="nav-link">📝 Report Lost</a>
+      <a href="dashboard.html" class="nav-link" id="dashboardLinkMobile" style="display:none;">📊 Dashboard</a>
+      <a href="my-claims.html" class="nav-link">🔍 My Claims</a>
+      <a href="messages.html" class="nav-link">✉️ Messages</a>
+      <a href="notifications.html" class="nav-link">🔔 Notifications</a>
+      <a href="profile.html" class="nav-link">👤 Profile</a>
+      <a href="#" id="logoutBtnMobile" style="margin-top:10px;padding:12px 18px;background:#FEE2E2;color:#DC2626;border-radius:10px;font-weight:600;font-size:14px;text-align:center;display:block;">🚪 Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ MAIN ════════════════════════════════════════════════════════════ -->
+<main style="max-width:1280px;margin:0 auto;padding:36px 24px;flex:1;width:100%;">
+
+  <!-- Page header -->
+  <div style="margin-bottom:28px;">
+    <h1 style="font-size:clamp(22px,3vw,32px);font-weight:800;color:#0F172A;letter-spacing:-.7px;margin:0 0 6px;">Browse Found Items</h1>
+    <p style="color:#64748B;font-size:15px;margin:0;">Search through items found on campus — one of these might be yours</p>
+  </div>
+
+  <!-- Search bar -->
+  <div style="max-width:1280px;margin:20px auto;padding:0 16px;">
+    <div style="display:grid;grid-template-columns:2fr 1.5fr;gap:16px;align-items:end;">
+      <div>
+        <label for="searchKeyword" style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px;">Search</label>
+        <input type="text" id="searchKeyword" placeholder="Search by title or description…" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
       </div>
-      <!-- Mobile menu -->
-      <div id="mobileMenu" class="lg:hidden hidden bg-white border-t border-gray-100 px-4 py-6 shadow-lg">
-        <div class="flex flex-col gap-4">
-          <a href="browse-found.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl bg-blue-50">📦 Browse Found</a>
-          <a href="report-lost.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">📝 Report Lost</a>
-          <a href="dashboard.html" id="dashboardLinkMobile" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50" style="display:none;">📊 Dashboard</a>
-          <a href="my-claims.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">🔍 My Claims</a>
-          <a href="messages.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">✉️ Messages</a>
-          <a href="notifications.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">🔔 Notifications</a>
-          <a href="profile.html" class="text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-blue-50">👤 Profile</a>
-          <a href="#" id="logoutBtnMobile" class="px-8 py-3 bg-red-600 text-white rounded-xl font-semibold text-center mt-2">Logout</a>
-        </div>
+      <div>
+        <label for="filterCategory" style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px;">Category</label>
+        <select id="filterCategory" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;cursor:pointer;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
+          <option value="">All Categories</option>
+          <option value="phone">📱 Phone</option>
+          <option value="wallet">👛 Wallet</option>
+          <option value="keys">🔑 Keys</option>
+          <option value="id">🆔 Student ID</option>
+          <option value="clothing">👕 Clothing</option>
+          <option value="bag">🎒 Bag</option>
+          <option value="textbook">📚 Textbook</option>
+          <option value="electronics">⚡ Electronics</option>
+          <option value="other">📦 Other</option>
+        </select>
       </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
-      <div
-        class="bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white p-8 rounded-2xl mb-8 shadow-xl"
-      >
-        <h1 class="text-4xl font-bold mb-2">🔎 Find Your Lost Item</h1>
-        <p class="mb-6 text-blue-100">
-          Browse through all found items and claim what's yours
-        </p>
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end"
-        >
-          <div class="lg:col-span-2">
-            <label for="searchKeyword" class="block mb-2 font-semibold text-sm"
-              >Search</label
-            >
-            <input
-              type="text"
-              id="searchKeyword"
-              placeholder="Search by title..."
-              class="w-full px-4 py-2.5 border border-blue-200 rounded-lg text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
-
-          <div>
-            <label for="filterCategory" class="block mb-2 font-semibold text-sm"
-              >Category</label
-            >
-            <select
-              id="filterCategory"
-              class="w-full px-4 py-2.5 border border-blue-200 rounded-lg text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">All Categories</option>
-              <option value="phone">📱 Phone</option>
-              <option value="wallet">👛 Wallet</option>
-              <option value="keys">🔑 Keys</option>
-              <option value="id">🆔 Student ID</option>
-              <option value="clothing">👕 Clothing</option>
-              <option value="bag">🎒 Bag</option>
-              <option value="textbook">📚 Textbook</option>
-              <option value="electronics">⚡ Electronics</option>
-              <option value="other">📦 Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="filterCampus" class="block mb-2 font-semibold text-sm"
-              >Campus</label
-            >
-            <select
-              id="filterCampus"
-              class="w-full px-4 py-2.5 border border-blue-200 rounded-lg text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">All Campuses</option>
-              <option value="Main">🏢 Main (Kitchener)</option>
-              <option value="Waterloo">🏢 Waterloo</option>
-              <option value="Cambridge">🏢 Cambridge</option>
-              <option value="Doon">🏢 Doon</option>
-            </select>
-          </div>
-
-          <div class="flex gap-2">
-            <button
-              id="searchBtn"
-              class="flex-1 px-4 py-2.5 bg-white text-blue-600 hover:bg-gray-50 font-semibold rounded-lg cursor-pointer transition-all hover:shadow-md"
-            >
-              Search
-            </button>
-            <button
-              id="resetBtn"
-              class="px-4 py-2.5 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-lg cursor-pointer transition-all"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
+      <div>
+        <label for="filterCampus" style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px;">Campus</label>
+        <select id="filterCampus" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;cursor:pointer;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
+          <option value="">All Campuses</option>
+          <option value="Main">🏢 Main (Kitchener)</option>
+          <option value="Waterloo">🏢 Waterloo</option>
+          <option value="Cambridge">🏢 Cambridge</option>
+          <option value="Doon">🏢 Doon</option>
+        </select>
       </div>
-
-      <div
-        id="errorMessage"
-        class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden"
-        role="alert"
-      ></div>
-
-      <div
-        id="itemsContainer"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-8 animate-fade-in"
-      >
-        <div class="col-span-full text-center py-12">
-          <div class="text-4xl mb-3">⏳</div>
-          <p class="text-gray-500 font-medium">Loading items...</p>
-        </div>
-      </div>
-
-      <div
-        class="flex justify-center items-center gap-3 my-8"
-        id="paginationContainer"
-        style="display: none"
-      >
-        <button
-          id="prevBtn"
-          class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all"
-        >
-          ← Previous
-        </button>
-        <span
-          id="pageInfo"
-          class="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg"
-        ></span>
-        <button
-          id="nextBtn"
-          class="px-4 py-2 bg-gray-200 text-gray-700 text-sm hover:bg-gray-300 rounded-lg font-medium cursor-pointer transition-all"
-        >
-          Next →
-        </button>
-      </div>
-
-      <div
-        id="emptyState"
-        class="text-center p-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl my-8 hidden"
-      >
-        <div class="text-5xl mb-3">📭</div>
-        <h2 class="text-gray-600 mb-2 text-2xl font-bold">No items found</h2>
-        <p class="text-gray-500 mb-6">Try adjusting your search filters</p>
+      <div style="display:flex;gap:10px;">
+        <button id="searchBtn" style="flex:1;padding:11px 16px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(79,70,229,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(79,70,229,.35)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(79,70,229,.25)';">🔍 Search</button>
+        <button id="resetBtn" style="padding:11px 16px;background:#F1F5F9;color:#475569;border:1.5px solid #E2E8F0;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='#E2E8F0';" onmouseout="this.style.background='#F1F5F9';">Reset</button>
       </div>
     </div>
+  </div>
 
-    <!-- Item Detail Modal -->
-    <div
-      id="itemModal"
-      class="fixed inset-0 bg-black/50 items-center justify-center z-[1000] hidden"
-      style="display: none"
-    >
-      <div
-        class="bg-white rounded-2xl p-8 max-w-2xl w-[90%] max-h-[90vh] overflow-y-auto relative shadow-2xl"
-      >
-        <span
-          class="close-modal absolute top-4 right-6 text-3xl cursor-pointer text-gray-500 hover:text-gray-800 transition-colors"
-          id="closeModal"
-          >&times;</span
-        >
-        <div id="modalBody"></div>
-      </div>
+  <!-- Error -->
+  <div id="errorMessage" class="cf-error" role="alert"></div>
+
+  <!-- Items grid -->
+  <div id="itemsContainer" class="items-grid fade-up">
+    <div style="grid-column:1/-1;text-align:center;padding:56px;">
+      <div style="font-size:48px;margin-bottom:14px;">⏳</div>
+      <p style="color:#94A3B8;font-weight:500;">Loading items…</p>
     </div>
+  </div>
 
-    <footer
-      class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto"
-    >
-      <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
-    </footer>
+  <!-- Pagination -->
+  <div id="paginationContainer" class="pg-wrap" style="display:none;">
+    <button id="prevBtn" class="pg-btn">← Previous</button>
+    <span id="pageInfo" style="padding:10px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;color:#64748B;font-size:14px;font-weight:500;"></span>
+    <button id="nextBtn" class="pg-btn">Next →</button>
+  </div>
 
-    <script src="/javascripts/api.js"></script>
-    <script src="/javascripts/modal.js"></script>
-    <script src="/javascripts/browse-found.js"></script>
-    <script>
-        // Navigation and authentication logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const user = getUser();
-            const dashboardLink = document.getElementById('dashboardLink');
-            const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+  <!-- Empty state -->
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div style="font-size:56px;margin-bottom:16px;">📭</div>
+    <h2 style="font-size:22px;font-weight:700;color:#0F172A;margin:0 0 8px;">No items found</h2>
+    <p style="color:#64748B;font-size:15px;margin:0 0 24px;">Try adjusting your search filters or check back later</p>
+    <button onclick="document.getElementById('resetBtn').click()" style="padding:11px 24px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;">Clear Filters</button>
+  </div>
+</main>
 
-            if (user) {
-                // Show dashboard link only for security users
-                if (user.role === 'security') {
-                    if (dashboardLink) dashboardLink.style.display = 'inline-block';
-                    if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
-                }
+<!-- ═══════ MODAL ══════════════════════════════════════════════════════════ -->
+<div id="itemModal" style="position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;z-50;padding:16px;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:24px;box-shadow:0 24px 64px rgba(0,0,0,.3);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;border:1px solid #E2E8F0;position:relative;">
+    <button id="closeModal" style="position:absolute;top:16px;right:16px;width:36px;height:36px;background:#F1F5F9;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748B;transition:all .2s;z-index:10;" onmouseover="this.style.background='#E2E8F0';" onmouseout="this.style.background='#F1F5F9';">✕</button>
+    <div id="modalBody" style="padding:24px;"></div>
+  </div>
+</div>
 
-                // Update logout button with user's name
-                if (logoutBtn) {
-                    logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
-                }
+<!-- ═══════ FOOTER ════════════════════════════════════════════════════════ -->
+<footer>
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:30px;height:30px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;">🎒</div>
+      <span style="font-weight:700;color:#fff;font-size:15px;">CampusFind</span>
+    </div>
+    <p style="color:#334155;font-size:13px;margin:0;">© 2026 CampusFind · Conestoga College · Team 4</p>
+  </div>
+</footer>
 
-                // Setup logout functionality
-                const setupLogout = (btn) => {
-                    if (btn) {
-                        btn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            if (confirm('Are you sure you want to logout?')) {
-                                localStorage.removeItem('user');
-                                localStorage.removeItem('token');
-                                window.location.href = 'index.html';
-                            }
-                        });
-                    }
-                };
-                setupLogout(logoutBtn);
-                setupLogout(logoutBtnMobile);
-            }
+<script src="/javascripts/api.js"></script>
+<script src="/javascripts/modal.js"></script>
+<script src="/javascripts/browse-found.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const user = getUser();
+  const dashboardLink = document.getElementById('dashboardLink');
+  const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutBtnMobile = document.getElementById('logoutBtnMobile');
 
-            // Mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-            }
-        });
-    </script>
-  </body>
+  if (user) {
+    if (user.role === 'security') {
+      if (dashboardLink) dashboardLink.style.display = 'inline-flex';
+      if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
+    }
+    if (logoutBtn) logoutBtn.textContent = `🚪 Logout (${user.first_name})`;
+    const setupLogout = (btn) => {
+      if (btn) btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) { localStorage.removeItem('user'); localStorage.removeItem('token'); window.location.href = 'index.html'; }
+      });
+    };
+    setupLogout(logoutBtn); setupLogout(logoutBtnMobile);
+  }
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  }
+});
+</script>
+</body>
 </html>

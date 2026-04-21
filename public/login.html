@@ -1,79 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Login to your Back2U account securely">
-    <meta name="color-scheme" content="light">
-    <title>Login - Back2u</title>
-    <link rel="stylesheet" href="/stylesheets/style.min.css">
-    <style>
-@layer components {
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-in { animation: slideIn 0.6s ease-out; }
-        .input-focus:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Login — CampusFind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/style.min.css">
+  <style>
+    *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+    body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:#F8FAFC;}
+
+    /* Split layout */
+    .auth-wrap{display:flex;min-height:100vh;}
+    .auth-left{flex:0 0 45%;background:linear-gradient(155deg,#0F172A 0%,#1E1B4B 55%,#0F172A 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:60px 56px;}
+    .auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 32px;background:#F8FAFC;}
+
+    /* Left panel decorations */
+    .left-orb{position:absolute;border-radius:50%;pointer-events:none;}
+    .left-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:48px 48px;}
+
+    /* Form card */
+    .form-card{background:#fff;border-radius:24px;padding:48px 44px;width:100%;max-width:440px;box-shadow:0 4px 32px rgba(0,0,0,.07);border:1px solid #E2E8F0;animation:slideUp .55s ease-out both;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+    /* Input */
+    .cf-label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:7px;}
+    .cf-input{width:100%;padding:12px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:15px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;}
+    .cf-input:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+    .cf-input::placeholder{color:#94A3B8;}
+
+    /* Button */
+    .cf-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(79,70,229,.35);margin-top:8px;}
+    .cf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.45);}
+
+    /* Nav */
+    .cf-topbar{position:fixed;top:0;left:0;right:0;z-index:50;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(15,23,42,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);}
+
+    /* Error */
+    .cf-error{background:#FEF2F2;border-left:4px solid #EF4444;color:#B91C1C;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+
+    /* Feature list on left */
+    .feat-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+    .feat-item:last-child{border-bottom:none;}
+    .feat-dot{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+
+    @media(max-width:768px){
+      .auth-left{display:none;}
+      .auth-right{padding:24px 16px;}
+      .form-card{padding:32px 24px;max-width:100%;}
+    }
+  </style>
 </head>
-<body class="flex flex-col bg-gradient-to-br from-slate-50 to-blue-50 text-gray-800">
-    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🔍</span>
-                <div class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Back2u</div>
-            </div>
-            <div class="flex gap-4 sm:gap-8 items-center">
-                <a href="index.html" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</a>
-                <a href="register.html" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all font-medium hover:shadow-md">Register</a>
-            </div>
+<body>
+
+<!-- Top bar (visible on mobile only effectively) -->
+<div class="cf-topbar">
+  <a href="index.html" style="display:flex;align-items:center;gap:9px;text-decoration:none;">
+    <div style="width:34px;height:34px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;">🎒</div>
+    <span style="font-size:18px;font-weight:800;background:linear-gradient(135deg,#818CF8,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">CampusFind</span>
+  </a>
+  <a href="register.html" style="padding:8px 18px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#A5B4FC;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;">Create Account</a>
+</div>
+
+<div class="auth-wrap" style="padding-top:0;">
+
+  <!-- ── LEFT PANEL ─────────────────────────────────────────────────────── -->
+  <div class="auth-left">
+    <div class="left-grid"></div>
+    <div class="left-orb" style="width:380px;height:380px;background:radial-gradient(circle,rgba(99,102,241,.25) 0%,transparent 70%);top:-120px;right:-100px;"></div>
+    <div class="left-orb" style="width:280px;height:280px;background:radial-gradient(circle,rgba(6,182,212,.18) 0%,transparent 70%);bottom:-80px;left:-60px;"></div>
+
+    <div style="position:relative;z-index:1;">
+      <!-- Logo -->
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:52px;">
+        <div style="width:42px;height:42px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;">🎒</div>
+        <span style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#818CF8,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">CampusFind</span>
+      </a>
+
+      <h2 style="font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;margin:0 0 12px;">Welcome back!</h2>
+      <p style="color:#64748B;font-size:15px;line-height:1.7;margin:0 0 44px;">Your campus lost &amp; found platform — securely connecting Conestoga students.</p>
+
+      <div>
+        <div class="feat-item">
+          <div class="feat-dot" style="background:rgba(99,102,241,.2);">📦</div>
+          <div><div style="color:#E2E8F0;font-weight:600;font-size:14px;">Browse found items</div><div style="color:#475569;font-size:13px;margin-top:2px;">Search across all 4 campuses</div></div>
         </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-12 flex-1 w-full flex items-center justify-center">
-        <div class="w-full max-w-md">
-            <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-100 animate-slide-in">
-                <div class="text-center mb-8">
-                    <div class="text-5xl mb-3 inline-block">🔐</div>
-                    <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">Welcome Back</h1>
-                    <p class="text-gray-600">Login to your Back2u account</p>
-                </div>
-
-                <div id="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 hidden" role="alert"></div>
-
-                <form id="loginForm" class="space-y-5">
-                    <div>
-                        <label for="email" class="block mb-2 font-semibold text-gray-700 text-sm">Email Address</label>
-                        <input type="email" id="email" name="email" required placeholder="your.email@conestogac.on.ca" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label for="password" class="block mb-2 font-semibold text-gray-700 text-sm">Password</label>
-                        <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password" spellcheck="false" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base transition-all input-focus focus:outline-none">
-                        <div class="text-right mt-2">
-                            <a href="forgot-password.html" class="text-blue-600 hover:underline text-sm font-semibold">🔑 Forgot Password?</a>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all font-semibold rounded-lg cursor-pointer mt-6">Login</button>
-
-                    <p class="text-center my-4 text-gray-600 text-sm">
-                        Don't have an account? <a href="register.html" class="text-blue-600 font-semibold hover:underline">Register here</a>
-                    </p>
-                </form>
-            </div>
+        <div class="feat-item">
+          <div class="feat-dot" style="background:rgba(6,182,212,.15);">💬</div>
+          <div><div style="color:#E2E8F0;font-weight:600;font-size:14px;">Secure messaging</div><div style="color:#475569;font-size:13px;margin-top:2px;">Chat directly with finders</div></div>
         </div>
+        <div class="feat-item">
+          <div class="feat-dot" style="background:rgba(16,185,129,.15);">✅</div>
+          <div><div style="color:#E2E8F0;font-weight:600;font-size:14px;">Track your claims</div><div style="color:#475569;font-size:13px;margin-top:2px;">Real-time status updates</div></div>
+        </div>
+        <div class="feat-item">
+          <div class="feat-dot" style="background:rgba(245,158,11,.15);">🔔</div>
+          <div><div style="color:#E2E8F0;font-weight:600;font-size:14px;">Instant notifications</div><div style="color:#475569;font-size:13px;margin-top:2px;">Never miss an update</div></div>
+        </div>
+      </div>
+
+      <!-- Testimonial-style stat -->
+      <div style="margin-top:44px;padding:20px 24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+        <div style="font-size:28px;font-weight:800;color:#818CF8;">150+</div>
+        <div style="color:#64748B;font-size:13px;margin-top:4px;">items successfully returned to their owners this semester</div>
+      </div>
     </div>
+  </div>
 
-    <footer class="bg-gradient-to-r from-slate-900 to-slate-800 text-gray-300 text-center py-8 border-t border-slate-700 mt-auto">
-        <p class="font-medium">&copy; 2026 Back2u. Finding what matters. 🎯</p>
-    </footer>
+  <!-- ── RIGHT PANEL ────────────────────────────────────────────────────── -->
+  <div class="auth-right">
+    <div class="form-card">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="font-size:44px;margin-bottom:12px;">🔐</div>
+        <h1 style="font-size:26px;font-weight:800;color:#0F172A;letter-spacing:-.5px;margin:0 0 8px;">Sign in to CampusFind</h1>
+        <p style="color:#64748B;font-size:14px;margin:0;">Use your Conestoga College email</p>
+      </div>
 
-    <script src="/javascripts/api.js"></script>
-    <script src="/javascripts/login.js"></script>
+      <div id="errorMessage" class="cf-error" role="alert"></div>
+
+      <form id="loginForm">
+        <div style="margin-bottom:18px;">
+          <label for="email" class="cf-label">Email Address</label>
+          <input type="email" id="email" name="email" required placeholder="you@conestogac.on.ca" class="cf-input">
+        </div>
+        <div style="margin-bottom:6px;">
+          <label for="password" class="cf-label">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password" spellcheck="false" class="cf-input">
+        </div>
+        <div style="text-align:right;margin-bottom:24px;">
+          <a href="forgot-password.html" style="color:#4F46E5;font-size:13px;font-weight:600;text-decoration:none;">Forgot password?</a>
+        </div>
+        <button type="submit" class="cf-btn">Sign In →</button>
+        <p style="text-align:center;margin-top:20px;color:#64748B;font-size:14px;">
+          Don't have an account? <a href="register.html" style="color:#4F46E5;font-weight:600;text-decoration:none;">Create one</a>
+        </p>
+      </form>
+
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid #F1F5F9;text-align:center;">
+        <p style="color:#94A3B8;font-size:12px;">Only <strong style="color:#64748B;">@conestogac.on.ca</strong> and <strong style="color:#64748B;">@conestoga.ca</strong> emails accepted</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/javascripts/api.js"></script>
+<script src="/javascripts/login.js"></script>
 </body>
 </html>
