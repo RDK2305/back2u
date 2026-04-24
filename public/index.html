@@ -1,15 +1,14 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>CampusFind — Lost & Found for Conestoga College</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  
   <link rel="stylesheet" href="/stylesheets/style.min.css">
   <style>
-    *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+    *{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;box-sizing:border-box;}
     body{margin:0;background:#F8FAFC;color:#1E293B;display:flex;flex-direction:column;min-height:100vh;}
     a{text-decoration:none;}
 
@@ -121,7 +120,7 @@
 </nav>
 
 <!-- ═══════ FULL NAV (logged in) ════════════════════════════════════════════ -->
-<nav class="cf-nav hidden" id="fullNav">
+<nav class="cf-nav" id="fullNav" style="display:none;">
   <div class="cf-nav-inner">
     <a href="index.html" class="cf-logo">
       <div class="cf-logo-icon">🎒</div>
@@ -357,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (user) {
     minimalNav.style.display = 'none';
-    fullNav.classList.remove('hidden');
+    fullNav.style.display = 'block';
     if (user.role === 'security') {
       if (dashboardLink) dashboardLink.style.display = 'inline-flex';
       if (dashboardLinkMobile) dashboardLinkMobile.style.display = 'block';
@@ -373,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupLogout(logoutBtn); setupLogout(logoutBtnMobile);
   } else {
     minimalNav.style.display = 'block';
-    fullNav.classList.add('hidden');
+    fullNav.style.display = 'none';
     if (navAuth) navAuth.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'login.html'; });
   }
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');

@@ -1,15 +1,14 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Browse Found Items — CampusFind</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  
   <link rel="stylesheet" href="/stylesheets/style.min.css"/>
   <style>
-    *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+    *{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;box-sizing:border-box;}
     body{margin:0;background:#F8FAFC;color:#1E293B;display:flex;flex-direction:column;min-height:100vh;}
     a{text-decoration:none;}
 
@@ -31,13 +30,13 @@
     .search-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px;align-items:end;}
 
     .cf-label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
-    .cf-input,.cf-select{width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;appearance:none;}
+    .cf-input,.cf-select{width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;appearance:none;}
     .cf-input:focus,.cf-select:focus{border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
     .cf-input::placeholder{color:#94A3B8;}
 
-    .btn-search{padding:11px 22px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 4px 12px rgba(79,70,229,.3);white-space:nowrap;}
+    .btn-search{padding:11px 22px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 4px 12px rgba(79,70,229,.3);white-space:nowrap;}
     .btn-search:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(79,70,229,.4);}
-    .btn-reset{padding:11px 16px;background:#F1F5F9;color:#475569;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .btn-reset{padding:11px 16px;background:#F1F5F9;color:#475569;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
     .btn-reset:hover{background:#E2E8F0;color:#1E293B;}
 
     /* Item cards */
@@ -51,12 +50,12 @@
     .item-title{font-size:15px;font-weight:700;color:#0F172A;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .item-meta{font-size:12px;color:#64748B;margin:0 0 14px;display:flex;gap:10px;flex-wrap:wrap;}
     .item-meta span{display:flex;align-items:center;gap:4px;}
-    .item-claim-btn{width:100%;padding:9px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+    .item-claim-btn{width:100%;padding:9px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;cursor:pointer;transition:all .2s;}
     .item-claim-btn:hover{box-shadow:0 4px 12px rgba(79,70,229,.35);}
 
     /* Pagination */
     .pg-wrap{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:36px;}
-    .pg-btn{padding:10px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;font-weight:600;color:#475569;cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;transition:all .2s;}
+    .pg-btn{padding:10px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;font-weight:600;color:#475569;cursor:pointer;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;transition:all .2s;}
     .pg-btn:hover{background:#EEF2FF;color:#4F46E5;border-color:#C7D2FE;}
 
     /* Empty state */
@@ -133,11 +132,11 @@
     <div style="display:grid;grid-template-columns:2fr 1.5fr;gap:16px;align-items:end;">
       <div>
         <label for="searchKeyword" style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px;">Search</label>
-        <input type="text" id="searchKeyword" placeholder="Search by title or description…" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
+        <input type="text" id="searchKeyword" placeholder="Search by title or description…" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
       </div>
       <div>
         <label for="filterCategory" style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px;">Category</label>
-        <select id="filterCategory" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;cursor:pointer;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
+        <select id="filterCategory" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;cursor:pointer;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
           <option value="">All Categories</option>
           <option value="phone">📱 Phone</option>
           <option value="wallet">👛 Wallet</option>
@@ -152,7 +151,7 @@
       </div>
       <div>
         <label for="filterCampus" style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px;">Campus</label>
-        <select id="filterCampus" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:'Inter',sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;cursor:pointer;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
+        <select id="filterCampus" style="width:100%;padding:11px 16px;border:1.5px solid #E2E8F0;border-radius:11px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:#1E293B;background:#fff;transition:all .2s;outline:none;cursor:pointer;" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.1)';" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none';">
           <option value="">All Campuses</option>
           <option value="Main">🏢 Main (Kitchener)</option>
           <option value="Waterloo">🏢 Waterloo</option>
