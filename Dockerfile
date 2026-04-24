@@ -4,7 +4,7 @@ FROM node:18-alpine AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --production --ignore-scripts
+RUN npm ci --omit=dev
 
 # ── Runtime stage ─────────────────────────────────────────────────────────────
 FROM node:18-alpine AS runtime
